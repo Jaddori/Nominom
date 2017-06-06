@@ -160,10 +160,14 @@
     <ClCompile Include="..\include\Lua\lvm.c" />
     <ClCompile Include="..\include\Lua\lzio.c" />
     <ClCompile Include="Assets.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelInstance.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,9 +199,13 @@
     <ClInclude Include="Array.h" />
     <ClInclude Include="Assets.h" />
     <ClInclude Include="BaseIncludes.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelInstance.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

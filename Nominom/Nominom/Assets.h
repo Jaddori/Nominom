@@ -16,6 +16,10 @@ public:
 	int loadModel( const char* path );
 	Font* loadFont( const char* path );
 
+	Mesh* getMesh( int index );
+	Texture* getTexture( int index );
+	Model* getModel( int index );
+
 private:
 	int find( const char* path, Array<char*>& list );
 	char* makeString( const char* ref );

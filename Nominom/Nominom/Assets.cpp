@@ -82,6 +82,24 @@ Font* Assets::loadFont( const char* path )
 	return result;
 }
 
+Mesh* Assets::getMesh( int index )
+{
+	assert( index >= 0 && index < meshes.getSize() );
+	return &meshes[index];
+}
+
+Texture* Assets::getTexture( int index )
+{
+	assert( index >= 0 && index < textures.getSize() );
+	return &textures[index];
+}
+
+Model* Assets::getModel( int index )
+{
+	assert( index >= 0 && index < models.getSize() );
+	return &models[index];
+}
+
 int Assets::find( const char* path, Array<char*>& list )
 {
 	int result = -1;
