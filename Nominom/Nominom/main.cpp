@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Input.h"
 
 int main( int argc, char* argv[] )
 {
@@ -21,6 +22,7 @@ int main( int argc, char* argv[] )
 			Camera camera;
 			Shader shader;
 			Assets assets;
+			Input input;
 
 			assert( shader.load( "./assets/shaders/basic.vs", nullptr, "./assets/shaders/basic.fs" ) );
 			shader.upload();
@@ -40,146 +42,48 @@ int main( int argc, char* argv[] )
 			glEnable( GL_DEPTH_TEST );
 			glEnable( GL_CULL_FACE );
 
-			int counter = 0;
-			int prevMouseX = -1, prevMouseY = -1;
-
-			bool lmb = false;
-			bool w = false, a = false, s = false, d = false, space = false, ctrl = false;
 			bool running = true;
 			SDL_Event e;
 			while( running )
 			{
-				int mouseX = 0, mouseY = 0;
-
 				SDL_PollEvent( &e );
-				switch( e.type )
+				input.update( &e );
+
+				if( e.type == SDL_QUIT || input.keyReleased( SDL_SCANCODE_ESCAPE ) )
 				{
-				case SDL_QUIT:
 					running = false;
-					break;
-
-				case SDL_KEYDOWN:
-					switch( e.key.keysym.sym )
-					{
-					case SDLK_ESCAPE:
-						running = false;
-						break;
-
-					case SDLK_w:
-						w = true;
-						break;
-
-					case SDLK_a:
-						a = true;
-						break;
-
-					case SDLK_s:
-						s = true;
-						break;
-
-					case SDLK_d:
-						d = true;
-						break;
-
-					case SDLK_SPACE:
-						space = true;
-						break;
-
-					case SDLK_LCTRL:
-						ctrl = true;
-						break;
-					}
-					break;
-
-				case SDL_KEYUP:
-					switch( e.key.keysym.sym )
-					{
-					case SDLK_w:
-						w = false;
-						break;
-
-					case SDLK_a:
-						a = false;
-						break;
-
-					case SDLK_s:
-						s = false;
-						break;
-
-					case SDLK_d:
-						d = false;
-						break;
-
-					case SDLK_SPACE:
-						space = false;
-						break;
-
-					case SDLK_LCTRL:
-						ctrl = false;
-						break;
-					}
-					break;
-
-				case SDL_MOUSEBUTTONDOWN:
-					if( e.button.button == SDL_BUTTON_LEFT )
-					{
-						lmb = true;
-					}
-					break;
-
-				case SDL_MOUSEBUTTONUP:
-					if( e.button.button == SDL_BUTTON_LEFT )
-					{
-						lmb = false;
-					}
-					break;
 				}
 
-				SDL_GetMouseState( &mouseX, &mouseY );
-				if( prevMouseX < 0 )
+				if( input.buttonDown( SDL_BUTTON_LEFT ) )
 				{
-					prevMouseX = mouseX;
-					prevMouseY = mouseY;
-				}
-				else
-				{
-					int dx = prevMouseX - mouseX;
-					int dy = prevMouseY - mouseY;
-
-					prevMouseX = mouseX;
-					prevMouseY = mouseY;
-
-					mouseX = dx;
-					mouseY = dy;
-				}
-
-				if( lmb && ( mouseX || mouseY ) )
-				{
-					camera.updateDirection( mouseX, mouseY );
+					if( input.getMouseDeltaX() || input.getMouseDeltaY() )
+					{
+						camera.updateDirection( input.getMouseDeltaX(), input.getMouseDeltaY() );
+					}
 				}
 
 				glm::vec3 localMovement;
-				if( w )
+				if( input.keyDown( SDL_SCANCODE_W ) )
 				{
 					localMovement.z += 1.0f;
 				}
-				if( s )
+				if( input.keyDown( SDL_SCANCODE_S ) )
 				{
 					localMovement.z -= 1.0f;
 				}
-				if( d )
+				if( input.keyDown( SDL_SCANCODE_D ) )
 				{
 					localMovement.x += 1.0f;
 				}
-				if( a )
+				if( input.keyDown( SDL_SCANCODE_A ) )
 				{
 					localMovement.x -= 1.0f;
 				}
-				if( space )
+				if( input.keyDown( SDL_SCANCODE_SPACE ) )
 				{
 					localMovement.y += 1.0f;
 				}
-				if( ctrl )
+				if( input.keyDown( SDL_SCANCODE_LCTRL ) )
 				{
 					localMovement.y -= 1.0f;
 				}
