@@ -8,7 +8,7 @@
 *.sln.docstates
 *.orig
 #*.lib
-#*.exe
+*.exe
 *.iobj
 *.ipdb
 
