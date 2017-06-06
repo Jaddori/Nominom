@@ -21,7 +21,7 @@ private:
 	char* makeString( const char* ref );
 
 	Assets( const Assets& ref ){}
-	Assets& operator=( const Assets& ref ){}
+	Assets& operator=( const Assets& ref ){ return *this; }
 
 	Array<Mesh> meshes;
 	Array<Texture> textures;
