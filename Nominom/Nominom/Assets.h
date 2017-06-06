@@ -11,6 +11,9 @@ public:
 	Assets();
 	~Assets();
 
+	void upload();
+	void unload();
+
 	int loadMesh( const char* path );
 	int loadTexture( const char* path );
 	int loadModel( const char* path );
@@ -36,4 +39,7 @@ private:
 	Array<char*> texturePaths;
 	Array<char*> modelPaths;
 	Array<char*> fontPaths;
+
+	Array<Mesh*> uploadMeshes;
+	Array<Texture*> uploadTextures;
 };

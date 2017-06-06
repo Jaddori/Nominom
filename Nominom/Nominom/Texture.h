@@ -51,7 +51,7 @@ public:
 
 private:
 	GLuint id;
-	char* pixels;
+	GLbyte* pixels;
 	int width;
 	int height;
 	GLenum format;

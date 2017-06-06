@@ -8,6 +8,28 @@ Assets::~Assets()
 {
 }
 
+void Assets::upload()
+{
+	const int MAX_MESHES = uploadMeshes.getSize();
+	for( int curMesh = 0; curMesh < MAX_MESHES; curMesh++ )
+	{
+		uploadMeshes[curMesh]->upload();
+	}
+
+	const int MAX_TEXTURES = uploadTextures.getSize();
+	for( int curTexture = 0; curTexture < MAX_TEXTURES; curTexture++ )
+	{
+		uploadTextures[curTexture]->upload();
+	}
+
+	uploadMeshes.clear();
+	uploadTextures.clear();
+}
+
+void Assets::unload()
+{
+}
+
 int Assets::loadMesh( const char* path )
 {
 	int result = find( path, meshPaths );
@@ -20,6 +42,8 @@ int Assets::loadMesh( const char* path )
 			result = meshes.getSize();
 			meshes.add( mesh );
 			meshPaths.add( makeString( path ) );
+
+			uploadMeshes.add( &meshes[result] );
 		}
 	}
 
@@ -38,6 +62,8 @@ int Assets::loadTexture( const char* path )
 			result = textures.getSize();
 			textures.add( texture );
 			texturePaths.add( makeString( path ) );
+
+			uploadTextures.add( &textures[result] );
 		}
 	}
 
@@ -70,7 +96,7 @@ Font* Assets::loadFont( const char* path )
 	if( index < 0 )
 	{
 		result = new Font();
-		if( !result->load( path ) )
+		if( result->load( path ) )
 		{
 			delete result;
 			result = nullptr;

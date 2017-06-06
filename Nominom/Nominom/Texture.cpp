@@ -16,7 +16,6 @@ Texture::Texture( const Texture& ref )
 
 Texture::~Texture()
 {
-	unload();
 }
 
 Texture& Texture::operator=( const Texture& ref )
@@ -58,8 +57,8 @@ bool Texture::load( const char* path )
 			case ID_DXT5: format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
 			}
 
-			pixels = new char[size];
-			fread( pixels, 1, size, file );
+			pixels = new GLbyte[size];
+			fread( pixels, sizeof( GLbyte ), size, file );
 
 			result = true;
 		}
@@ -72,6 +71,8 @@ bool Texture::load( const char* path )
 
 void Texture::upload()
 {
+	assert( pixels );
+
 	glGenTextures( 1, &id );
 	glBindTexture( GL_TEXTURE_2D, id );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );

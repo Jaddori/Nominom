@@ -85,6 +85,18 @@ void Camera::updateOrthographic( float width, float height )
 	projectionMatrix = glm::ortho( 0.0f, width, height, 0.0f );
 }
 
+void Camera::setPosition( const glm::vec3& p )
+{
+	position = p;
+	dirtyViewMatrix = true;
+}
+
+void Camera::setDirection( const glm::vec3& d )
+{
+	direction = d;
+	dirtyViewMatrix = true;
+}
+
 const glm::mat4& Camera::getViewMatrix()
 {
 	if( dirtyViewMatrix )

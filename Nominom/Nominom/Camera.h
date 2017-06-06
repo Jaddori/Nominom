@@ -13,6 +13,9 @@ public:
 	void updatePerspective( float width, float height );
 	void updateOrthographic( float width, float height );
 
+	void setPosition( const glm::vec3& position );
+	void setDirection( const glm::vec3& direction );
+
 	const glm::mat4& getViewMatrix();
 	const glm::mat4& getProjectionMatrix();
 

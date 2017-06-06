@@ -16,7 +16,6 @@ Mesh::Mesh( const Mesh& ref )
 
 Mesh::~Mesh()
 {
-	unload();
 }
 
 Mesh& Mesh::operator=( const Mesh& ref )
