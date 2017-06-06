@@ -9,6 +9,8 @@
 *.orig
 #*.lib
 #*.exe
+*.iobj
+*.ipdb
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
