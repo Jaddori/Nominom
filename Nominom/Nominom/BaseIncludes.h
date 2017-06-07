@@ -16,6 +16,7 @@
 
 #include "GL\glew.h"
 #include "SDL\SDL.h"
+#include <Windows.h>
 
 #else
 #include <glm.hpp>

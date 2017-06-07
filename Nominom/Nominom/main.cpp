@@ -4,6 +4,78 @@
 #include "Camera.h"
 #include "Input.h"
 
+#define FPS 60
+#define TICKS (1000 / FPS)
+
+struct ThreadData
+{
+	Renderer* renderer;
+	Assets* assets;
+	Input* input;
+	Array<ModelInstance>* instances;
+	SDL_sem* updateLock;
+	SDL_sem* renderLock;
+	bool running;
+};
+
+int updateThread( void* args )
+{
+	ThreadData* data = (ThreadData*)args;
+
+	Camera* camera = data->renderer->getCamera();
+
+	while( data->running )
+	{
+		if( SDL_SemWaitTimeout( data->updateLock, 100 ) == 0 )
+		{
+			if( data->input->buttonDown( SDL_BUTTON_LEFT ) )
+			{
+				int dx = data->input->getMouseDeltaX();
+				int dy = data->input->getMouseDeltaY();
+				if( dx || dy )
+				{
+					camera->updateDirection( dx, dy );
+				}
+			}
+
+			glm::vec3 localMovement;
+			if( data->input->keyDown( SDL_SCANCODE_W ) )
+			{
+				localMovement.z += 1.0f;
+			}
+			if( data->input->keyDown( SDL_SCANCODE_S ) )
+			{
+				localMovement.z -= 1.0f;
+			}
+			if( data->input->keyDown( SDL_SCANCODE_D ) )
+			{
+				localMovement.x += 1.0f;
+			}
+			if( data->input->keyDown( SDL_SCANCODE_A ) )
+			{
+				localMovement.x -= 1.0f;
+			}
+			if( data->input->keyDown( SDL_SCANCODE_SPACE ) )
+			{
+				localMovement.y += 1.0f;
+			}
+			if( data->input->keyDown( SDL_SCANCODE_LCTRL ) )
+			{
+				localMovement.y -= 1.0f;
+			}
+
+			if( glm::length( localMovement ) > 0.0f )
+			{
+				camera->updatePosition( localMovement );
+			}
+
+			SDL_SemPost( data->renderLock );
+		}
+	}
+
+	return 0;
+}
+
 int main( int argc, char* argv[] )
 {
 	SDL_Window* window = SDL_CreateWindow( "Nominom", 32, 32, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL );
@@ -44,58 +116,31 @@ int main( int argc, char* argv[] )
 			glEnable( GL_DEPTH_TEST );
 			glEnable( GL_CULL_FACE );
 
-			bool running = true;
-			SDL_Event e;
-			while( running )
+			ThreadData data =
 			{
-				while( SDL_PollEvent( &e ) )
-				{
-					input.update( &e );
+				&renderer,
+				&assets,
+				&input,
+				&instances,
+				SDL_CreateSemaphore(1),
+				SDL_CreateSemaphore(0),
+				true
+			};
 
-					if( e.type == SDL_QUIT || input.keyReleased( SDL_SCANCODE_ESCAPE ) )
-					{
-						running = false;
-					}
-				}
+			SDL_Thread* thread = SDL_CreateThread( updateThread, "UpdateThread", &data );
 
-				if( input.buttonDown( SDL_BUTTON_LEFT ) )
-				{
-					if( input.getMouseDeltaX() || input.getMouseDeltaY() )
-					{
-						camera->updateDirection( input.getMouseDeltaX(), input.getMouseDeltaY() );
-					}
-				}
+			SDL_Event e;
+			while( data.running )
+			{
+				SDL_SemWait( data.renderLock );
 
-				glm::vec3 localMovement;
-				if( input.keyDown( SDL_SCANCODE_W ) )
+				int startTime = SDL_GetTicks();
+				if( !input.update() )
 				{
-					localMovement.z += 1.0f;
-				}
-				if( input.keyDown( SDL_SCANCODE_S ) )
-				{
-					localMovement.z -= 1.0f;
-				}
-				if( input.keyDown( SDL_SCANCODE_D ) )
-				{
-					localMovement.x += 1.0f;
-				}
-				if( input.keyDown( SDL_SCANCODE_A ) )
-				{
-					localMovement.x -= 1.0f;
-				}
-				if( input.keyDown( SDL_SCANCODE_SPACE ) )
-				{
-					localMovement.y += 1.0f;
-				}
-				if( input.keyDown( SDL_SCANCODE_LCTRL ) )
-				{
-					localMovement.y -= 1.0f;
+					data.running = false;
 				}
 
-				if( glm::length( localMovement ) > 0.0f )
-				{
-					camera->updatePosition( localMovement );
-				}
+				SDL_SemPost( data.updateLock );
 
 				glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -103,8 +148,15 @@ int main( int argc, char* argv[] )
 				renderer.render( &assets );
 
 				SDL_GL_SwapWindow( window );
-				SDL_Delay( 20 );
+				int timeDif = SDL_GetTicks() - startTime;
+
+				if( timeDif < TICKS )
+				{
+					SDL_Delay( TICKS - timeDif );
+				}
 			}
+
+			SDL_WaitThread( thread, NULL );
 
 			SDL_GL_DeleteContext( glContext );
 		}

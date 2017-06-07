@@ -15,31 +15,41 @@ Input::~Input()
 {
 }
 
-void Input::update( SDL_Event* e )
+bool Input::update()
 {
+	bool result = true;
+
 	memcpy( prevKeys, keys, sizeof(bool)*INPUT_MAX_KEYS );
 	memcpy( prevButtons, buttons, sizeof(bool)*INPUT_MAX_BUTTONS );
 
 	int prevMouseX = mouseX;
 	int prevMouseY = mouseY;
 
-	switch( e->type )
+	SDL_Event e;
+	while( SDL_PollEvent( &e ) )
 	{
-	case SDL_KEYDOWN:
-		keys[e->key.keysym.scancode] = true;
-		break;
+		switch( e.type )
+		{
+		case SDL_KEYDOWN:
+			keys[e.key.keysym.scancode] = true;
+			break;
 
-	case SDL_KEYUP:
-		keys[e->key.keysym.scancode] = false;
-		break;
+		case SDL_KEYUP:
+			keys[e.key.keysym.scancode] = false;
+			break;
 
-	case SDL_MOUSEBUTTONDOWN:
-		buttons[e->button.button] = true;
-		break;
+		case SDL_MOUSEBUTTONDOWN:
+			buttons[e.button.button] = true;
+			break;
 
-	case SDL_MOUSEBUTTONUP:
-		buttons[e->button.button] = false;
-		break;
+		case SDL_MOUSEBUTTONUP:
+			buttons[e.button.button] = false;
+			break;
+
+		case SDL_QUIT:
+			result = false;
+			break;
+		}
 	}
 
 	SDL_GetMouseState( &mouseX, &mouseY );
@@ -49,6 +59,8 @@ void Input::update( SDL_Event* e )
 		mouseDeltaX = prevMouseX - mouseX;
 		mouseDeltaY = prevMouseY - mouseY;
 	}
+
+	return result;
 }
 
 bool Input::keyDown( int32_t key )
