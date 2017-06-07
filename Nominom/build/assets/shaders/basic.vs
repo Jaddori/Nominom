@@ -11,13 +11,13 @@ out vec3 fragNormal;
 out vec3 fragTangent;
 out vec3 fragBitangent;
 
-uniform mat4 worldMatrix;
+uniform mat4 worldMatrices[100];
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * worldMatrix * vec4( vertPosition, 1.0 );
+	gl_Position = projectionMatrix * viewMatrix * worldMatrices[gl_InstanceID] * vec4( vertPosition, 1.0 );
 	fragUV = vertUV;
 	fragNormal = vertNormal;
 	fragTangent = vertTangent;

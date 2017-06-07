@@ -21,6 +21,9 @@ void Renderer::render( Assets* assets )
 	{
 		ModelInstance& instance = instances->at( curInstance );
 
+		Texture* texture = assets->getTexture( instance.getTexture() );
+		texture->bind( GL_TEXTURE0 );
+
 		Mesh* mesh = assets->getMesh( instance.getMesh() );
 		mesh->render( instance.getInstances() );
 	}

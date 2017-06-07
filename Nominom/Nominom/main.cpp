@@ -23,19 +23,28 @@ int main( int argc, char* argv[] )
 			Shader shader;
 			Assets assets;
 			Input input;
+			Array<ModelInstance> instances;
 
 			assert( shader.load( "./assets/shaders/basic.vs", nullptr, "./assets/shaders/basic.fs" ) );
 			shader.upload();
 
 			GLint projectionMatrixLocation = shader.getUniform( "projectionMatrix" );
 			GLint viewMatrixLocation = shader.getUniform( "viewMatrix" );
-			GLint worldMatrixLocation = shader.getUniform( "worldMatrix" );
+			GLint worldMatrixLocation = shader.getUniform( "worldMatrices" );
 
 			camera.updatePerspective( 640.0f, 480.0f );
 			camera.setPosition( glm::vec3( 0, 0, -5.0f ) );
 
 			int mesh = assets.loadMesh( "./assets/meshes/cube.mesh" );
 			int texture = assets.loadTexture( "./assets/textures/grass.dds" );
+
+			instances.add( ModelInstance( mesh, texture ) );
+			int firstIndex = instances[0].add();
+			int secondIndex = instances[0].add();
+
+			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );
+
+			renderer.queue( &instances );
 
 			assets.upload();
 
@@ -96,16 +105,14 @@ int main( int argc, char* argv[] )
 				glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+				instances[0].finalize();
+
 				shader.bind();
 				shader.setMat4( projectionMatrixLocation, &camera.getProjectionMatrix(), 1 );
 				shader.setMat4( viewMatrixLocation, &camera.getViewMatrix(), 1 );
-				shader.setMat4( worldMatrixLocation, &glm::mat4(), 1 );
+				shader.setMat4( worldMatrixLocation, instances[0].getFinalMatrices(), instances[0].getInstances() );
 
-				Texture* textureptr = assets.getTexture( texture );
-				textureptr->bind( GL_TEXTURE0 );
-
-				Mesh* meshptr = assets.getMesh( mesh );
-				meshptr->render( 1 );
+				renderer.render( &assets );
 
 				SDL_GL_SwapWindow( window );
 				SDL_Delay( 20 );
