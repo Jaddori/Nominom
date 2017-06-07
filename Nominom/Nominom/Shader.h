@@ -21,6 +21,7 @@ public:
 	void setMat4( GLuint uniform, const glm::mat4* values, int count );
 
 	GLint getUniform( const char* name );
+	bool getValid() const;
 
 private:
 	char* readFile( const char* path );
@@ -31,4 +32,6 @@ private:
 	char* vertexData;
 	char* geometryData;
 	char* fragmentData;
+
+	bool valid;
 };

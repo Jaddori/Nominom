@@ -3,14 +3,16 @@
 Mesh::Mesh()
 	: vertices( nullptr ), indices( nullptr ),
 	vao( 0 ), vbo( 0 ), ibo( 0 ),
-	vertexCount( 0 ), indexCount( 0 )
+	vertexCount( 0 ), indexCount( 0 ),
+	valid( false )
 {
 }
 
 Mesh::Mesh( const Mesh& ref )
 	: vertices( ref.vertices ), indices( ref.indices ),
 	vao( ref.vao ), vbo( ref.vbo ), ibo( ref.ibo ),
-	vertexCount( ref.vertexCount ), indexCount( ref.indexCount )
+	vertexCount( ref.vertexCount ), indexCount( ref.indexCount ),
+	valid( false )
 {
 }
 
@@ -30,13 +32,13 @@ Mesh& Mesh::operator=( const Mesh& ref )
 	vertexCount = ref.vertexCount;
 	indexCount = ref.indexCount;
 
+	valid = ref.valid;
+
 	return *this;
 }
 
 bool Mesh::load( const char* path )
 {
-	bool result = false;
-
 	FILE* file = fopen( path, "rb" );
 	if( file )
 	{
@@ -51,14 +53,16 @@ bool Mesh::load( const char* path )
 
 		fclose( file );
 
-		result = true;
+		valid = true;
 	}
 
-	return result;
+	return valid;
 }
 
 void Mesh::upload()
 {
+	assert( valid );
+
 	glGenVertexArrays( 1, &vao );
 	glBindVertexArray( vao );
 
@@ -107,11 +111,13 @@ void Mesh::unload()
 
 	vbo = ibo = vao = 0;
 	vertexCount = indexCount = 0;
+
+	valid = false;
 }
 
 void Mesh::render( int instances ) const
 {
-	assert( instances > 0 );
+	assert( valid && instances > 0 );
 
 	glBindVertexArray( vao );
 	glDrawElementsInstanced( GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, NULL, instances );
@@ -119,5 +125,11 @@ void Mesh::render( int instances ) const
 
 void Mesh::bind() const
 {
+	assert( valid );
 	glBindVertexArray( vao );
+}
+
+bool Mesh::getValid() const
+{
+	return valid;
 }

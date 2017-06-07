@@ -48,6 +48,7 @@ public:
 	GLuint getID() const;
 	int getWidth() const;
 	int getHeight() const;
+	bool getValid() const;
 
 private:
 	GLuint id;
@@ -56,4 +57,6 @@ private:
 	int height;
 	GLenum format;
 	int size;
+
+	bool valid;
 };

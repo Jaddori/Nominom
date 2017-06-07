@@ -1,13 +1,12 @@
 #include "Shader.h"
 
 Shader::Shader()
-	: program( 0 )
+	: program( 0 ), valid( false )
 {
 }
 
 Shader::~Shader()
 {
-	unload();
 }
 
 bool Shader::load( const char* vertex, const char* geometry, const char* fragment )
@@ -27,12 +26,13 @@ bool Shader::load( const char* vertex, const char* geometry, const char* fragmen
 		fragmentData = readFile( fragment );
 	}
 
-	return ( vertexData || geometryData || fragmentData );
+	valid = ( vertexData || geometryData || fragmentData );
+	return valid;
 }
 
 void Shader::upload()
 {
-	assert( vertexData || geometryData || fragmentData );
+	assert( valid && ( vertexData || geometryData || fragmentData ) );
 
 	if( program > 0 )
 	{
@@ -86,46 +86,61 @@ void Shader::unload()
 	{
 		delete[] fragmentData;
 	}
+
+	valid = false;
 }
 
 void Shader::bind()
 {
+	assert( valid );
 	glUseProgram( program );
 }
 
 void Shader::setInt( GLuint uniform, const int* values, int count )
 {
+	assert( valid );
 	glUniform1iv( uniform, count, values );
 }
 
 void Shader::setFloat( GLuint uniform, const float* values, int count )
 {
+	assert( valid );
 	glUniform1fv( uniform, count, values );
 }
 
 void Shader::setVec2( GLuint uniform, const glm::vec2& value )
 {
+	assert( valid );
 	glUniform2f( uniform, value.x, value.y );
 }
 
 void Shader::setVec3( GLuint uniform, const glm::vec3& value )
 {
+	assert( valid );
 	glUniform3f( uniform, value.x, value.y, value.z );
 }
 
 void Shader::setVec4( GLuint uniform, const glm::vec4& value )
 {
+	assert( valid );
 	glUniform4f( uniform, value.x, value.y, value.z, value.w );
 }
 
 void Shader::setMat4( GLuint uniform, const glm::mat4* values, int count )
 {
+	assert( valid );
 	glUniformMatrix4fv( uniform, count, GL_FALSE, glm::value_ptr(*values) );
 }
 
 GLint Shader::getUniform( const char* name )
 {
+	assert( valid );
 	return glGetUniformLocation( program, name );
+}
+
+bool Shader::getValid() const
+{
+	return valid;
 }
 
 char* Shader::readFile( const char* path )
@@ -144,6 +159,10 @@ char* Shader::readFile( const char* path )
 		result[len] = 0;
 
 		fclose( file );
+	}
+	else
+	{
+		valid = false;
 	}
 
 	return result;
@@ -165,6 +184,7 @@ void Shader::compile( GLenum type, const char* data )
 		buffer[255] = 0;
 
 		printf( "%s\n", buffer );
+		valid = false;
 	}
 
 	glAttachShader( program, shader );
@@ -176,7 +196,7 @@ void Shader::link()
 	glLinkProgram( program );
 
 	GLint success = 0;
-	glGetProgramiv( program, GL_COMPILE_STATUS, &success );
+	glGetProgramiv( program, GL_LINK_STATUS, &success );
 	if( success != GL_TRUE )
 	{
 		char buffer[256] = {};
@@ -185,5 +205,6 @@ void Shader::link()
 		buffer[255] = 0;
 
 		printf( "%s\n", buffer );
+		valid = false;
 	}
 }

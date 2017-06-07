@@ -14,7 +14,11 @@ public:
 
 	bool load( const char* path );
 
+	bool getValid() const;
+
 private:
 	Array<int> meshes;
 	Array<int> textures;
+
+	bool valid;
 };

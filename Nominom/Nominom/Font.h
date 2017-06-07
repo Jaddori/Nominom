@@ -30,6 +30,9 @@ public:
 
 	bool load( const char* path );
 
+	bool getValid() const;
+
 private:
 	FontInfo info;
+	bool valid;
 };

@@ -1,11 +1,12 @@
 #include "Model.h"
 
 Model::Model()
+	: valid( false )
 {
 }
 
 Model::Model( const Model& ref )
-	: meshes( ref.meshes ), textures( ref.textures )
+	: meshes( ref.meshes ), textures( ref.textures ), valid( ref.valid )
 {
 }
 
@@ -17,14 +18,13 @@ Model& Model::operator=( const Model& ref )
 {
 	meshes = ref.meshes;
 	textures = ref.textures;
+	valid = ref.valid;
 
 	return *this;
 }
 
 bool Model::load( const char* path )
 {
-	bool result = false;
-
 	FILE* file = fopen( path, "rb" );
 	if( file )
 	{
@@ -41,8 +41,13 @@ bool Model::load( const char* path )
 
 		fclose( file );
 
-		result = false;
+		valid = false;
 	}
 
-	return result;
+	return valid;
+}
+
+bool Model::getValid() const
+{
+	return valid;
 }

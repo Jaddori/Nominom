@@ -19,21 +19,10 @@ int main( int argc, char* argv[] )
 			}
 
 			Renderer renderer;
-			Camera camera;
-			Shader shader;
+			Camera* camera = renderer.getCamera();
 			Assets assets;
 			Input input;
 			Array<ModelInstance> instances;
-
-			assert( shader.load( "./assets/shaders/basic.vs", nullptr, "./assets/shaders/basic.fs" ) );
-			shader.upload();
-
-			GLint projectionMatrixLocation = shader.getUniform( "projectionMatrix" );
-			GLint viewMatrixLocation = shader.getUniform( "viewMatrix" );
-			GLint worldMatrixLocation = shader.getUniform( "worldMatrices" );
-
-			camera.updatePerspective( 640.0f, 480.0f );
-			camera.setPosition( glm::vec3( 0, 0, -5.0f ) );
 
 			int mesh = assets.loadMesh( "./assets/meshes/cube.mesh" );
 			int texture = assets.loadTexture( "./assets/textures/grass.dds" );
@@ -45,8 +34,12 @@ int main( int argc, char* argv[] )
 			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );
 
 			renderer.queue( &instances );
+			renderer.load();
+			renderer.upload();
 
 			assets.upload();
+
+			camera->setPosition( glm::vec3( 0, 0, -4.0f ) );
 
 			glEnable( GL_DEPTH_TEST );
 			glEnable( GL_CULL_FACE );
@@ -55,19 +48,21 @@ int main( int argc, char* argv[] )
 			SDL_Event e;
 			while( running )
 			{
-				SDL_PollEvent( &e );
-				input.update( &e );
-
-				if( e.type == SDL_QUIT || input.keyReleased( SDL_SCANCODE_ESCAPE ) )
+				while( SDL_PollEvent( &e ) )
 				{
-					running = false;
+					input.update( &e );
+
+					if( e.type == SDL_QUIT || input.keyReleased( SDL_SCANCODE_ESCAPE ) )
+					{
+						running = false;
+					}
 				}
 
 				if( input.buttonDown( SDL_BUTTON_LEFT ) )
 				{
 					if( input.getMouseDeltaX() || input.getMouseDeltaY() )
 					{
-						camera.updateDirection( input.getMouseDeltaX(), input.getMouseDeltaY() );
+						camera->updateDirection( input.getMouseDeltaX(), input.getMouseDeltaY() );
 					}
 				}
 
@@ -99,18 +94,11 @@ int main( int argc, char* argv[] )
 
 				if( glm::length( localMovement ) > 0.0f )
 				{
-					camera.updatePosition( localMovement );
+					camera->updatePosition( localMovement );
 				}
 
 				glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-				instances[0].finalize();
-
-				shader.bind();
-				shader.setMat4( projectionMatrixLocation, &camera.getProjectionMatrix(), 1 );
-				shader.setMat4( viewMatrixLocation, &camera.getViewMatrix(), 1 );
-				shader.setMat4( worldMatrixLocation, instances[0].getFinalMatrices(), instances[0].getInstances() );
 
 				renderer.render( &assets );
 

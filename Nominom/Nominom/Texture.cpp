@@ -3,14 +3,16 @@
 Texture::Texture()
 	: id( 0 ), pixels( nullptr ),
 	width( 0 ), height( 0 ),
-	format( 0 ), size( 0 )
+	format( 0 ), size( 0 ),
+	valid( false )
 {
 }
 
 Texture::Texture( const Texture& ref )
 	: id( ref.id ), pixels( ref.pixels ),
 	width( ref.width ), height( ref.height ),
-	format( ref.format ), size( ref.size )
+	format( ref.format ), size( ref.size ),
+	valid( ref.valid )
 {
 }
 
@@ -26,14 +28,13 @@ Texture& Texture::operator=( const Texture& ref )
 	height = ref.height;
 	format = ref.format;
 	size = ref.size;
+	valid = ref.valid;
 
 	return *this;
 }
 
 bool Texture::load( const char* path )
 {
-	bool result = false;
-
 	FILE* file = fopen( path, "rb" );
 	if( file )
 	{
@@ -60,18 +61,18 @@ bool Texture::load( const char* path )
 			pixels = new GLbyte[size];
 			fread( pixels, sizeof( GLbyte ), size, file );
 
-			result = true;
+			valid = true;
 		}
 
 		fclose( file );
 	}
 
-	return result;
+	return valid;
 }
 
 void Texture::upload()
 {
-	assert( pixels );
+	assert( valid && pixels );
 
 	glGenTextures( 1, &id );
 	glBindTexture( GL_TEXTURE_2D, id );
@@ -99,10 +100,14 @@ void Texture::unload()
 		delete[] pixels;
 		pixels = nullptr;
 	}
+
+	valid = false;
 }
 
 void Texture::bind( GLenum location ) const
 {
+	assert( valid );
+
 	glActiveTexture( location );
 	glBindTexture( GL_TEXTURE_2D, id );
 }
@@ -120,4 +125,9 @@ int Texture::getWidth() const
 int Texture::getHeight() const
 {
 	return height;
+}
+
+bool Texture::getValid() const
+{
+	return valid;
 }

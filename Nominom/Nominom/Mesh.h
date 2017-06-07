@@ -18,9 +18,13 @@ public:
 	void render( int instances ) const;
 	void bind() const;
 
+	bool getValid() const;
+
 private:
 	Vertex* vertices;
 	GLuint* indices;
 	GLuint vao, vbo, ibo;
 	int vertexCount, indexCount;
+
+	bool valid;
 };
