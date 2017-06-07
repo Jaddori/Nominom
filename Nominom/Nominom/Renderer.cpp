@@ -21,6 +21,9 @@ void Renderer::load()
 
 void Renderer::upload()
 {
+	glEnable( GL_DEPTH_TEST );
+	glEnable( GL_CULL_FACE );
+
 	if( basicShader.getValid() )
 	{
 		basicShader.upload();
@@ -47,9 +50,6 @@ void Renderer::render( Assets* assets )
 	{
 		ModelInstance& instance = instances->at( curInstance );
 
-		// TEMP: Move this somewhere else:
-		instance.finalize();
-
 		basicShader.setMat4( worldMatricesLocation, instance.getFinalMatrices(), instance.getInstances() );
 
 		Texture* texture = assets->getTexture( instance.getTexture() );
@@ -57,6 +57,15 @@ void Renderer::render( Assets* assets )
 
 		Mesh* mesh = assets->getMesh( instance.getMesh() );
 		mesh->render( instance.getInstances() );
+	}
+}
+
+void Renderer::finalize()
+{
+	const int MAX_INSTANCES = instances->getSize();
+	for( int curInstance = 0; curInstance < MAX_INSTANCES; curInstance++ )
+	{
+		instances->at( curInstance ).finalize();
 	}
 }
 

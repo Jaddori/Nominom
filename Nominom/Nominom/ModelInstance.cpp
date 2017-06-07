@@ -92,6 +92,11 @@ void ModelInstance::setWorldMatrix( int index, const glm::mat4& matrix )
 	worldMatrices[index] = matrix;
 }
 
+void ModelInstance::setDirty( bool dirty )
+{
+	dirtyMatrices = dirty;
+}
+
 int ModelInstance::getMesh() const
 {
 	return mesh;

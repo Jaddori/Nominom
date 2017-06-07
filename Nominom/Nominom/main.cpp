@@ -69,6 +69,8 @@ int updateThread( void* args )
 				camera->updatePosition( localMovement );
 			}
 
+			data->instances->at( 0 ).setDirty( true );
+
 			SDL_SemPost( data->renderLock );
 		}
 	}
@@ -113,9 +115,6 @@ int main( int argc, char* argv[] )
 
 			camera->setPosition( glm::vec3( 0, 0, -4.0f ) );
 
-			glEnable( GL_DEPTH_TEST );
-			glEnable( GL_CULL_FACE );
-
 			ThreadData data =
 			{
 				&renderer,
@@ -129,9 +128,9 @@ int main( int argc, char* argv[] )
 
 			SDL_Thread* thread = SDL_CreateThread( updateThread, "UpdateThread", &data );
 
-			SDL_Event e;
 			while( data.running )
 			{
+				// CRITICAL SECTION
 				SDL_SemWait( data.renderLock );
 
 				int startTime = SDL_GetTicks();
@@ -140,7 +139,10 @@ int main( int argc, char* argv[] )
 					data.running = false;
 				}
 
+				renderer.finalize();
+
 				SDL_SemPost( data.updateLock );
+				// END OF CRITICAL SECTION
 
 				glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );

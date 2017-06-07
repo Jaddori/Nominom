@@ -17,6 +17,7 @@ public:
 
 	void queue( Array<ModelInstance>* instances );
 	void render( Assets* assets );
+	void finalize();
 
 	Camera* getCamera();
 

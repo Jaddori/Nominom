@@ -24,6 +24,7 @@ public:
 	void setTexture( int texture );
 	void setVisible( int index, int visible );
 	void setWorldMatrix( int index, const glm::mat4& matrix );
+	void setDirty( bool dirty );
 
 	int getMesh() const;
 	int getTexture() const;
