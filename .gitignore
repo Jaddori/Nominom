@@ -299,5 +299,5 @@ QT/build-CityGenerator*/
 *.lot
 *.toc
 
-Nominom/build/log.text
+Nominom/build/log.txt
 Nominom/build/Nominom.exe
