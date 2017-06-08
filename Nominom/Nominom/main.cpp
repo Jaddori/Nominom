@@ -26,7 +26,7 @@ int updateThread( void* args )
 
 	Camera* camera = data->renderer->getCamera();
 
-	DebugSphere sphere = { glm::vec3( 0.0f ), 1.0f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+	DebugSphere sphere = { glm::vec3( 0.0f ), 1.5f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugLine line = { glm::vec3( 0.0f ), glm::vec3( 0.0f, 10.0f, 0.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugAABB aabb = { glm::vec3( -3.0f ), glm::vec3( 3.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugOBB obb = { glm::vec3( 0.0f ), glm::vec3(0.7f, 0.0f, 0.7f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-0.7f, 0.0f, 0.7f), glm::vec3(3.0f), glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
@@ -93,6 +93,7 @@ int updateThread( void* args )
 int main( int argc, char* argv[] )
 {
 	Logger::instance().start();
+	Logger::instance().setVerbosity( VERBOSITY_WARNING );
 
 	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
 	{
@@ -127,14 +128,45 @@ int main( int argc, char* argv[] )
 
 			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );
 
+			GLenum glError = glGetError();
+			if( glError )
+			{
+				int a = 0;
+			}
+
 			renderer.queue( &instances );
 			renderer.load();
+			glError = glGetError();
+			if( glError )
+			{
+				int a = 0;
+			}
 			renderer.upload();
+			glError = glGetError();
+			if( glError )
+			{
+				int a = 0;
+			}
 
 			debugShapes.load();
+			glError = glGetError();
+			if( glError )
+			{
+				int a = 0;
+			}
 			debugShapes.upload();
+			glError = glGetError();
+			if( glError )
+			{
+				int a = 0;
+			}
 
 			assets.upload();
+			glError = glGetError();
+			if( glError )
+			{
+				int a = 0;
+			}
 
 			camera->setPosition( glm::vec3( 0, 0, -4.0f ) );
 

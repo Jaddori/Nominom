@@ -103,6 +103,16 @@ void Camera::setDirection( const glm::vec3& d )
 	dirtyViewMatrix = true;
 }
 
+const glm::vec3& Camera::getPosition() const
+{
+	return position;
+}
+
+const glm::vec3& Camera::getDirection() const
+{
+	return direction;
+}
+
 const glm::mat4& Camera::getViewMatrix()
 {
 	if( dirtyViewMatrix )

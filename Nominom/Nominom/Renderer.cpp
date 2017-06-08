@@ -15,9 +15,14 @@ void Renderer::load()
 {
 	LOG( VERBOSITY_INFORMATION, "Renderer", "Loading shader." );
 
-	if( !basicShader.load( "./assets/shaders/basic.vs", nullptr, "./assets/shaders/basic.fs" ) )
+	/*if( !basicShader.load( "./assets/shaders/basic.vs", nullptr, "./assets/shaders/basic.fs" ) )
 	{
 		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load basic shader." );
+	}*/
+
+	if( !gbuffer.load( 640, 480 ) )
+	{
+		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load gbuffer." );
 	}
 
 	camera.updatePerspective( 640.0f, 480.0f );
@@ -30,14 +35,16 @@ void Renderer::upload()
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
 
-	if( basicShader.getValid() )
+	/*if( basicShader.getValid() )
 	{
 		basicShader.upload();
 
 		worldMatricesLocation = basicShader.getUniform( "worldMatrices" );
 		viewMatrixLocation = basicShader.getUniform( "viewMatrix" );
 		projectionMatrixLocation = basicShader.getUniform( "projectionMatrix" );
-	}
+	}*/
+
+	gbuffer.upload();
 }
 
 void Renderer::queue( Array<ModelInstance>* i )
@@ -47,16 +54,21 @@ void Renderer::queue( Array<ModelInstance>* i )
 
 void Renderer::render( Assets* assets )
 {
-	basicShader.bind();
+	/*basicShader.bind();
 	basicShader.setMat4( projectionMatrixLocation, &camera.getFinalProjectionMatrix(), 1 );
-	basicShader.setMat4( viewMatrixLocation, &camera.getFinalViewMatrix(), 1 );
+	basicShader.setMat4( viewMatrixLocation, &camera.getFinalViewMatrix(), 1 );*/
+
+	gbuffer.begin();
+	gbuffer.beginGeometryPass( &camera );
 
 	const int MAX_INSTANCES = instances->getSize();
 	for( int curInstance = 0; curInstance < MAX_INSTANCES; curInstance++ )
 	{
 		ModelInstance& instance = instances->at( curInstance );
 
-		basicShader.setMat4( worldMatricesLocation, instance.getFinalMatrices(), instance.getInstances() );
+		//basicShader.setMat4( worldMatricesLocation, instance.getFinalMatrices(), instance.getInstances() );
+
+		gbuffer.updateGeometryWorldMatrices( instance.getFinalMatrices(), instance.getInstances() );
 
 		Texture* texture = assets->getTexture( instance.getTexture() );
 		texture->bind( GL_TEXTURE0 );
@@ -64,6 +76,10 @@ void Renderer::render( Assets* assets )
 		Mesh* mesh = assets->getMesh( instance.getMesh() );
 		mesh->render( instance.getInstances() );
 	}
+
+	gbuffer.endGeometryPass();
+
+	gbuffer.end();
 }
 
 void Renderer::finalize()

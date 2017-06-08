@@ -51,6 +51,7 @@ void Logger::log( int verb, const char* author, const char* message )
 	assert( file );
 
 	fprintf( file, "%s: %s\n", author, message );
+	fflush( file );
 
 	if( verbosity <= verb )
 	{

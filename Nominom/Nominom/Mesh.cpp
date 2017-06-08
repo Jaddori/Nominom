@@ -88,8 +88,8 @@ void Mesh::upload()
 	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0 );
 	glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat)*3) );
 	glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat)*5) );
-	glVertexAttribPointer( 3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat)*8) );
-	glVertexAttribPointer( 4, 5, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat)*11) );
+	glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat)*8) );
+	glVertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat)*11) );
 
 	glBindVertexArray( 0 );
 
@@ -98,12 +98,16 @@ void Mesh::upload()
 
 	vertices = nullptr;
 	indices = nullptr;
+
+	GLOG( "Mesh" );
 }
 
 void Mesh::unload()
 {
 	if( vao > 0 )
 	{
+		GLOG( "Mesh" );
+
 		glBindVertexArray( vao );
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -111,6 +115,8 @@ void Mesh::unload()
 		glDeleteBuffers( 1, &vbo );
 		glDeleteBuffers( 1, &ibo );
 		glDeleteVertexArrays( 1, &vao );
+
+		GLOG( "Mesh" );
 	}
 
 	vbo = ibo = vao = 0;
@@ -123,9 +129,14 @@ void Mesh::render( int instances ) const
 {
 	assert( valid && instances > 0 );
 
+	// DEBUG: Probably remove this or surround it with #ifdef _DEBUG
+	GLOG( "Mesh" );
+
 	glBindVertexArray( vao );
 	glDrawElementsInstanced( GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, NULL, instances );
 	glBindVertexArray( 0 );
+
+	GLOG( "Mesh" );
 }
 
 void Mesh::bind() const

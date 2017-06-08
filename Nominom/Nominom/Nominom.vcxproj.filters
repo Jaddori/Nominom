@@ -160,6 +160,9 @@
     <ClCompile Include="DebugShapes.cpp">
       <Filter>Source Files\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Lua\lapi.h">
@@ -296,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="DebugShapes.h">
       <Filter>Source Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Source Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -51,6 +51,12 @@ void Shader::upload()
 {
 	assert( valid && ( vertexData || geometryData || fragmentData ) );
 
+	GLenum glError = glGetError();
+	if( glError )
+	{
+		LOG( VERBOSITY_WARNING, "Shader", "Unhandled OpenGL error: %d", glError );
+	}
+
 	LOG( VERBOSITY_INFORMATION, "Shader", "Uploading shader." );
 
 	if( program > 0 )
@@ -82,6 +88,12 @@ void Shader::upload()
 	}
 
 	link();
+
+	glError = glGetError();
+	if( glError )
+	{
+		LOG( VERBOSITY_WARNING, "Shader", "OpenGL error: %d", glError );
+	}
 }
 
 void Shader::unload()
@@ -90,7 +102,19 @@ void Shader::unload()
 
 	if( program > 0 )
 	{
+		GLenum glError = glGetError();
+		if( glError )
+		{
+			LOG( VERBOSITY_WARNING, "Shader", "Unhandled OpenGL error: %d", glError );
+		}
+		
 		glDeleteProgram( program );
+
+		glError = glGetError();
+		if( glError )
+		{
+			LOG( VERBOSITY_WARNING, "Shader", "OpenGL error: %d", glError );
+		}
 	}
 
 	if( vertexData )
@@ -156,7 +180,19 @@ void Shader::setMat4( GLuint uniform, const glm::mat4* values, int count )
 GLint Shader::getUniform( const char* name )
 {
 	assert( valid );
-	return glGetUniformLocation( program, name );
+	GLenum glError = glGetError();
+	if( glError )
+	{
+		int derfp = 0;
+	}
+	GLint result = glGetUniformLocation( program, name );
+	glError = glGetError();
+	if( glError )
+	{
+		int derer = 0;
+	}
+
+	return result;
 }
 
 bool Shader::getValid() const

@@ -17,6 +17,9 @@ public:
 	void setPosition( const glm::vec3& position );
 	void setDirection( const glm::vec3& direction );
 
+	const glm::vec3& getPosition() const;
+	const glm::vec3& getDirection() const;
+
 	const glm::mat4& getViewMatrix();
 	const glm::mat4& getProjectionMatrix();
 
