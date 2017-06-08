@@ -3,6 +3,7 @@
 in vec2 fragUV;
 in vec3 fragNormal;
 in mat3 fragTBN;
+in vec3 fragTangent;
 
 layout(location=0) out vec4 finalDiffuse;
 layout(location=1) out vec4 finalNormal;
@@ -22,6 +23,7 @@ void main()
 	normal = normalize( normal * 2.0 - 1.0 );
 	normal = normalize( fragTBN * normal );
 	finalNormal = vec4( normal, 1.0 );
+	finalNormal = vec4( fragTangent, 1.0 );
 	
 	finalSpecular = texture( specularMap, uv );
 }

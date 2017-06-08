@@ -9,6 +9,7 @@ layout(location=4) in vec3 vertBitangent;
 out vec2 geomUV;
 out vec3 geomNormal;
 out mat3 geomTBN;
+out vec3 geomTangent;
 
 uniform mat4 worldMatrices[100];
 
@@ -17,6 +18,7 @@ void main()
 	gl_Position = worldMatrices[gl_InstanceID] * vec4( vertPosition, 1.0 );
 	geomUV = vertUV;
 	geomNormal = vertNormal;
+	geomTangent = vertTangent;
 	
 	vec3 T = normalize( vec3( worldMatrices[gl_InstanceID] * vec4( vertTangent, 0.0 ) ) );
 	vec3 B = normalize( vec3( worldMatrices[gl_InstanceID] * vec4( vertBitangent, 0.0 ) ) );

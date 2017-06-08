@@ -21,6 +21,7 @@ public:
 	void finalize();
 
 	Camera* getCamera();
+	GBuffer* getGBuffer();
 
 private:
 	Array<ModelInstance>* instances;

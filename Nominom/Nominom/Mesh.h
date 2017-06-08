@@ -19,6 +19,7 @@ public:
 	void bind() const;
 
 	bool getValid() const;
+	const Vertex* getVertices( int* count ) const;
 
 private:
 	Vertex* vertices;

@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "ModelInstance.h"
 #include "Camera.h"
+#include "Texture.h"
 
 enum
 {
@@ -29,10 +30,14 @@ public:
 	void beginGeometryPass( Camera* camera );
 	void endGeometryPass();
 	void updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count );
+	void updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap );
 	//void renderGeometry( Camera* camera, Array<ModelInstance>& instances );
 	void renderDirectionalLights( Camera* camera );
 	void renderPointLights( Camera* camera );
 	void renderSpotLights( Camera* camera );
+
+	void setDebug( bool debug );
+	void toggleDebug();
 
 	GLuint getFBO() const;
 
@@ -41,12 +46,16 @@ private:
 	int height;
 	GLuint fbo;
 	GLuint targets[MAX_TARGETS];
+	bool debug;
 
 	Shader geometryPass;
-	GLuint geometryProjectionMatrix;
-	GLuint geometryViewMatrix;
-	GLuint geometryWorldMatrices;
-	GLuint geometryCameraPosition;
+	GLint geometryProjectionMatrix;
+	GLint geometryViewMatrix;
+	GLint geometryWorldMatrices;
+	GLint geometryCameraPosition;
+	GLint geometryDiffuseMap;
+	GLint geometryNormalMap;
+	GLint geometrySpecularMap;
 
 	Shader directionalLightPass;
 

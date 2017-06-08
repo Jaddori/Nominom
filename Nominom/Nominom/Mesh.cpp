@@ -93,11 +93,11 @@ void Mesh::upload()
 
 	glBindVertexArray( 0 );
 
-	delete[] vertices;
+	/*delete[] vertices;
 	delete[] indices;
 
 	vertices = nullptr;
-	indices = nullptr;
+	indices = nullptr;*/
 
 	GLOG( "Mesh" );
 }
@@ -148,4 +148,10 @@ void Mesh::bind() const
 bool Mesh::getValid() const
 {
 	return valid;
+}
+
+const Vertex* Mesh::getVertices( int* count ) const
+{
+	*count = vertexCount;
+	return vertices;
 }

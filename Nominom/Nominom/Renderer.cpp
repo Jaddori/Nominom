@@ -70,8 +70,18 @@ void Renderer::render( Assets* assets )
 
 		gbuffer.updateGeometryWorldMatrices( instance.getFinalMatrices(), instance.getInstances() );
 
-		Texture* texture = assets->getTexture( instance.getTexture() );
-		texture->bind( GL_TEXTURE0 );
+		//Texture* texture = assets->getTexture( instance.getTexture() );
+		//texture->bind( GL_TEXTURE0 );
+
+		assert( instance.getDiffuseMap() >= 0 );
+		assert( instance.getNormalMap() >= 0 );
+		assert( instance.getSpecularMap() >= 0 );
+
+		Texture* diffuseMap = assets->getTexture( instance.getDiffuseMap() );
+		Texture* normalMap = assets->getTexture( instance.getNormalMap() );
+		Texture* specularMap = assets->getTexture( instance.getSpecularMap() );
+
+		gbuffer.updateGeometryTextures( diffuseMap, normalMap, specularMap );
 
 		Mesh* mesh = assets->getMesh( instance.getMesh() );
 		mesh->render( instance.getInstances() );
@@ -96,4 +106,9 @@ void Renderer::finalize()
 Camera* Renderer::getCamera()
 {
 	return &camera;
+}
+
+GBuffer* Renderer::getGBuffer()
+{
+	return &gbuffer;
 }

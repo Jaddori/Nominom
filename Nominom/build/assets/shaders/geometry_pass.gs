@@ -6,10 +6,12 @@ layout(triangle_strip, max_vertices=3) out;
 in vec2 geomUV[];
 in vec3 geomNormal[];
 in mat3 geomTBN[];
+in vec3 geomTangent[];
 
 out vec2 fragUV;
 out vec3 fragNormal;
 out mat3 fragTBN;
+out vec3 fragTangent;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -32,6 +34,7 @@ void main()
 			fragUV = geomUV[i];
 			fragNormal = geomNormal[i];
 			fragTBN = geomTBN[i];
+			fragTangent = geomTangent[i];
 			
 			EmitVertex();
 		}

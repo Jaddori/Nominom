@@ -70,6 +70,10 @@ int updateThread( void* args )
 			{
 				localMovement.y -= 1.0f;
 			}
+			if( data->input->keyReleased( SDL_SCANCODE_G ) )
+			{
+				data->renderer->getGBuffer()->toggleDebug();
+			}
 
 			if( glm::length( localMovement ) > 0.0f )
 			{
@@ -78,10 +82,19 @@ int updateThread( void* args )
 
 			data->instances->at( 0 ).setDirty( true );
 
-			data->debugShapes->addSphere( sphere );
+			/*data->debugShapes->addSphere( sphere );
 			data->debugShapes->addLine( line );
 			data->debugShapes->addAABB( aabb );
-			data->debugShapes->addOBB( obb );
+			data->debugShapes->addOBB( obb );*/
+
+			Mesh* mesh = data->assets->getMesh( 0 );
+			int count;
+			const Vertex* vertices = mesh->getVertices( &count );
+			for( int i=0; i<count; i++ )
+			{
+				DebugLine line = { vertices[i].position, vertices[i].position+vertices[i].tangent*0.1f, glm::vec4( 0.0f, 0.0f, 1.0f, 1.0f ) };
+				data->debugShapes->addLine( line );
+			}
 
 			SDL_SemPost( data->renderLock );
 		}
@@ -119,54 +132,25 @@ int main( int argc, char* argv[] )
 			Array<ModelInstance> instances;
 			DebugShapes debugShapes;
 
-			int mesh = assets.loadMesh( "./assets/meshes/cube.mesh" );
-			int texture = assets.loadTexture( "./assets/textures/grass.dds" );
+			int mesh = assets.loadMesh( "./assets/meshes/test.mesh" );
+			int diffuseMap = assets.loadTexture( "./assets/textures/crate_diffuse.dds" );
+			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
+			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
 
-			instances.add( ModelInstance( mesh, texture ) );
+			instances.add( ModelInstance( mesh, diffuseMap, normalMap, specularMap ) );
 			int firstIndex = instances[0].add();
 			int secondIndex = instances[0].add();
 
 			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );
 
-			GLenum glError = glGetError();
-			if( glError )
-			{
-				int a = 0;
-			}
-
 			renderer.queue( &instances );
 			renderer.load();
-			glError = glGetError();
-			if( glError )
-			{
-				int a = 0;
-			}
 			renderer.upload();
-			glError = glGetError();
-			if( glError )
-			{
-				int a = 0;
-			}
 
 			debugShapes.load();
-			glError = glGetError();
-			if( glError )
-			{
-				int a = 0;
-			}
 			debugShapes.upload();
-			glError = glGetError();
-			if( glError )
-			{
-				int a = 0;
-			}
 
 			assets.upload();
-			glError = glGetError();
-			if( glError )
-			{
-				int a = 0;
-			}
 
 			camera->setPosition( glm::vec3( 0, 0, -4.0f ) );
 
@@ -206,9 +190,6 @@ int main( int argc, char* argv[] )
 
 				SDL_SemPost( data.updateLock );
 				// END OF CRITICAL SECTION
-
-				glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
-				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 				renderer.render( &assets );
 				

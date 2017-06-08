@@ -76,6 +76,10 @@ void GBuffer::upload()
 
 		geometryWorldMatrices = geometryPass.getUniform( "worldMatrices" );
 		GLOG( "GBuffer" );
+
+		geometryDiffuseMap = geometryPass.getUniform( "diffuseMap" );
+		geometryNormalMap = geometryPass.getUniform( "normalMap" );
+		geometrySpecularMap = geometryPass.getUniform( "specularMap" );
 	}
 
 	if( directionalLightPass.getValid() )
@@ -133,7 +137,7 @@ void GBuffer::upload()
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to create framebuffer.\nStatus: %d", status );
 	}
 
-	glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
+	glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
 
@@ -149,10 +153,32 @@ void GBuffer::begin()
 
 void GBuffer::end()
 {
-	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-	glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-	glReadBuffer( GL_COLOR_ATTACHMENT0 );
-	glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+	if( debug )
+	{
+		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+
+		// diffuse target, top left
+		glReadBuffer( GL_COLOR_ATTACHMENT0 );
+		glBlitFramebuffer( 0, 0, width, height, 0, height/2, width/2, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+		// position target, top right
+		glReadBuffer( GL_COLOR_ATTACHMENT1 );
+		glBlitFramebuffer( 0, 0, width, height, width/2, height/2, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+		// normal target, bottom left
+		glReadBuffer( GL_COLOR_ATTACHMENT2 );
+		glBlitFramebuffer( 0, 0, width, height, 0, 0, width/2, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+		// depth target, bottom right
+	}
+	else
+	{
+		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+		glReadBuffer( GL_COLOR_ATTACHMENT0 );
+		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	GLOG( "GBuffer" );
@@ -164,6 +190,11 @@ void GBuffer::beginGeometryPass( Camera* camera )
 	geometryPass.setMat4( geometryProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
 	geometryPass.setMat4( geometryViewMatrix, &camera->getFinalViewMatrix(), 1 );
 	geometryPass.setVec3( geometryCameraPosition, camera->getPosition() );
+
+	int samplerLocations[] = { 0, 1, 2 };
+	geometryPass.setInt( geometryDiffuseMap, &samplerLocations[0], 1 );
+	geometryPass.setInt( geometryNormalMap, &samplerLocations[1], 1 );
+	geometryPass.setInt( geometrySpecularMap, &samplerLocations[2], 1 );
 }
 
 void GBuffer::endGeometryPass()
@@ -174,6 +205,13 @@ void GBuffer::endGeometryPass()
 void GBuffer::updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count )
 {
 	geometryPass.setMat4( geometryWorldMatrices, worldMatrices, count );
+}
+
+void GBuffer::updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap )
+{
+	diffuseMap->bind( GL_TEXTURE0 );
+	normalMap->bind( GL_TEXTURE1 );
+	specularMap->bind( GL_TEXTURE2 );
 }
 
 /*void GBuffer::renderGeometry( Camera* camera, Array<ModelInstance>& instances )
@@ -191,6 +229,16 @@ void GBuffer::renderPointLights( Camera* camera )
 
 void GBuffer::renderSpotLights( Camera* camera )
 {
+}
+
+void GBuffer::setDebug( bool d )
+{
+	debug = d;
+}
+
+void GBuffer::toggleDebug()
+{
+	debug = !debug;
 }
 
 GLuint GBuffer::getFBO() const
