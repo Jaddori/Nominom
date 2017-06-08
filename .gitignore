@@ -298,3 +298,6 @@ QT/build-CityGenerator*/
 *.lof
 *.lot
 *.toc
+
+Nominom/build/log.text
+Nominom/build/Nominom.exe
