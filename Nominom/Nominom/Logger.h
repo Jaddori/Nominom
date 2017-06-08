@@ -11,7 +11,7 @@
 #define LOGFMT( author, message, verbosity, ... ) snprintf( LOGBUF, LOGGER_TEMP_BUFFER_MAX_LENGTH, message, __VA_ARGS__ ); LOG( author, LOGBUF, verbosity )*/
 #define LOG( verbosity, author, message, ... ) snprintf( Logger::instance().getTemporaryBuffer(), LOGGER_TEMP_BUFFER_MAX_LENGTH, message, __VA_ARGS__ ); Logger::instance().log( verbosity, author, Logger::instance().getTemporaryBuffer() )
 #else
-#define LOG( author, message, verbosity ) 
+#define LOG( verbosity, author, message, ... ) 
 #define LOGBUF 
 #define LOGFMT 
 #endif

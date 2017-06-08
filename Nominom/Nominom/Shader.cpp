@@ -206,6 +206,7 @@ void Shader::compile( GLenum type, const char* data )
 		buffer[255] = 0;
 
 		LOG( VERBOSITY_ERROR, "Shader", buffer );
+		printf( "%s\n", buffer );
 		valid = false;
 
 		assert( false );
@@ -229,6 +230,7 @@ void Shader::link()
 		buffer[255] = 0;
 
 		LOG( VERBOSITY_ERROR, "Shader", buffer );
+		printf( "%s\n", buffer );
 		valid = false;
 
 		assert( false );

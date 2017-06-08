@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5043DA2F1EE97500005F631C /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA271EE97500005F631C /* Camera.cpp */; };
+		5043DA301EE97500005F631C /* ModelInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA291EE97500005F631C /* ModelInstance.cpp */; };
+		5043DA311EE97500005F631C /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA2B1EE97500005F631C /* Renderer.cpp */; };
+		5043DA321EE97500005F631C /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA2D1EE97500005F631C /* Shader.cpp */; };
+		5043DA3C1EE97513005F631C /* DebugShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA361EE97513005F631C /* DebugShapes.cpp */; };
+		5043DA3D1EE97513005F631C /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA391EE97513005F631C /* Logger.cpp */; };
+		5043DA411EE97524005F631C /* Input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA3F1EE97524005F631C /* Input.cpp */; };
 		50CCA71B1EE6AFE8009E77BC /* Assets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7101EE6AFE8009E77BC /* Assets.cpp */; };
 		50CCA71C1EE6AFE8009E77BC /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7121EE6AFE8009E77BC /* Font.cpp */; };
 		50CCA71D1EE6AFE8009E77BC /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7141EE6AFE8009E77BC /* Mesh.cpp */; };
@@ -62,6 +69,25 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5043DA271EE97500005F631C /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Camera.cpp; path = ../../Nominom/Nominom/Camera.cpp; sourceTree = "<group>"; };
+		5043DA281EE97500005F631C /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = ../../Nominom/Nominom/Camera.h; sourceTree = "<group>"; };
+		5043DA291EE97500005F631C /* ModelInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModelInstance.cpp; path = ../../Nominom/Nominom/ModelInstance.cpp; sourceTree = "<group>"; };
+		5043DA2A1EE97500005F631C /* ModelInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModelInstance.h; path = ../../Nominom/Nominom/ModelInstance.h; sourceTree = "<group>"; };
+		5043DA2B1EE97500005F631C /* Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Renderer.cpp; path = ../../Nominom/Nominom/Renderer.cpp; sourceTree = "<group>"; };
+		5043DA2C1EE97500005F631C /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Renderer.h; path = ../../Nominom/Nominom/Renderer.h; sourceTree = "<group>"; };
+		5043DA2D1EE97500005F631C /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Shader.cpp; path = ../../Nominom/Nominom/Shader.cpp; sourceTree = "<group>"; };
+		5043DA2E1EE97500005F631C /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shader.h; path = ../../Nominom/Nominom/Shader.h; sourceTree = "<group>"; };
+		5043DA331EE97513005F631C /* DebugAABB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugAABB.h; path = ../../Nominom/Nominom/DebugAABB.h; sourceTree = "<group>"; };
+		5043DA341EE97513005F631C /* DebugLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugLine.h; path = ../../Nominom/Nominom/DebugLine.h; sourceTree = "<group>"; };
+		5043DA351EE97513005F631C /* DebugOBB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugOBB.h; path = ../../Nominom/Nominom/DebugOBB.h; sourceTree = "<group>"; };
+		5043DA361EE97513005F631C /* DebugShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugShapes.cpp; path = ../../Nominom/Nominom/DebugShapes.cpp; sourceTree = "<group>"; };
+		5043DA371EE97513005F631C /* DebugShapes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugShapes.h; path = ../../Nominom/Nominom/DebugShapes.h; sourceTree = "<group>"; };
+		5043DA381EE97513005F631C /* DebugSphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugSphere.h; path = ../../Nominom/Nominom/DebugSphere.h; sourceTree = "<group>"; };
+		5043DA391EE97513005F631C /* Logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Logger.cpp; path = ../../Nominom/Nominom/Logger.cpp; sourceTree = "<group>"; };
+		5043DA3A1EE97513005F631C /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Logger.h; path = ../../Nominom/Nominom/Logger.h; sourceTree = "<group>"; };
+		5043DA3B1EE97513005F631C /* LogMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LogMessage.h; path = ../../Nominom/Nominom/LogMessage.h; sourceTree = "<group>"; };
+		5043DA3F1EE97524005F631C /* Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Input.cpp; path = ../../Nominom/Nominom/Input.cpp; sourceTree = "<group>"; };
+		5043DA401EE97524005F631C /* Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Input.h; path = ../../Nominom/Nominom/Input.h; sourceTree = "<group>"; };
 		50CCA7021EE6AFA3009E77BC /* OSX */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OSX; sourceTree = BUILT_PRODUCTS_DIR; };
 		50CCA70E1EE6AFD4009E77BC /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Array.h; path = ../../Nominom/Nominom/Array.h; sourceTree = "<group>"; };
 		50CCA70F1EE6AFD4009E77BC /* BaseIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseIncludes.h; path = ../../Nominom/Nominom/BaseIncludes.h; sourceTree = "<group>"; };
@@ -151,6 +177,46 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5043DA251EE974E2005F631C /* Rendering */ = {
+			isa = PBXGroup;
+			children = (
+				5043DA271EE97500005F631C /* Camera.cpp */,
+				5043DA281EE97500005F631C /* Camera.h */,
+				5043DA291EE97500005F631C /* ModelInstance.cpp */,
+				5043DA2A1EE97500005F631C /* ModelInstance.h */,
+				5043DA2B1EE97500005F631C /* Renderer.cpp */,
+				5043DA2C1EE97500005F631C /* Renderer.h */,
+				5043DA2D1EE97500005F631C /* Shader.cpp */,
+				5043DA2E1EE97500005F631C /* Shader.h */,
+			);
+			name = Rendering;
+			sourceTree = "<group>";
+		};
+		5043DA261EE974E9005F631C /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				5043DA331EE97513005F631C /* DebugAABB.h */,
+				5043DA341EE97513005F631C /* DebugLine.h */,
+				5043DA351EE97513005F631C /* DebugOBB.h */,
+				5043DA361EE97513005F631C /* DebugShapes.cpp */,
+				5043DA371EE97513005F631C /* DebugShapes.h */,
+				5043DA381EE97513005F631C /* DebugSphere.h */,
+				5043DA391EE97513005F631C /* Logger.cpp */,
+				5043DA3A1EE97513005F631C /* Logger.h */,
+				5043DA3B1EE97513005F631C /* LogMessage.h */,
+			);
+			name = Debug;
+			sourceTree = "<group>";
+		};
+		5043DA3E1EE97518005F631C /* Input */ = {
+			isa = PBXGroup;
+			children = (
+				5043DA3F1EE97524005F631C /* Input.cpp */,
+				5043DA401EE97524005F631C /* Input.h */,
+			);
+			name = Input;
+			sourceTree = "<group>";
+		};
 		50CCA6F91EE6AFA3009E77BC = {
 			isa = PBXGroup;
 			children = (
@@ -171,6 +237,9 @@
 		50CCA7041EE6AFA3009E77BC /* OSX */ = {
 			isa = PBXGroup;
 			children = (
+				5043DA3E1EE97518005F631C /* Input */,
+				5043DA261EE974E9005F631C /* Debug */,
+				5043DA251EE974E2005F631C /* Rendering */,
 				50CCA7221EE6B0BD009E77BC /* Lua */,
 				50CCA7201EE6B01B009E77BC /* main.cpp */,
 				50CCA70D1EE6AFBD009E77BC /* Assets */,
@@ -340,7 +409,10 @@
 				50CCA7701EE6B0D2009E77BC /* lopcodes.c in Sources */,
 				50CCA7621EE6B0D2009E77BC /* lctype.c in Sources */,
 				50CCA77A1EE6B0D2009E77BC /* lvm.c in Sources */,
+				5043DA321EE97500005F631C /* Shader.cpp in Sources */,
+				5043DA311EE97500005F631C /* Renderer.cpp in Sources */,
 				50CCA7641EE6B0D2009E77BC /* ldebug.c in Sources */,
+				5043DA3C1EE97513005F631C /* DebugShapes.cpp in Sources */,
 				50CCA76A1EE6B0D2009E77BC /* liolib.c in Sources */,
 				50CCA71F1EE6AFE8009E77BC /* Texture.cpp in Sources */,
 				50CCA71D1EE6AFE8009E77BC /* Mesh.cpp in Sources */,
@@ -349,12 +421,15 @@
 				50CCA7651EE6B0D2009E77BC /* ldo.c in Sources */,
 				50CCA7661EE6B0D2009E77BC /* ldump.c in Sources */,
 				50CCA76D1EE6B0D2009E77BC /* lmem.c in Sources */,
+				5043DA2F1EE97500005F631C /* Camera.cpp in Sources */,
 				50CCA7691EE6B0D2009E77BC /* linit.c in Sources */,
 				50CCA76E1EE6B0D2009E77BC /* loadlib.c in Sources */,
+				5043DA3D1EE97513005F631C /* Logger.cpp in Sources */,
 				50CCA7731EE6B0D2009E77BC /* lstate.c in Sources */,
 				50CCA7721EE6B0D2009E77BC /* lparser.c in Sources */,
 				50CCA7741EE6B0D2009E77BC /* lstring.c in Sources */,
 				50CCA75C1EE6B0D2009E77BC /* lapi.c in Sources */,
+				5043DA411EE97524005F631C /* Input.cpp in Sources */,
 				50CCA75D1EE6B0D2009E77BC /* lauxlib.c in Sources */,
 				50CCA76F1EE6B0D2009E77BC /* lobject.c in Sources */,
 				50CCA7631EE6B0D2009E77BC /* ldblib.c in Sources */,
@@ -367,6 +442,7 @@
 				50CCA71B1EE6AFE8009E77BC /* Assets.cpp in Sources */,
 				50CCA71E1EE6AFE8009E77BC /* Model.cpp in Sources */,
 				50CCA7611EE6B0D2009E77BC /* lcorolib.c in Sources */,
+				5043DA301EE97500005F631C /* ModelInstance.cpp in Sources */,
 				50CCA7781EE6B0D2009E77BC /* ltm.c in Sources */,
 				50CCA76C1EE6B0D2009E77BC /* lmathlib.c in Sources */,
 				50CCA7791EE6B0D2009E77BC /* lundump.c in Sources */,
@@ -510,6 +586,7 @@
 				50CCA70B1EE6AFA3009E77BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
