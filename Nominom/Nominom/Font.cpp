@@ -32,6 +32,10 @@ bool Font::load( const char* path )
 
 		valid = true;
 	}
+	else
+	{
+		LOG( VERBOSITY_ERROR, "Font", "Failed to open file %s.", path );
+	}
 
 	return valid;
 }

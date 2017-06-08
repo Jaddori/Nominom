@@ -55,6 +55,10 @@ bool Mesh::load( const char* path )
 
 		valid = true;
 	}
+	else
+	{
+		LOG( VERBOSITY_ERROR, "Mesh", "Failed to open file %s.", path );
+	}
 
 	return valid;
 }

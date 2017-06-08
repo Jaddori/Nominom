@@ -43,6 +43,10 @@ bool Model::load( const char* path )
 
 		valid = false;
 	}
+	else
+	{
+		LOG( VERBOSITY_ERROR, "Model", "Failed to open file %s.", path );
+	}
 
 	return valid;
 }

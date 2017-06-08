@@ -66,6 +66,10 @@ bool Texture::load( const char* path )
 
 		fclose( file );
 	}
+	else
+	{
+		LOG( VERBOSITY_ERROR, "Texture", "Failed to open file %s.", path );
+	}
 
 	return valid;
 }

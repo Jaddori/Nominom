@@ -92,6 +92,8 @@ int updateThread( void* args )
 
 int main( int argc, char* argv[] )
 {
+	Logger::instance().start();
+
 	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
 	{
 		return -1;
@@ -196,6 +198,8 @@ int main( int argc, char* argv[] )
 
 		SDL_DestroyWindow( window );
 	}
+
+	Logger::instance().stop();
 
 	return 0;
 }

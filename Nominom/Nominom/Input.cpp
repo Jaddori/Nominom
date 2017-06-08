@@ -2,6 +2,8 @@
 
 Input::Input()
 {
+	LOG( VERBOSITY_INFORMATION, "Input", "Constructing." );
+
 	memset( keys, 0, sizeof(bool)*INPUT_MAX_KEYS );
 	memset( prevKeys, 0, sizeof(bool)*INPUT_MAX_KEYS );
 	memset( buttons, 0, sizeof(bool)*INPUT_MAX_BUTTONS );
@@ -13,6 +15,7 @@ Input::Input()
 
 Input::~Input()
 {
+	LOG( VERBOSITY_INFORMATION, "Input", "Destructing." );
 }
 
 bool Input::update()

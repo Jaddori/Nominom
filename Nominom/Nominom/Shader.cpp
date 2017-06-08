@@ -11,19 +11,36 @@ Shader::~Shader()
 
 bool Shader::load( const char* vertex, const char* geometry, const char* fragment )
 {
+	LOG( VERBOSITY_INFORMATION, "Shader", "Loading shader from:" );
+	LOG( VERBOSITY_INFORMATION, "Shader", "\t%s", vertex );
+	LOG( VERBOSITY_INFORMATION, "Shader", "\t%s", geometry );
+	LOG( VERBOSITY_INFORMATION, "Shader", "\t%s", fragment );
+
 	if( vertex )
 	{
 		vertexData = readFile( vertex );
+		if( vertexData == nullptr )
+		{
+			LOG( VERBOSITY_ERROR, "Shader", "Failed to read file %s.", vertex );
+		}
 	}
 
 	if( geometry )
 	{
 		geometryData = readFile( geometry );
+		if( geometryData == nullptr )
+		{
+			LOG( VERBOSITY_ERROR, "Shader", "Failed to read file %s.", geometry );
+		}
 	}
 
 	if( fragment )
 	{
 		fragmentData = readFile( fragment );
+		if( fragmentData == nullptr )
+		{
+			LOG( VERBOSITY_ERROR, "Shader", "Failed to read file %s.", fragment );
+		}
 	}
 
 	valid = ( vertexData || geometryData || fragmentData );
@@ -33,6 +50,8 @@ bool Shader::load( const char* vertex, const char* geometry, const char* fragmen
 void Shader::upload()
 {
 	assert( valid && ( vertexData || geometryData || fragmentData ) );
+
+	LOG( VERBOSITY_INFORMATION, "Shader", "Uploading shader." );
 
 	if( program > 0 )
 	{
@@ -67,6 +86,8 @@ void Shader::upload()
 
 void Shader::unload()
 {
+	LOG( VERBOSITY_INFORMATION, "Shader", "Unloading shader." );
+
 	if( program > 0 )
 	{
 		glDeleteProgram( program );
@@ -163,6 +184,7 @@ char* Shader::readFile( const char* path )
 	else
 	{
 		valid = false;
+		LOG( VERBOSITY_ERROR, "Shader", "Failed to open file %s.", path );
 	}
 
 	return result;
@@ -183,7 +205,7 @@ void Shader::compile( GLenum type, const char* data )
 		glGetShaderInfoLog( shader, 256, &len, buffer );
 		buffer[255] = 0;
 
-		printf( "%s\n", buffer );
+		LOG( VERBOSITY_ERROR, "Shader", buffer );
 		valid = false;
 
 		assert( false );
@@ -206,7 +228,7 @@ void Shader::link()
 		glGetProgramInfoLog( program, 256, &len, buffer );
 		buffer[255] = 0;
 
-		printf( "%s\n", buffer );
+		LOG( VERBOSITY_ERROR, "Shader", buffer );
 		valid = false;
 
 		assert( false );

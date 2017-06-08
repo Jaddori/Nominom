@@ -3,9 +3,11 @@
 #include <stdint.h>
 #include <assert.h>
 #include <cstdlib>
+#include <ctime>
 #include <math.h>
 #include <sstream>
 #include "Array.h"
+#include "Logger.h"
 
 #include "lua.hpp"
 

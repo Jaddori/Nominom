@@ -3,17 +3,21 @@
 Renderer::Renderer()
 	: instances( nullptr )
 {
+	LOG( VERBOSITY_INFORMATION, "Renderer", "Constructing." );
 }
 
 Renderer::~Renderer()
 {
+	LOG( VERBOSITY_INFORMATION, "Renderer", "Destructing." );
 }
 
 void Renderer::load()
 {
+	LOG( VERBOSITY_INFORMATION, "Renderer", "Loading shader." );
+
 	if( !basicShader.load( "./assets/shaders/basic.vs", nullptr, "./assets/shaders/basic.fs" ) )
 	{
-		printf( "Renderer: Failed to load basic shader.\n" );
+		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load basic shader." );
 	}
 
 	camera.updatePerspective( 640.0f, 480.0f );
@@ -21,6 +25,8 @@ void Renderer::load()
 
 void Renderer::upload()
 {
+	LOG( VERBOSITY_INFORMATION, "Renderer", "Uploading shader." );
+
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
 
