@@ -105,11 +105,13 @@ int main( int argc, char* argv[] )
 		SDL_GLContext glContext = SDL_GL_CreateContext( window );
 		if( glContext )
 		{
+#if WIN32
 			glewExperimental = GL_TRUE;
 			if( glewInit() != GLEW_OK )
 			{
 				return -1;
 			}
+#endif
 
 			Renderer renderer;
 			Camera* camera = renderer.getCamera();
