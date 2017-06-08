@@ -85,6 +85,12 @@ void Camera::updateOrthographic( float width, float height )
 	projectionMatrix = glm::ortho( 0.0f, width, height, 0.0f );
 }
 
+void Camera::finalize()
+{
+	finalProjectionMatrix = getProjectionMatrix();
+	finalViewMatrix = getViewMatrix();
+}
+
 void Camera::setPosition( const glm::vec3& p )
 {
 	position = p;
@@ -111,4 +117,14 @@ const glm::mat4& Camera::getViewMatrix()
 const glm::mat4& Camera::getProjectionMatrix()
 {
 	return projectionMatrix;
+}
+
+const glm::mat4& Camera::getFinalViewMatrix()
+{
+	return finalViewMatrix;
+}
+
+const glm::mat4& Camera::getFinalProjectionMatrix()
+{
+	return finalProjectionMatrix;
 }

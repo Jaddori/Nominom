@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Input.h"
+#include "DebugShapes.h"
 
 #define FPS 60
 #define TICKS (1000 / FPS)
@@ -13,6 +14,7 @@ struct ThreadData
 	Assets* assets;
 	Input* input;
 	Array<ModelInstance>* instances;
+	DebugShapes* debugShapes;
 	SDL_sem* updateLock;
 	SDL_sem* renderLock;
 	bool running;
@@ -23,6 +25,11 @@ int updateThread( void* args )
 	ThreadData* data = (ThreadData*)args;
 
 	Camera* camera = data->renderer->getCamera();
+
+	DebugSphere sphere = { glm::vec3( 0.0f ), 1.0f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+	DebugLine line = { glm::vec3( 0.0f ), glm::vec3( 0.0f, 10.0f, 0.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+	DebugAABB aabb = { glm::vec3( -3.0f ), glm::vec3( 3.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+	DebugOBB obb = { glm::vec3( 0.0f ), glm::vec3(0.7f, 0.0f, 0.7f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-0.7f, 0.0f, 0.7f), glm::vec3(3.0f), glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
 
 	while( data->running )
 	{
@@ -71,6 +78,11 @@ int updateThread( void* args )
 
 			data->instances->at( 0 ).setDirty( true );
 
+			data->debugShapes->addSphere( sphere );
+			data->debugShapes->addLine( line );
+			data->debugShapes->addAABB( aabb );
+			data->debugShapes->addOBB( obb );
+
 			SDL_SemPost( data->renderLock );
 		}
 	}
@@ -80,6 +92,11 @@ int updateThread( void* args )
 
 int main( int argc, char* argv[] )
 {
+	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
+	{
+		return -1;
+	}
+
 	SDL_Window* window = SDL_CreateWindow( "Nominom", 32, 32, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL );
 	if( window )
 	{
@@ -97,6 +114,7 @@ int main( int argc, char* argv[] )
 			Assets assets;
 			Input input;
 			Array<ModelInstance> instances;
+			DebugShapes debugShapes;
 
 			int mesh = assets.loadMesh( "./assets/meshes/cube.mesh" );
 			int texture = assets.loadTexture( "./assets/textures/grass.dds" );
@@ -111,6 +129,9 @@ int main( int argc, char* argv[] )
 			renderer.load();
 			renderer.upload();
 
+			debugShapes.load();
+			debugShapes.upload();
+
 			assets.upload();
 
 			camera->setPosition( glm::vec3( 0, 0, -4.0f ) );
@@ -121,6 +142,7 @@ int main( int argc, char* argv[] )
 				&assets,
 				&input,
 				&instances,
+				&debugShapes,
 				SDL_CreateSemaphore(1),
 				SDL_CreateSemaphore(0),
 				true
@@ -134,12 +156,19 @@ int main( int argc, char* argv[] )
 				SDL_SemWait( data.renderLock );
 
 				int startTime = SDL_GetTicks();
-				if( !input.update() )
+				if( !input.update() || input.keyReleased( SDL_SCANCODE_ESCAPE ) )
 				{
 					data.running = false;
 				}
 
 				renderer.finalize();
+				debugShapes.finalize();
+
+				/*for( int i=0; i<10; i++ )
+				{
+					sphere.position = glm::vec3( i, 0.0f, 0.0f );
+					debugShapes.addSphere( sphere );
+				}*/
 
 				SDL_SemPost( data.updateLock );
 				// END OF CRITICAL SECTION
@@ -148,6 +177,8 @@ int main( int argc, char* argv[] )
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 				renderer.render( &assets );
+				
+				debugShapes.render( camera );
 
 				SDL_GL_SwapWindow( window );
 				int timeDif = SDL_GetTicks() - startTime;

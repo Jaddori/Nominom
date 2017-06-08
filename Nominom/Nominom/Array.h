@@ -119,6 +119,37 @@ public:
 		return data[index];
 	}
 
+	void copy( const Array& ref )
+	{
+		if( capacity < ref.capacity )
+		{
+			capacity = ref.capacity;
+
+			delete[] data;
+			data = new T[capacity];
+		}
+
+		size = ref.size;
+		for( int i=0; i<ref.size; i++ )
+		{
+			data[i] = ref.data[i];
+		}
+	}
+
+	void fastCopy( const Array& ref )
+	{
+		if( capacity < ref.capacity )
+		{
+			capacity = ref.capacity;
+
+			delete[] data;
+			data = new T[capacity];
+		}
+
+		size = ref.size;
+		memcpy( data, ref.data, sizeof(T)*ref.size );
+	}
+
 	T* getData()
 	{
 		return data;

@@ -42,8 +42,8 @@ void Renderer::queue( Array<ModelInstance>* i )
 void Renderer::render( Assets* assets )
 {
 	basicShader.bind();
-	basicShader.setMat4( projectionMatrixLocation, &camera.getProjectionMatrix(), 1 );
-	basicShader.setMat4( viewMatrixLocation, &camera.getViewMatrix(), 1 );
+	basicShader.setMat4( projectionMatrixLocation, &camera.getFinalProjectionMatrix(), 1 );
+	basicShader.setMat4( viewMatrixLocation, &camera.getFinalViewMatrix(), 1 );
 
 	const int MAX_INSTANCES = instances->getSize();
 	for( int curInstance = 0; curInstance < MAX_INSTANCES; curInstance++ )
@@ -67,6 +67,8 @@ void Renderer::finalize()
 	{
 		instances->at( curInstance ).finalize();
 	}
+
+	camera.finalize();
 }
 
 Camera* Renderer::getCamera()

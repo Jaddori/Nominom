@@ -121,6 +121,7 @@ void Mesh::render( int instances ) const
 
 	glBindVertexArray( vao );
 	glDrawElementsInstanced( GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, NULL, instances );
+	glBindVertexArray( 0 );
 }
 
 void Mesh::bind() const

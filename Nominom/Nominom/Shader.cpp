@@ -185,6 +185,8 @@ void Shader::compile( GLenum type, const char* data )
 
 		printf( "%s\n", buffer );
 		valid = false;
+
+		assert( false );
 	}
 
 	glAttachShader( program, shader );
@@ -206,5 +208,7 @@ void Shader::link()
 
 		printf( "%s\n", buffer );
 		valid = false;
+
+		assert( false );
 	}
 }
