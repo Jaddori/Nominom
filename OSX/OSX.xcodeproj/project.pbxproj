@@ -14,6 +14,7 @@
 		5043DA3C1EE97513005F631C /* DebugShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA361EE97513005F631C /* DebugShapes.cpp */; };
 		5043DA3D1EE97513005F631C /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA391EE97513005F631C /* Logger.cpp */; };
 		5043DA411EE97524005F631C /* Input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA3F1EE97524005F631C /* Input.cpp */; };
+		50CAA4701EEB323B00DFEA78 /* GBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CAA46E1EEB323B00DFEA78 /* GBuffer.cpp */; };
 		50CCA71B1EE6AFE8009E77BC /* Assets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7101EE6AFE8009E77BC /* Assets.cpp */; };
 		50CCA71C1EE6AFE8009E77BC /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7121EE6AFE8009E77BC /* Font.cpp */; };
 		50CCA71D1EE6AFE8009E77BC /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7141EE6AFE8009E77BC /* Mesh.cpp */; };
@@ -88,6 +89,8 @@
 		5043DA3B1EE97513005F631C /* LogMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LogMessage.h; path = ../../Nominom/Nominom/LogMessage.h; sourceTree = "<group>"; };
 		5043DA3F1EE97524005F631C /* Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Input.cpp; path = ../../Nominom/Nominom/Input.cpp; sourceTree = "<group>"; };
 		5043DA401EE97524005F631C /* Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Input.h; path = ../../Nominom/Nominom/Input.h; sourceTree = "<group>"; };
+		50CAA46E1EEB323B00DFEA78 /* GBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GBuffer.cpp; path = ../../Nominom/Nominom/GBuffer.cpp; sourceTree = "<group>"; };
+		50CAA46F1EEB323B00DFEA78 /* GBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GBuffer.h; path = ../../Nominom/Nominom/GBuffer.h; sourceTree = "<group>"; };
 		50CCA7021EE6AFA3009E77BC /* OSX */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OSX; sourceTree = BUILT_PRODUCTS_DIR; };
 		50CCA70E1EE6AFD4009E77BC /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Array.h; path = ../../Nominom/Nominom/Array.h; sourceTree = "<group>"; };
 		50CCA70F1EE6AFD4009E77BC /* BaseIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseIncludes.h; path = ../../Nominom/Nominom/BaseIncludes.h; sourceTree = "<group>"; };
@@ -180,6 +183,8 @@
 		5043DA251EE974E2005F631C /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
+				50CAA46E1EEB323B00DFEA78 /* GBuffer.cpp */,
+				50CAA46F1EEB323B00DFEA78 /* GBuffer.h */,
 				5043DA271EE97500005F631C /* Camera.cpp */,
 				5043DA281EE97500005F631C /* Camera.h */,
 				5043DA291EE97500005F631C /* ModelInstance.cpp */,
@@ -436,6 +441,7 @@
 				50CCA7761EE6B0D2009E77BC /* ltable.c in Sources */,
 				50CCA77B1EE6B0D2009E77BC /* lzio.c in Sources */,
 				50CCA7711EE6B0D2009E77BC /* loslib.c in Sources */,
+				50CAA4701EEB323B00DFEA78 /* GBuffer.cpp in Sources */,
 				50CCA7751EE6B0D2009E77BC /* lstrlib.c in Sources */,
 				50CCA7211EE6B01B009E77BC /* main.cpp in Sources */,
 				50CCA71C1EE6AFE8009E77BC /* Font.cpp in Sources */,
