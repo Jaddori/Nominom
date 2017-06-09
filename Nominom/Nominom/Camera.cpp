@@ -2,7 +2,7 @@
 
 Camera::Camera()
 	: position( 0.0f ), direction( 0.0f, 0.0f, 1.0f ), dirtyViewMatrix( true ),
-	horizontalAngle( 0.0f ), verticalAngle( 0.0f )
+	horizontalAngle( 0.0f ), verticalAngle( 0.0f ), farPlane( 100.0f ), nearPlane( 0.1f )
 {
 }
 
@@ -77,7 +77,7 @@ void Camera::updateDirection( int deltaX, int deltaY )
 
 void Camera::updatePerspective( float width, float height )
 {
-	projectionMatrix = glm::perspectiveFov( 45.0f, width, height, 0.1f, 100.0f );
+	projectionMatrix = glm::perspectiveFov( 45.0f, width, height, nearPlane, farPlane );
 }
 
 void Camera::updateOrthographic( float width, float height )
@@ -101,6 +101,16 @@ void Camera::setDirection( const glm::vec3& d )
 {
 	direction = d;
 	dirtyViewMatrix = true;
+}
+
+const glm::vec3& Camera::getPosition() const
+{
+	return position;
+}
+
+const glm::vec3& Camera::getDirection() const
+{
+	return direction;
 }
 
 const glm::mat4& Camera::getViewMatrix()
@@ -127,4 +137,14 @@ const glm::mat4& Camera::getFinalViewMatrix()
 const glm::mat4& Camera::getFinalProjectionMatrix()
 {
 	return finalProjectionMatrix;
+}
+
+float Camera::getFarPlane() const
+{
+	return farPlane;
+}
+
+float Camera::getNearPlane() const
+{
+	return nearPlane;
 }

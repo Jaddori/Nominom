@@ -13,7 +13,7 @@ class ModelInstance
 {
 public:
 	ModelInstance();
-	ModelInstance( int mesh, int texture );
+	ModelInstance( int mesh, int diffuseMap, int normalMap, int specularMap );
 	~ModelInstance();
 
 	int add();
@@ -21,13 +21,16 @@ public:
 	void finalize();
 
 	void setMesh( int mesh );
-	void setTexture( int texture );
+	void setTextures( int diffuse, int normal, int specular );
 	void setVisible( int index, int visible );
 	void setWorldMatrix( int index, const glm::mat4& matrix );
 	void setDirty( bool dirty );
 
 	int getMesh() const;
-	int getTexture() const;
+	//int getTexture() const;
+	int getDiffuseMap() const;
+	int getNormalMap() const;
+	int getSpecularMap() const;
 	int getInstances() const;
 	glm::mat4* getWorldMatrix( int index );
 
@@ -36,7 +39,9 @@ public:
 
 private:
 	int mesh;
-	int texture;
+	int diffuseMap;
+	int normalMap;
+	int specularMap;
 	Array<glm::mat4> worldMatrices;
 	Array<int> flags;
 

@@ -17,11 +17,17 @@ public:
 	void setPosition( const glm::vec3& position );
 	void setDirection( const glm::vec3& direction );
 
+	const glm::vec3& getPosition() const;
+	const glm::vec3& getDirection() const;
+
 	const glm::mat4& getViewMatrix();
 	const glm::mat4& getProjectionMatrix();
 
 	const glm::mat4& getFinalViewMatrix();
 	const glm::mat4& getFinalProjectionMatrix();
+
+	float getFarPlane() const;
+	float getNearPlane() const;
 
 private: 
 	glm::vec3 position;
@@ -35,4 +41,6 @@ private:
 	bool dirtyViewMatrix;
 	float horizontalAngle;
 	float verticalAngle;
+	float farPlane;
+	float nearPlane;
 };

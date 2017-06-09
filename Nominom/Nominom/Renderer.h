@@ -5,6 +5,7 @@
 #include "Assets.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "GBuffer.h"
 
 class Renderer
 {
@@ -20,12 +21,14 @@ public:
 	void finalize();
 
 	Camera* getCamera();
+	GBuffer* getGBuffer();
 
 private:
 	Array<ModelInstance>* instances;
 
 	Camera camera;
-	Shader basicShader;
+	GBuffer gbuffer;
+	//Shader basicShader;
 	GLuint worldMatricesLocation;
 	GLuint viewMatrixLocation;
 	GLuint projectionMatrixLocation;

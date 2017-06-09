@@ -1,12 +1,12 @@
 #include "ModelInstance.h"
 
 ModelInstance::ModelInstance()
-	: dirtyMatrices( true )
+	: dirtyMatrices( true ), mesh( -1 ), diffuseMap( -1 ), normalMap( -1 ), specularMap( -1 )
 {
 }
 
-ModelInstance::ModelInstance( int m, int t )
-	: mesh( m ), texture( t ), dirtyMatrices( true )
+ModelInstance::ModelInstance( int m, int diffuse, int normal, int specular )
+	: mesh( m ), diffuseMap( diffuse ), normalMap( normal ), specularMap( specular ), dirtyMatrices( true )
 {
 }
 
@@ -74,9 +74,11 @@ void ModelInstance::setMesh( int m )
 	mesh = m;
 }
 
-void ModelInstance::setTexture( int t )
+void ModelInstance::setTextures( int diffuse, int normal, int specular )
 {
-	texture = t;
+	diffuseMap = diffuse;
+	normalMap = normal;
+	specularMap = specular;
 }
 
 void ModelInstance::setVisible( int index, int visible )
@@ -102,9 +104,24 @@ int ModelInstance::getMesh() const
 	return mesh;
 }
 
-int ModelInstance::getTexture() const
+/*int ModelInstance::getTexture() const
 {
 	return texture;
+}*/
+
+int ModelInstance::getDiffuseMap() const
+{
+	return diffuseMap;
+}
+
+int ModelInstance::getNormalMap() const
+{
+	return normalMap;
+}
+
+int ModelInstance::getSpecularMap() const
+{
+	return specularMap;
 }
 
 int ModelInstance::getInstances() const

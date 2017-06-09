@@ -78,6 +78,8 @@ void Texture::upload()
 {
 	assert( valid && pixels );
 
+	GLOG( "Texture" );
+
 	glGenTextures( 1, &id );
 	glBindTexture( GL_TEXTURE_2D, id );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -87,13 +89,19 @@ void Texture::upload()
 
 	delete[] pixels;
 	pixels = nullptr;
+
+	GLOG( "Texture" );
 }
 
 void Texture::unload()
 {
 	if( id )
 	{
+		GLOG( "Texture" );
+
 		glDeleteTextures( 1, &id );
+
+		GLOG( "Texture" );
 	}
 
 	id = 0;
@@ -112,8 +120,23 @@ void Texture::bind( GLenum location ) const
 {
 	assert( valid );
 
+	// DEBUG: Remove or surround with #ifdef _DEBUG
+	//GLOG( "Texture" );
+	GLenum glError = glGetError();
+	if( glError )
+	{
+		LOG( VERBOSITY_WARNING, "Texture", "OpenGL error: %d", glError );
+	}
+
 	glActiveTexture( location );
 	glBindTexture( GL_TEXTURE_2D, id );
+
+	//GLOG( "Texture" );
+	glError = glGetError();
+	if( glError )
+	{
+		LOG( VERBOSITY_WARNING, "Texture", "OpenGL error: %d", glError );
+	}
 }
 
 GLuint Texture::getID() const

@@ -26,7 +26,7 @@ int updateThread( void* args )
 
 	Camera* camera = data->renderer->getCamera();
 
-	DebugSphere sphere = { glm::vec3( 0.0f ), 1.0f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+	DebugSphere sphere = { glm::vec3( 0.0f ), 1.5f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugLine line = { glm::vec3( 0.0f ), glm::vec3( 0.0f, 10.0f, 0.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugAABB aabb = { glm::vec3( -3.0f ), glm::vec3( 3.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugOBB obb = { glm::vec3( 0.0f ), glm::vec3(0.7f, 0.0f, 0.7f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-0.7f, 0.0f, 0.7f), glm::vec3(3.0f), glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
@@ -70,6 +70,10 @@ int updateThread( void* args )
 			{
 				localMovement.y -= 1.0f;
 			}
+			if( data->input->keyReleased( SDL_SCANCODE_G ) )
+			{
+				data->renderer->getGBuffer()->toggleDebug();
+			}
 
 			if( glm::length( localMovement ) > 0.0f )
 			{
@@ -78,10 +82,26 @@ int updateThread( void* args )
 
 			data->instances->at( 0 ).setDirty( true );
 
-			data->debugShapes->addSphere( sphere );
+			/*data->debugShapes->addSphere( sphere );
 			data->debugShapes->addLine( line );
 			data->debugShapes->addAABB( aabb );
-			data->debugShapes->addOBB( obb );
+			data->debugShapes->addOBB( obb );*/
+
+			Mesh* mesh = data->assets->getMesh( 0 );
+			int count;
+			const Vertex* vertices = mesh->getVertices( &count );
+			for( int i=0; i<count; i++ )
+			{
+				DebugLine normalLine = { vertices[i].position, vertices[i].position+vertices[i].normal*0.1f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+
+				DebugLine tangentLine = { vertices[i].position, vertices[i].position+vertices[i].tangent*0.1f, glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
+
+				DebugLine bitangentLine = { vertices[i].position, vertices[i].position+vertices[i].bitangent*0.1f, glm::vec4( 0.0f, 0.0f, 1.0f, 1.0f ) };
+
+				data->debugShapes->addLine( normalLine );
+				data->debugShapes->addLine( tangentLine );
+				data->debugShapes->addLine( bitangentLine );
+			}
 
 			SDL_SemPost( data->renderLock );
 		}
@@ -93,6 +113,7 @@ int updateThread( void* args )
 int main( int argc, char* argv[] )
 {
 	Logger::instance().start();
+	Logger::instance().setVerbosity( VERBOSITY_WARNING );
 
 	if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
 	{
@@ -124,10 +145,12 @@ int main( int argc, char* argv[] )
 			Array<ModelInstance> instances;
 			DebugShapes debugShapes;
 
-			int mesh = assets.loadMesh( "./assets/meshes/cube.mesh" );
-			int texture = assets.loadTexture( "./assets/textures/grass.dds" );
+			int mesh = assets.loadMesh( "./assets/meshes/test.mesh" );
+			int diffuseMap = assets.loadTexture( "./assets/textures/crate_diffuse.dds" );
+			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
+			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
 
-			instances.add( ModelInstance( mesh, texture ) );
+			instances.add( ModelInstance( mesh, diffuseMap, normalMap, specularMap ) );
 			int firstIndex = instances[0].add();
 			int secondIndex = instances[0].add();
 
@@ -180,9 +203,6 @@ int main( int argc, char* argv[] )
 
 				SDL_SemPost( data.updateLock );
 				// END OF CRITICAL SECTION
-
-				glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
-				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 				renderer.render( &assets );
 				
