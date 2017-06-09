@@ -26,6 +26,9 @@ public:
 	const glm::mat4& getFinalViewMatrix();
 	const glm::mat4& getFinalProjectionMatrix();
 
+	float getFarPlane() const;
+	float getNearPlane() const;
+
 private: 
 	glm::vec3 position;
 	glm::vec3 direction;
@@ -38,4 +41,6 @@ private:
 	bool dirtyViewMatrix;
 	float horizontalAngle;
 	float verticalAngle;
+	float farPlane;
+	float nearPlane;
 };

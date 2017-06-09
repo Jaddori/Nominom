@@ -32,15 +32,15 @@ bool GBuffer::load( int w, int h )
 		result = false;
 	}
 
-	/*if( !directionalLightPass.load( "./assets/shaders/directional_light_pass.vs",
-									"./assets/shaders/directional_light_pass.gs",
+	if( !directionalLightPass.load( "./assets/shaders/directional_light_pass.vs",
+									nullptr,
 									"./assets/shaders/directional_light_pass.fs" ) )
 	{
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load directional light pass shader." );
 		result = false;
 	}
 
-	if( !pointLightPass.load( "./assets/shaders/point_light_pass.vs",
+	/*if( !pointLightPass.load( "./assets/shaders/point_light_pass.vs",
 								"./assets/shaders/point_light_pass.gs",
 								"./assets/shaders/point_light_pass.fs" ) )
 	{
@@ -75,13 +75,31 @@ void GBuffer::upload()
 
 		geometryDiffuseMap = geometryPass.getUniform( "diffuseMap" );
 		geometryNormalMap = geometryPass.getUniform( "normalMap" );
-		geometrySpecularMap = geometryPass.getUniform( "specularMap" );
+		geometryPositionMap = geometryPass.getUniform( "positionMap" );
+		geometryDepthMap = geometryPass.getUniform( "depthMap" );
+		GLOG( "GBuffer" );
+
+		geometryFarPlane = geometryPass.getUniform( "farPlane" );
+		geometryNearPlane = geometryPass.getUniform( "nearPlane" );
 		GLOG( "GBuffer" );
 	}
 
 	if( directionalLightPass.getValid() )
 	{
 		directionalLightPass.upload();
+		GLOG( "GBuffer" );
+
+		directionalLightDirection = directionalLightPass.getUniform( "directionalLight.direction" );
+		directionalLightColor = directionalLightPass.getUniform( "directionalLight.color" );
+		directionalLightIntensity = directionalLightPass.getUniform( "directionalLight.intensity" );
+		directionalLightCameraPosition = directionalLightPass.getUniform( "cameraPosition" );
+		GLOG( "GBuffer" );
+
+		directionalLightDiffuseTarget = directionalLightPass.getUniform( "diffuseTarget" );
+		directionalLightNormalTarget = directionalLightPass.getUniform( "normalTarget" );
+		directionalLightPositionTarget = directionalLightPass.getUniform( "positionTarget" );
+		directionalLightDepthTarget = directionalLightPass.getUniform( "depthTarget" );
+		GLOG( "GBuffer" );
 	}
 
 	if( pointLightPass.getValid() )
@@ -101,12 +119,17 @@ void GBuffer::upload()
 	GLOG( "GBuffer" );
 
 	glGenTextures( MAX_TARGETS, targets );
+	glGenTextures( 1, &depthBuffer );
 	GLOG( "GBuffer" );
 
 	// generate color targets
-	for( int i=0; i<MAX_TARGETS-1; i++ )
+	for( int i=0; i<MAX_TARGETS; i++ )
 	{
 		glBindTexture( GL_TEXTURE_2D, targets[i] );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0 );
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL );
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, targets[i], 0 );
 
@@ -114,18 +137,9 @@ void GBuffer::upload()
 	}
 
 	// generate depth target
-	glBindTexture( GL_TEXTURE_2D, targets[TARGET_DEPTH] );
+	glBindTexture( GL_TEXTURE_2D, depthBuffer );
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL );
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets[TARGET_DEPTH], 0 );
-	GLOG( "GBuffer" );
-
-	GLenum drawBuffers[] =
-	{
-		GL_COLOR_ATTACHMENT0,
-		GL_COLOR_ATTACHMENT1,
-		GL_COLOR_ATTACHMENT2,
-	};
-	glDrawBuffers( MAX_TARGETS-1, drawBuffers );
+	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0 );
 	GLOG( "GBuffer" );
 
 	GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
@@ -139,13 +153,38 @@ void GBuffer::upload()
 	glEnable( GL_CULL_FACE );
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+	// generate quad
+	glGenVertexArrays( 1, &quadVAO );
+	glBindVertexArray( quadVAO );
+
+	glEnableVertexAttribArray( 0 );
+	glEnableVertexAttribArray( 1 );
+
+	const GLfloat quadVertices[] =
+	{
+		// position		uv
+		-1.0f, 1.0f,	0.0f, 0.0f,
+		-1.0f, -1.0f,	0.0f, 1.0f,
+		1.0f, 1.0f,		1.0f, 0.0f,
+		1.0f, -1.0f,	1.0f, 1.0f
+	};
+	const int STRIDE = sizeof(GLfloat)*4;
+
+	GLuint quadVBO;
+	glGenBuffers( 1, &quadVBO );
+	glBindBuffer( GL_ARRAY_BUFFER, quadVBO );
+	glBufferData( GL_ARRAY_BUFFER, STRIDE*4, quadVertices, GL_STATIC_DRAW );
+
+	glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, STRIDE, 0 );
+	glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, STRIDE, (void*)(sizeof(GLfloat)*2) );
+
+	glBindVertexArray( 0 );
 }
 
 void GBuffer::begin()
 {
 	glBindFramebuffer( GL_FRAMEBUFFER, fbo );
-
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
 void GBuffer::end()
@@ -159,22 +198,24 @@ void GBuffer::end()
 		glReadBuffer( GL_COLOR_ATTACHMENT0 );
 		glBlitFramebuffer( 0, 0, width, height, 0, height/2, width/2, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
-		// position target, top right
+		// normal target, top right
 		glReadBuffer( GL_COLOR_ATTACHMENT1 );
 		glBlitFramebuffer( 0, 0, width, height, width/2, height/2, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
-		// normal target, bottom left
+		// position target, bottom left
 		glReadBuffer( GL_COLOR_ATTACHMENT2 );
 		glBlitFramebuffer( 0, 0, width, height, 0, 0, width/2, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
 		// depth target, bottom right
+		glReadBuffer( GL_COLOR_ATTACHMENT3 );
+		glBlitFramebuffer( 0, 0, width, height, width/2, 0, width, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 	}
 	else
 	{
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		/*glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
 		glReadBuffer( GL_COLOR_ATTACHMENT0 );
-		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );*/
 	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -183,19 +224,36 @@ void GBuffer::end()
 
 void GBuffer::beginGeometryPass( Camera* camera )
 {
+	GLenum drawBuffers[] =
+	{
+		GL_COLOR_ATTACHMENT0,
+		GL_COLOR_ATTACHMENT1,
+		GL_COLOR_ATTACHMENT2,
+		GL_COLOR_ATTACHMENT3,
+	};
+	glDrawBuffers( MAX_TARGETS-1, drawBuffers );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	GLOG( "GBuffer" );
+
 	geometryPass.bind();
 	geometryPass.setMat4( geometryProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
 	geometryPass.setMat4( geometryViewMatrix, &camera->getFinalViewMatrix(), 1 );
+	AGLOG( "GBuffer" );
+
+	float farPlane = camera->getFarPlane();
+	float nearPlane = camera->getNearPlane();
+	geometryPass.setFloat( geometryFarPlane, &farPlane, 1 );
+	geometryPass.setFloat( geometryNearPlane, &nearPlane, 1 );
+	AGLOG( "GBuffer" );
 
 	int samplerLocations[] = { 0, 1, 2 };
 	geometryPass.setInt( geometryDiffuseMap, &samplerLocations[0], 1 );
 	geometryPass.setInt( geometryNormalMap, &samplerLocations[1], 1 );
-	geometryPass.setInt( geometrySpecularMap, &samplerLocations[2], 1 );
+	AGLOG( "GBuffer" );
 }
 
 void GBuffer::endGeometryPass()
 {
-
 }
 
 void GBuffer::updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count )
@@ -213,7 +271,7 @@ void GBuffer::updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, T
 /*void GBuffer::renderGeometry( Camera* camera, Array<ModelInstance>& instances )
 {
 
-}*/
+}
 
 void GBuffer::renderDirectionalLights( Camera* camera )
 {
@@ -225,6 +283,61 @@ void GBuffer::renderPointLights( Camera* camera )
 
 void GBuffer::renderSpotLights( Camera* camera )
 {
+}*/
+
+void GBuffer::beginDirectionalLightPass( Camera* camera )
+{
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_DEPTH_TEST );
+	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
+
+	directionalLightPass.bind();
+	AGLOG( "GBuffer" );
+
+	directionalLightPass.setVec3( directionalLightCameraPosition, camera->getPosition() );
+	AGLOG( "GBuffer" );
+
+	
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, targets[0] );
+	glActiveTexture( GL_TEXTURE1 );
+	glBindTexture( GL_TEXTURE_2D, targets[1] );
+	glActiveTexture( GL_TEXTURE2 );
+	glBindTexture( GL_TEXTURE_2D, targets[2] );
+	glActiveTexture( GL_TEXTURE3 );
+	glBindTexture( GL_TEXTURE_2D, targets[3] );
+	AGLOG( "GBuffer" );
+
+	const int TARGET_LOCATIONS[] = { 0, 1, 2, 3 };
+	directionalLightPass.setInt( directionalLightDiffuseTarget, &TARGET_LOCATIONS[0], 1 );
+	directionalLightPass.setInt( directionalLightNormalTarget, &TARGET_LOCATIONS[1], 1 );
+	directionalLightPass.setInt( directionalLightPositionTarget, &TARGET_LOCATIONS[2], 1 );
+	directionalLightPass.setInt( directionalLightDepthTarget, &TARGET_LOCATIONS[3], 1 );
+	AGLOG( "GBuffer" );
+}
+
+void GBuffer::endDirectionalLightPass()
+{
+	glEnable( GL_DEPTH_TEST );
+	glEnable( GL_CULL_FACE );
+
+	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+	glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+	glReadBuffer( GL_COLOR_ATTACHMENT4 );
+	glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+}
+
+void GBuffer::renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity )
+{
+	directionalLightPass.setVec3( directionalLightDirection, direction );
+	directionalLightPass.setVec3( directionalLightColor, color );
+	directionalLightPass.setFloat( directionalLightIntensity, &intensity, 1 );
+	AGLOG( "GBuffer" );
+
+	glBindVertexArray( quadVAO );
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	glBindVertexArray( 0 );
+	AGLOG( "GBuffer" );
 }
 
 void GBuffer::setDebug( bool d )

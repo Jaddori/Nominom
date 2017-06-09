@@ -18,6 +18,15 @@
 		LOG( VERBOSITY_WARNING, author, "OpenGL error: %d", glError );	\
 	}																	\
 }
+#define AGLOG( author )													\
+{																		\
+	GLenum glError = glGetError();										\
+	if( glError )														\
+	{																	\
+		LOG( VERBOSITY_WARNING, author, "OpenGL error: %d", glError );	\
+	}																	\
+	assert( glError == 0 );												\
+}
 #else
 /*#define LOG( author, message, verbosity ) 
 #define LOGBUF 

@@ -54,11 +54,9 @@ void Renderer::queue( Array<ModelInstance>* i )
 
 void Renderer::render( Assets* assets )
 {
-	/*basicShader.bind();
-	basicShader.setMat4( projectionMatrixLocation, &camera.getFinalProjectionMatrix(), 1 );
-	basicShader.setMat4( viewMatrixLocation, &camera.getFinalViewMatrix(), 1 );*/
-
 	gbuffer.begin();
+
+	// GEOMETRY PASS
 	gbuffer.beginGeometryPass( &camera );
 
 	const int MAX_INSTANCES = instances->getSize();
@@ -66,12 +64,7 @@ void Renderer::render( Assets* assets )
 	{
 		ModelInstance& instance = instances->at( curInstance );
 
-		//basicShader.setMat4( worldMatricesLocation, instance.getFinalMatrices(), instance.getInstances() );
-
 		gbuffer.updateGeometryWorldMatrices( instance.getFinalMatrices(), instance.getInstances() );
-
-		//Texture* texture = assets->getTexture( instance.getTexture() );
-		//texture->bind( GL_TEXTURE0 );
 
 		assert( instance.getDiffuseMap() >= 0 );
 		assert( instance.getNormalMap() >= 0 );
@@ -88,6 +81,19 @@ void Renderer::render( Assets* assets )
 	}
 
 	gbuffer.endGeometryPass();
+
+	// DIRECTIONAL LIGHT PASS
+	gbuffer.beginDirectionalLightPass( &camera );
+
+	glm::vec3 direction( 1.0f, -1.0f, 1.0f );
+	glm::vec3 color( 1.0f, 0.0f, 0.0f );
+	float intensity = 0.8f;
+
+	gbuffer.renderDirectionalLight( direction, color, intensity );
+
+	gbuffer.endDirectionalLightPass();
+
+	// POINT LIGHT PASS
 
 	gbuffer.end();
 }

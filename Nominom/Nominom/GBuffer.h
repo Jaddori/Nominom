@@ -12,6 +12,7 @@ enum
 	TARGET_POSITION,
 	TARGET_NORMAL,
 	TARGET_DEPTH,
+	TARGET_FINAL,
 	MAX_TARGETS
 };
 
@@ -32,9 +33,12 @@ public:
 	void updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count );
 	void updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap );
 	//void renderGeometry( Camera* camera, Array<ModelInstance>& instances );
-	void renderDirectionalLights( Camera* camera );
-	void renderPointLights( Camera* camera );
-	void renderSpotLights( Camera* camera );
+	//void renderDirectionalLights( Camera* camera );
+	//void renderPointLights( Camera* camera );
+	//void renderSpotLights( Camera* camera );
+	void beginDirectionalLightPass( Camera* camera );
+	void endDirectionalLightPass();
+	void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
 
 	void setDebug( bool debug );
 	void toggleDebug();
@@ -46,7 +50,10 @@ private:
 	int height;
 	GLuint fbo;
 	GLuint targets[MAX_TARGETS];
+	GLuint depthBuffer;
 	bool debug;
+
+	GLuint quadVAO;
 
 	Shader geometryPass;
 	GLint geometryProjectionMatrix;
@@ -54,10 +61,20 @@ private:
 	GLint geometryWorldMatrices;
 	GLint geometryDiffuseMap;
 	GLint geometryNormalMap;
-	GLint geometrySpecularMap;
+	GLint geometryPositionMap;
+	GLint geometryDepthMap;
+	GLint geometryFarPlane;
+	GLint geometryNearPlane;
 
 	Shader directionalLightPass;
-
+	GLint directionalLightDirection;
+	GLint directionalLightColor;
+	GLint directionalLightIntensity;
+	GLint directionalLightCameraPosition;
+	GLint directionalLightDiffuseTarget;
+	GLint directionalLightNormalTarget;
+	GLint directionalLightPositionTarget;
+	GLint directionalLightDepthTarget;
 
 	Shader pointLightPass;
 

@@ -142,7 +142,6 @@ int main( int argc, char* argv[] )
 			int mesh = assets.loadMesh( "./assets/meshes/test.mesh" );
 			int diffuseMap = assets.loadTexture( "./assets/textures/crate_diffuse.dds" );
 			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
-			//int normalMap = assets.loadTexture( "./assets/textures/default_normal.dds" );
 			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
 
 			instances.add( ModelInstance( mesh, diffuseMap, normalMap, specularMap ) );
