@@ -52,7 +52,6 @@ private:
 	GLint geometryProjectionMatrix;
 	GLint geometryViewMatrix;
 	GLint geometryWorldMatrices;
-	GLint geometryCameraPosition;
 	GLint geometryDiffuseMap;
 	GLint geometryNormalMap;
 	GLint geometrySpecularMap;

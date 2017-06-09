@@ -92,8 +92,15 @@ int updateThread( void* args )
 			const Vertex* vertices = mesh->getVertices( &count );
 			for( int i=0; i<count; i++ )
 			{
-				DebugLine line = { vertices[i].position, vertices[i].position+vertices[i].tangent*0.1f, glm::vec4( 0.0f, 0.0f, 1.0f, 1.0f ) };
-				data->debugShapes->addLine( line );
+				DebugLine normalLine = { vertices[i].position, vertices[i].position+vertices[i].normal*0.1f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+
+				DebugLine tangentLine = { vertices[i].position, vertices[i].position+vertices[i].tangent*0.1f, glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
+
+				DebugLine bitangentLine = { vertices[i].position, vertices[i].position+vertices[i].bitangent*0.1f, glm::vec4( 0.0f, 0.0f, 1.0f, 1.0f ) };
+
+				data->debugShapes->addLine( normalLine );
+				data->debugShapes->addLine( tangentLine );
+				data->debugShapes->addLine( bitangentLine );
 			}
 
 			SDL_SemPost( data->renderLock );
@@ -135,6 +142,7 @@ int main( int argc, char* argv[] )
 			int mesh = assets.loadMesh( "./assets/meshes/test.mesh" );
 			int diffuseMap = assets.loadTexture( "./assets/textures/crate_diffuse.dds" );
 			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
+			//int normalMap = assets.loadTexture( "./assets/textures/default_normal.dds" );
 			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
 
 			instances.add( ModelInstance( mesh, diffuseMap, normalMap, specularMap ) );

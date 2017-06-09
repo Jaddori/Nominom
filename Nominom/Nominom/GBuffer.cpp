@@ -25,7 +25,7 @@ bool GBuffer::load( int w, int h )
 	bool result = true;
 
 	if( !geometryPass.load( "./assets/shaders/geometry_pass.vs",
-							"./assets/shaders/geometry_pass.gs",
+							nullptr,
 							"./assets/shaders/geometry_pass.fs" ) )
 	{
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load geometry pass shader." );
@@ -69,17 +69,14 @@ void GBuffer::upload()
 		GLOG( "GBuffer" );
 
 		geometryProjectionMatrix = geometryPass.getUniform( "projectionMatrix" );
-		GLOG( "GBuffer" );
-
 		geometryViewMatrix = geometryPass.getUniform( "viewMatrix" );
-		GLOG( "GBuffer" );
-
 		geometryWorldMatrices = geometryPass.getUniform( "worldMatrices" );
 		GLOG( "GBuffer" );
 
 		geometryDiffuseMap = geometryPass.getUniform( "diffuseMap" );
 		geometryNormalMap = geometryPass.getUniform( "normalMap" );
 		geometrySpecularMap = geometryPass.getUniform( "specularMap" );
+		GLOG( "GBuffer" );
 	}
 
 	if( directionalLightPass.getValid() )
@@ -189,7 +186,6 @@ void GBuffer::beginGeometryPass( Camera* camera )
 	geometryPass.bind();
 	geometryPass.setMat4( geometryProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
 	geometryPass.setMat4( geometryViewMatrix, &camera->getFinalViewMatrix(), 1 );
-	geometryPass.setVec3( geometryCameraPosition, camera->getPosition() );
 
 	int samplerLocations[] = { 0, 1, 2 };
 	geometryPass.setInt( geometryDiffuseMap, &samplerLocations[0], 1 );

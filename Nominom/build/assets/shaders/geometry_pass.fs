@@ -20,10 +20,9 @@ void main()
 	finalDiffuse = texture( diffuseMap, uv );
 	
 	vec3 normal = texture( normalMap, uv ).rgb;
-	normal = normalize( normal * 2.0 - 1.0 );
+	normal = normalize(normal * 2.0 - 1.0);
 	normal = normalize( fragTBN * normal );
 	finalNormal = vec4( normal, 1.0 );
-	finalNormal = vec4( fragTangent, 1.0 );
 	
 	finalSpecular = texture( specularMap, uv );
 }

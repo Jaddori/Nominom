@@ -121,12 +121,22 @@ void Texture::bind( GLenum location ) const
 	assert( valid );
 
 	// DEBUG: Remove or surround with #ifdef _DEBUG
-	GLOG( "Texture" );
+	//GLOG( "Texture" );
+	GLenum glError = glGetError();
+	if( glError )
+	{
+		LOG( VERBOSITY_WARNING, "Texture", "OpenGL error: %d", glError );
+	}
 
 	glActiveTexture( location );
 	glBindTexture( GL_TEXTURE_2D, id );
 
-	GLOG( "Texture" );
+	//GLOG( "Texture" );
+	glError = glGetError();
+	if( glError )
+	{
+		LOG( VERBOSITY_WARNING, "Texture", "OpenGL error: %d", glError );
+	}
 }
 
 GLuint Texture::getID() const
