@@ -16,7 +16,9 @@ public:
 	void load( Assets* assets );
 	void upload();
 
-	void queue( Array<ModelInstance>* instances );
+	void queueInstances( Array<ModelInstance>* instances );
+	void queueDirectionalLights( Array<DirectionalLight>* lights );
+	void queuePointLights( Array<PointLight>* lights );
 	void render( Assets* assets );
 	void finalize();
 
@@ -25,6 +27,8 @@ public:
 
 private:
 	Array<ModelInstance>* instances;
+	Array<DirectionalLight>* directionalLights;
+	Array<PointLight>* pointLights;
 
 	Camera camera;
 	GBuffer gbuffer;

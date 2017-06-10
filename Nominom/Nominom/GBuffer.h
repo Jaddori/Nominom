@@ -8,6 +8,23 @@
 
 #define GBUFFER_SPHERE_MESH_PATH "./assets/meshes/sphere.mesh"
 
+struct DirectionalLight
+{
+	glm::vec3 direction;
+	glm::vec3 color;
+	float intensity;
+};
+
+struct PointLight
+{
+	glm::vec3 position;
+	glm::vec3 color;
+	float intensity;
+	float linear;
+	float constant;
+	float exponent;
+};
+
 enum
 {
 	TARGET_DIFFUSE = 0,
@@ -36,11 +53,13 @@ public:
 	void updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap );
 	void beginDirectionalLightPass( Camera* camera );
 	void endDirectionalLightPass();
-	void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
+	//void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
+	void renderDirectionalLight( const DirectionalLight& light );
 
 	void beginPointLightPass( Camera* camera );
 	void endPointLightPass();
-	void renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
+	//void renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
+	void renderPointLight( const PointLight& light );
 
 	void setDebug( bool debug );
 	void toggleDebug();
