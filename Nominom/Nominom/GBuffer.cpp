@@ -413,7 +413,7 @@ void GBuffer::renderPointLight( const PointLight& light )
 
 	// Distance from attenuation formula:
 	// http://ogldev.atspace.co.uk/www/tutorial36/tutorial36.html
-	float C = max( max( light.color.r, light.color.g ), light.color.b );
+	float C = fmax( fmax( light.color.r, light.color.g ), light.color.b );
 	float radius = ( -light.linear + sqrt( powf( light.linear, 2.0f ) - 4*light.exponent * ( light.constant - 256*C*light.intensity ) ) ) / (2*light.exponent);
 
 	glm::mat4 worldMatrix = glm::scale( glm::translate( glm::mat4(), light.position ), glm::vec3( radius ) );
