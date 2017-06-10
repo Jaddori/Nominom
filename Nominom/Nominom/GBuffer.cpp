@@ -368,9 +368,7 @@ void GBuffer::renderDirectionalLight( const glm::vec3& direction, const glm::vec
 void GBuffer::beginPointLightPass( Camera* camera )
 {
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
-	glClear( GL_COLOR_BUFFER_BIT );
 	glDisable( GL_DEPTH_TEST );
-	glClear( GL_COLOR_BUFFER_BIT );
 
 	glEnable( GL_BLEND );
 	glBlendEquation( GL_FUNC_ADD );
@@ -382,7 +380,7 @@ void GBuffer::beginPointLightPass( Camera* camera )
 
 	//pointLightPass.setMat4( pointLightProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
 	//pointLightPass.setMat4( pointLightViewMatrix, &camera->getFinalViewMatrix(), 1 );
-	//pointLightPass.setVec3( pointLightCameraPosition, camera->getPosition() );
+	pointLightPass.setVec3( pointLightCameraPosition, camera->getPosition() );
 	AGLOG( "GBuffer(PointLightPass)" );
 
 	glActiveTexture( GL_TEXTURE0 );
