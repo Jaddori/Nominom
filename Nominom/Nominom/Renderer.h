@@ -13,7 +13,7 @@ public:
 	Renderer();
 	~Renderer();
 
-	void load();
+	void load( Assets* assets );
 	void upload();
 
 	void queue( Array<ModelInstance>* instances );

@@ -11,7 +11,7 @@ Renderer::~Renderer()
 	LOG( VERBOSITY_INFORMATION, "Renderer", "Destructing." );
 }
 
-void Renderer::load()
+void Renderer::load( Assets* assets )
 {
 	LOG( VERBOSITY_INFORMATION, "Renderer", "Loading shader." );
 
@@ -20,7 +20,7 @@ void Renderer::load()
 		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load basic shader." );
 	}*/
 
-	if( !gbuffer.load( 640, 480 ) )
+	if( !gbuffer.load( assets, 640, 480 ) )
 	{
 		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load gbuffer." );
 	}
@@ -107,7 +107,7 @@ void Renderer::render( Assets* assets )
 		glm::vec3 color( 0.0f, 1.0f, 0.0f );
 		float intensity = 2.0f;
 
-		gbuffer.renderPointLight( position, radius, color, intensity );
+		gbuffer.renderPointLight( &camera, position, radius, color, intensity );
 	}
 	gbuffer.endPointLightPass();
 

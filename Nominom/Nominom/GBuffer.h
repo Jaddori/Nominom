@@ -4,7 +4,9 @@
 #include "Shader.h"
 #include "ModelInstance.h"
 #include "Camera.h"
-#include "Texture.h"
+#include "Assets.h"
+
+#define GBUFFER_SPHERE_MESH_PATH "./assets/meshes/sphere.mesh"
 
 enum
 {
@@ -22,7 +24,7 @@ public:
 	GBuffer();
 	~GBuffer();
 
-	bool load( int width, int height );
+	bool load( Assets* assets, int width, int height );
 	void upload();
 
 	void begin();
@@ -42,7 +44,7 @@ public:
 
 	void beginPointLightPass( Camera* camera );
 	void endPointLightPass();
-	void renderPointLight( const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
+	void renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
 
 	void setDebug( bool debug );
 	void toggleDebug();
@@ -56,6 +58,7 @@ private:
 	GLuint targets[MAX_TARGETS];
 	GLuint depthBuffer;
 	bool debug;
+	Assets* assets;
 
 	GLuint quadVAO;
 
@@ -85,6 +88,7 @@ private:
 	GLint pointLightViewMatrix;
 	GLint pointLightWorldMatrix;
 	GLint pointLightCameraPosition;
+	GLint pointLightScreenSize;
 	GLint pointLightPosition;
 	GLint pointLightRadius;
 	GLint pointLightColor;
@@ -95,6 +99,7 @@ private:
 	GLint pointLightDiffuseTarget;
 	GLint pointLightNormalTarget;
 	GLint pointLightPositionTarget;
+	int sphereMesh;
 
 	Shader spotLightPass;
 };

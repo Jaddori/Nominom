@@ -151,7 +151,7 @@ int main( int argc, char* argv[] )
 			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );
 
 			renderer.queue( &instances );
-			renderer.load();
+			renderer.load( &assets );
 			renderer.upload();
 
 			debugShapes.load();

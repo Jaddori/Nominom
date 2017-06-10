@@ -10,16 +10,11 @@ GBuffer::~GBuffer()
 	LOG( VERBOSITY_INFORMATION, "GBuffer", "Destructing." );
 }
 
-bool GBuffer::load( int w, int h )
+bool GBuffer::load( Assets* a, int w, int h )
 {
 	LOG( VERBOSITY_INFORMATION, "GBuffer", "Loading shaders." );
 
-	GLenum glError = glGetError();
-	if( glError )
-	{
-		LOG( VERBOSITY_WARNING, "GBuffer", "Unhandled OpenGL error: %d", glError );
-	}
-
+	assets = a;
 	width = w;
 	height = h;
 	bool result = true;
@@ -45,6 +40,13 @@ bool GBuffer::load( int w, int h )
 								"./assets/shaders/point_light_pass.fs" ) )
 	{
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load point light pass shader." );
+		result = false;
+	}
+
+	sphereMesh = assets->loadMesh( GBUFFER_SPHERE_MESH_PATH );
+	if( sphereMesh < 0 )
+	{
+		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load sphere mesh for point light pass." );
 		result = false;
 	}
 
@@ -113,6 +115,9 @@ void GBuffer::upload()
 		GLOG( "GBuffer" );
 
 		pointLightCameraPosition = pointLightPass.getUniform( "cameraPosition" );
+		pointLightScreenSize = pointLightPass.getUniform( "screenSize" );
+		GLOG( "GBuffer" );
+
 		pointLightPosition = pointLightPass.getUniform( "pointLight.position" );
 		pointLightRadius = pointLightPass.getUniform( "pointLight.radius" );
 		pointLightColor = pointLightPass.getUniform( "pointLight.color" );
@@ -311,7 +316,7 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_DEPTH_TEST );
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
-	glClearColor( 0.1f, 0.1f, 0.1f, 0.0f );
+	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 
 	glEnable( GL_BLEND );
@@ -369,6 +374,7 @@ void GBuffer::beginPointLightPass( Camera* camera )
 {
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
 	glDisable( GL_DEPTH_TEST );
+	glCullFace( GL_FRONT );
 
 	glEnable( GL_BLEND );
 	glBlendEquation( GL_FUNC_ADD );
@@ -378,9 +384,11 @@ void GBuffer::beginPointLightPass( Camera* camera )
 	pointLightPass.bind();
 	AGLOG( "GBuffer(PointLightPass)" );
 
-	//pointLightPass.setMat4( pointLightProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
-	//pointLightPass.setMat4( pointLightViewMatrix, &camera->getFinalViewMatrix(), 1 );
+	pointLightPass.setMat4( pointLightProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
+	pointLightPass.setMat4( pointLightViewMatrix, &camera->getFinalViewMatrix(), 1 );
 	pointLightPass.setVec3( pointLightCameraPosition, camera->getPosition() );
+	// TEMP: Magic numbers
+	pointLightPass.setVec2( pointLightScreenSize, glm::vec2( 640.0f, 480.0f ) );
 	AGLOG( "GBuffer(PointLightPass)" );
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -402,9 +410,10 @@ void GBuffer::endPointLightPass()
 {
 	glEnable( GL_DEPTH_TEST );
 	glDisable( GL_BLEND );
+	glCullFace( GL_BACK );
 }
 
-void GBuffer::renderPointLight( const glm::vec3& position, float radius, const glm::vec3& color, float intensity )
+void GBuffer::renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity )
 {
 	pointLightPass.setVec3( pointLightPosition, position );
 	pointLightPass.setFloat( pointLightRadius, &radius, 1 );
@@ -418,10 +427,13 @@ void GBuffer::renderPointLight( const glm::vec3& position, float radius, const g
 	pointLightPass.setFloat( pointLightExponent, &val, 1 );
 	AGLOG( "GBuffer" );
 
-	glBindVertexArray( quadVAO );
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-	glBindVertexArray( 0 );
-	AGLOG( "GBuffer" );
+	glm::mat4 worldMatrix = glm::scale( glm::translate( glm::mat4(), position ), glm::vec3( radius ) );
+	pointLightPass.setMat4( pointLightWorldMatrix, &worldMatrix, 1 );
+
+	Mesh* sphere = assets->getMesh( sphereMesh );
+	assert( sphere );
+
+	sphere->render(1);
 }
 
 void GBuffer::setDebug( bool d )

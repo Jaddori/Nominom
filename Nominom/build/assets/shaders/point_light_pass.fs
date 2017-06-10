@@ -17,6 +17,7 @@ out vec4 finalColor;
 
 uniform PointLight pointLight;
 uniform vec3 cameraPosition;
+uniform vec2 screenSize;
 uniform sampler2D diffuseTarget;
 uniform sampler2D normalTarget;
 uniform sampler2D positionTarget;
@@ -57,9 +58,10 @@ vec4 calculatePointLight( vec3 normal, vec3 position )
 
 void main()
 {
-	vec3 diffuse = texture( diffuseTarget, fragUV ).rgb;
-	vec3 position = texture( positionTarget, fragUV ).rgb;
-	vec3 normal = normalize( texture( normalTarget, fragUV ).rgb );
+	vec2 uv = gl_FragCoord.xy / screenSize;
+	vec3 diffuse = texture( diffuseTarget, uv ).rgb;
+	vec3 position = texture( positionTarget, uv ).rgb;
+	vec3 normal = normalize( texture( normalTarget, uv ).rgb );
 	
 	finalColor = vec4( diffuse, 1.0 ) * calculatePointLight( normal, position );
 	//finalColor = vec4( 1.0, 0.0, 0.0, 1.0 );
