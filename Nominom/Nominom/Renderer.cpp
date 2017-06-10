@@ -84,16 +84,32 @@ void Renderer::render( Assets* assets )
 
 	// DIRECTIONAL LIGHT PASS
 	gbuffer.beginDirectionalLightPass( &camera );
+	{
+		glm::vec3 direction( 1.0f, -1.0f, 1.0f );
+		glm::vec3 color( 1.0f, 0.0f, 0.0f );
+		float intensity = 0.8f;
 
-	glm::vec3 direction( 1.0f, -1.0f, 1.0f );
-	glm::vec3 color( 1.0f, 0.0f, 0.0f );
-	float intensity = 0.8f;
+		gbuffer.renderDirectionalLight( direction, color, intensity );
 
-	gbuffer.renderDirectionalLight( direction, color, intensity );
+		direction = glm::vec3( -1.0f, -1.0f, 1.0f );
+		color = glm::vec3( 0.0f, 0.0f, 1.0f );
+		intensity = 0.75f;
 
+		gbuffer.renderDirectionalLight( direction, color, intensity );
+	}
 	gbuffer.endDirectionalLightPass();
 
 	// POINT LIGHT PASS
+	gbuffer.beginPointLightPass( &camera );
+	{
+		glm::vec3 position( 0.0f, 1.0f, 2.1f);
+		float radius = 3.0f;
+		glm::vec3 color( 0.0f, 1.0f, 0.0f );
+		float intensity = 2.0f;
+
+		gbuffer.renderPointLight( position, radius, color, intensity );
+	}
+	gbuffer.endPointLightPass();
 
 	gbuffer.end();
 }
