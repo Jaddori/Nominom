@@ -290,6 +290,12 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_DEPTH_TEST );
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
+	glClearColor( 0.1f, 0.1f, 0.1f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	glEnable( GL_BLEND );
+	glBlendEquation( GL_FUNC_ADD );
+	glBlendFunc( GL_ONE, GL_ONE );
 
 	directionalLightPass.bind();
 	AGLOG( "GBuffer" );
@@ -318,6 +324,10 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 
 void GBuffer::endDirectionalLightPass()
 {
+	glDisable( GL_BLEND );
+	glBlendEquation( GL_FUNC_ADD );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
 
