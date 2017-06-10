@@ -95,6 +95,7 @@ void GBuffer::upload()
 		directionalLightColor = directionalLightPass.getUniform( "directionalLight.color" );
 		directionalLightIntensity = directionalLightPass.getUniform( "directionalLight.intensity" );
 		directionalLightCameraPosition = directionalLightPass.getUniform( "cameraPosition" );
+		directionalLightSpecularPower = directionalLightPass.getUniform( "specularPower" );
 		GLOG( "GBuffer" );
 
 		directionalLightDiffuseTarget = directionalLightPass.getUniform( "diffuseTarget" );
@@ -115,6 +116,7 @@ void GBuffer::upload()
 		GLOG( "GBuffer" );
 
 		pointLightCameraPosition = pointLightPass.getUniform( "cameraPosition" );
+		pointLightSpecularPower = pointLightPass.getUniform( "specularPower" );
 		pointLightScreenSize = pointLightPass.getUniform( "screenSize" );
 		GLOG( "GBuffer" );
 
@@ -262,19 +264,16 @@ void GBuffer::beginGeometryPass( Camera* camera )
 	GLOG( "GBuffer" );
 
 	geometryPass.bind();
-	geometryPass.setMat4( geometryProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
-	geometryPass.setMat4( geometryViewMatrix, &camera->getFinalViewMatrix(), 1 );
+	geometryPass.setMat4( geometryProjectionMatrix, camera->getFinalProjectionMatrix() );
+	geometryPass.setMat4( geometryViewMatrix, camera->getFinalViewMatrix() );
 	AGLOG( "GBuffer" );
 
-	float farPlane = camera->getFarPlane();
-	float nearPlane = camera->getNearPlane();
-	geometryPass.setFloat( geometryFarPlane, &farPlane, 1 );
-	geometryPass.setFloat( geometryNearPlane, &nearPlane, 1 );
+	geometryPass.setFloat( geometryFarPlane, camera->getFarPlane() );
+	geometryPass.setFloat( geometryNearPlane, camera->getNearPlane() );
 	AGLOG( "GBuffer" );
 
-	int samplerLocations[] = { 0, 1, 2 };
-	geometryPass.setInt( geometryDiffuseMap, &samplerLocations[0], 1 );
-	geometryPass.setInt( geometryNormalMap, &samplerLocations[1], 1 );
+	geometryPass.setInt( geometryDiffuseMap, 0 );
+	geometryPass.setInt( geometryNormalMap, 1 );
 	AGLOG( "GBuffer" );
 }
 
@@ -294,23 +293,6 @@ void GBuffer::updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, T
 	specularMap->bind( GL_TEXTURE2 );
 }
 
-/*void GBuffer::renderGeometry( Camera* camera, Array<ModelInstance>& instances )
-{
-
-}
-
-void GBuffer::renderDirectionalLights( Camera* camera )
-{
-}
-
-void GBuffer::renderPointLights( Camera* camera )
-{
-}
-
-void GBuffer::renderSpotLights( Camera* camera )
-{
-}*/
-
 void GBuffer::beginDirectionalLightPass( Camera* camera )
 {
 	glDisable( GL_CULL_FACE );
@@ -327,6 +309,8 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 	AGLOG( "GBuffer" );
 
 	directionalLightPass.setVec3( directionalLightCameraPosition, camera->getPosition() );
+	// TEMP: Magic number
+	directionalLightPass.setFloat( directionalLightSpecularPower, 8.0f );
 	AGLOG( "GBuffer" );
 	
 	glActiveTexture( GL_TEXTURE0 );
@@ -339,11 +323,10 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 	glBindTexture( GL_TEXTURE_2D, targets[3] );
 	AGLOG( "GBuffer" );
 
-	const int TARGET_LOCATIONS[] = { 0, 1, 2, 3 };
-	directionalLightPass.setInt( directionalLightDiffuseTarget, &TARGET_LOCATIONS[0], 1 );
-	directionalLightPass.setInt( directionalLightNormalTarget, &TARGET_LOCATIONS[1], 1 );
-	directionalLightPass.setInt( directionalLightPositionTarget, &TARGET_LOCATIONS[2], 1 );
-	directionalLightPass.setInt( directionalLightDepthTarget, &TARGET_LOCATIONS[3], 1 );
+	directionalLightPass.setInt( directionalLightDiffuseTarget, 0 );
+	directionalLightPass.setInt( directionalLightNormalTarget, 1 );
+	directionalLightPass.setInt( directionalLightPositionTarget, 2 );
+	directionalLightPass.setInt( directionalLightDepthTarget, 3 );
 	AGLOG( "GBuffer" );
 }
 
@@ -361,7 +344,7 @@ void GBuffer::renderDirectionalLight( const glm::vec3& direction, const glm::vec
 {
 	directionalLightPass.setVec3( directionalLightDirection, direction );
 	directionalLightPass.setVec3( directionalLightColor, color );
-	directionalLightPass.setFloat( directionalLightIntensity, &intensity, 1 );
+	directionalLightPass.setFloat( directionalLightIntensity, intensity );
 	AGLOG( "GBuffer" );
 
 	glBindVertexArray( quadVAO );
@@ -384,10 +367,11 @@ void GBuffer::beginPointLightPass( Camera* camera )
 	pointLightPass.bind();
 	AGLOG( "GBuffer(PointLightPass)" );
 
-	pointLightPass.setMat4( pointLightProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
-	pointLightPass.setMat4( pointLightViewMatrix, &camera->getFinalViewMatrix(), 1 );
+	pointLightPass.setMat4( pointLightProjectionMatrix, camera->getFinalProjectionMatrix() );
+	pointLightPass.setMat4( pointLightViewMatrix, camera->getFinalViewMatrix() );
 	pointLightPass.setVec3( pointLightCameraPosition, camera->getPosition() );
 	// TEMP: Magic numbers
+	pointLightPass.setFloat( pointLightSpecularPower, 8.0f );
 	pointLightPass.setVec2( pointLightScreenSize, glm::vec2( 640.0f, 480.0f ) );
 	AGLOG( "GBuffer(PointLightPass)" );
 
@@ -399,10 +383,9 @@ void GBuffer::beginPointLightPass( Camera* camera )
 	glBindTexture( GL_TEXTURE_2D, targets[2] );
 	AGLOG( "GBuffer" );
 
-	const int TARGET_LOCATIONS[] = { 0, 1, 2 };
-	pointLightPass.setInt( pointLightDiffuseTarget, &TARGET_LOCATIONS[0], 1 );
-	pointLightPass.setInt( pointLightNormalTarget, &TARGET_LOCATIONS[1], 1 );
-	pointLightPass.setInt( pointLightPositionTarget, &TARGET_LOCATIONS[2], 1 );
+	pointLightPass.setInt( pointLightDiffuseTarget, 0 );
+	pointLightPass.setInt( pointLightNormalTarget, 1 );
+	pointLightPass.setInt( pointLightPositionTarget, 2 );
 	AGLOG( "GBuffer(PointLightPass)" );
 }
 
@@ -416,24 +399,25 @@ void GBuffer::endPointLightPass()
 void GBuffer::renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity )
 {
 	pointLightPass.setVec3( pointLightPosition, position );
-	pointLightPass.setFloat( pointLightRadius, &radius, 1 );
+	pointLightPass.setFloat( pointLightRadius, radius );
 	pointLightPass.setVec3( pointLightColor, color );
-	pointLightPass.setFloat( pointLightIntensity, &intensity, 1 );
+	pointLightPass.setFloat( pointLightIntensity, intensity );
 	AGLOG( "GBuffer" );
 
-	float val = 1.0f;
-	pointLightPass.setFloat( pointLightLinear, &val, 1 );
-	pointLightPass.setFloat( pointLightConstant, &val, 1 );
-	pointLightPass.setFloat( pointLightExponent, &val, 1 );
+	// TEMP: Magic numbers
+	pointLightPass.setFloat( pointLightLinear, 1.0f );
+	pointLightPass.setFloat( pointLightConstant, 0.0f );
+	pointLightPass.setFloat( pointLightExponent, 1.0f );
 	AGLOG( "GBuffer" );
 
 	glm::mat4 worldMatrix = glm::scale( glm::translate( glm::mat4(), position ), glm::vec3( radius ) );
-	pointLightPass.setMat4( pointLightWorldMatrix, &worldMatrix, 1 );
+	pointLightPass.setMat4( pointLightWorldMatrix, worldMatrix );
 
 	Mesh* sphere = assets->getMesh( sphereMesh );
 	assert( sphere );
 
 	sphere->render(1);
+	AGLOG( "GBuffer" );
 }
 
 void GBuffer::setDebug( bool d )

@@ -34,10 +34,6 @@ public:
 	void endGeometryPass();
 	void updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count );
 	void updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap );
-	//void renderGeometry( Camera* camera, Array<ModelInstance>& instances );
-	//void renderDirectionalLights( Camera* camera );
-	//void renderPointLights( Camera* camera );
-	//void renderSpotLights( Camera* camera );
 	void beginDirectionalLightPass( Camera* camera );
 	void endDirectionalLightPass();
 	void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
@@ -78,6 +74,7 @@ private:
 	GLint directionalLightColor;
 	GLint directionalLightIntensity;
 	GLint directionalLightCameraPosition;
+	GLint directionalLightSpecularPower;
 	GLint directionalLightDiffuseTarget;
 	GLint directionalLightNormalTarget;
 	GLint directionalLightPositionTarget;
@@ -88,6 +85,7 @@ private:
 	GLint pointLightViewMatrix;
 	GLint pointLightWorldMatrix;
 	GLint pointLightCameraPosition;
+	GLint pointLightSpecularPower;
 	GLint pointLightScreenSize;
 	GLint pointLightPosition;
 	GLint pointLightRadius;
