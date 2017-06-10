@@ -159,8 +159,10 @@
     <ClCompile Include="..\include\Lua\lundump.c" />
     <ClCompile Include="..\include\Lua\lvm.c" />
     <ClCompile Include="..\include\Lua\lzio.c" />
+    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Assets.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="DebugShapes.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -168,11 +170,13 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Lua\lapi.h" />
@@ -200,10 +204,12 @@
     <ClInclude Include="..\include\Lua\lundump.h" />
     <ClInclude Include="..\include\Lua\lvm.h" />
     <ClInclude Include="..\include\Lua\lzio.h" />
+    <ClInclude Include="Actor.h" />
     <ClInclude Include="Array.h" />
     <ClInclude Include="Assets.h" />
     <ClInclude Include="BaseIncludes.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="DebugAABB.h" />
     <ClInclude Include="DebugLine.h" />
     <ClInclude Include="DebugOBB.h" />
@@ -215,11 +221,13 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="LogMessage.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelInstance.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

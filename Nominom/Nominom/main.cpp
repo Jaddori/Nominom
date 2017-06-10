@@ -4,6 +4,8 @@
 #include "Camera.h"
 #include "Input.h"
 #include "DebugShapes.h"
+#include "Actor.h"
+#include "MeshRenderer.h"
 
 #define FPS 60
 #define TICKS (1000 / FPS)
@@ -196,6 +198,16 @@ int main( int argc, char* argv[] )
 			};
 			pointLights.add( pointLight );
 
+			Actor actor;
+			Transform transform;
+			transform.setPosition( glm::vec3( 10.0f, 0.0f, 0.0f ) );
+			MeshRenderer meshRenderer;
+			meshRenderer.load( &assets, &instances );
+
+			actor.addComponent( &transform );
+			actor.addComponent( &meshRenderer );
+			
+
 			ThreadData data =
 			{
 				&renderer,
@@ -223,6 +235,7 @@ int main( int argc, char* argv[] )
 					data.running = false;
 				}
 
+				meshRenderer.finalize( &instances );
 				renderer.finalize();
 				debugShapes.finalize();
 
