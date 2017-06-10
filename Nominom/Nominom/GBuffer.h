@@ -40,6 +40,10 @@ public:
 	void endDirectionalLightPass();
 	void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
 
+	void beginPointLightPass( Camera* camera );
+	void endPointLightPass();
+	void renderPointLight( const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
+
 	void setDebug( bool debug );
 	void toggleDebug();
 
@@ -77,7 +81,20 @@ private:
 	GLint directionalLightDepthTarget;
 
 	Shader pointLightPass;
-
+	GLint pointLightProjectionMatrix;
+	GLint pointLightViewMatrix;
+	GLint pointLightWorldMatrix;
+	GLint pointLightCameraPosition;
+	GLint pointLightPosition;
+	GLint pointLightRadius;
+	GLint pointLightColor;
+	GLint pointLightIntensity;
+	GLint pointLightLinear;
+	GLint pointLightConstant;
+	GLint pointLightExponent;
+	GLint pointLightDiffuseTarget;
+	GLint pointLightNormalTarget;
+	GLint pointLightPositionTarget;
 
 	Shader spotLightPass;
 };

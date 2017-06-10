@@ -40,15 +40,15 @@ bool GBuffer::load( int w, int h )
 		result = false;
 	}
 
-	/*if( !pointLightPass.load( "./assets/shaders/point_light_pass.vs",
-								"./assets/shaders/point_light_pass.gs",
+	if( !pointLightPass.load( "./assets/shaders/point_light_pass.vs",
+								nullptr,
 								"./assets/shaders/point_light_pass.fs" ) )
 	{
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load point light pass shader." );
 		result = false;
 	}
 
-	if( !spotLightPass.load( "./assets/shaders/spot_light_pass.vs",
+	/*if( !spotLightPass.load( "./assets/shaders/spot_light_pass.vs",
 								"./assets/shaders/spot_light_pass.gs",
 								"./assets/shaders/spot_light_pass.fs" ) )
 	{
@@ -105,6 +105,27 @@ void GBuffer::upload()
 	if( pointLightPass.getValid() )
 	{
 		pointLightPass.upload();
+		GLOG( "GBuffer" );
+
+		pointLightProjectionMatrix = pointLightPass.getUniform( "projectionMatrix" );
+		pointLightViewMatrix = pointLightPass.getUniform( "viewMatrix" );
+		pointLightWorldMatrix = pointLightPass.getUniform( "worldMatrix" );
+		GLOG( "GBuffer" );
+
+		pointLightCameraPosition = pointLightPass.getUniform( "cameraPosition" );
+		pointLightPosition = pointLightPass.getUniform( "pointLight.position" );
+		pointLightRadius = pointLightPass.getUniform( "pointLight.radius" );
+		pointLightColor = pointLightPass.getUniform( "pointLight.color" );
+		pointLightIntensity = pointLightPass.getUniform( "pointLight.intensity" );
+		pointLightLinear = pointLightPass.getUniform( "pointLight.linear" );
+		pointLightConstant = pointLightPass.getUniform( "pointLight.constant" );
+		pointLightExponent = pointLightPass.getUniform( "pointLight.exponent" );
+		GLOG( "GBuffer" );
+
+		pointLightDiffuseTarget = pointLightPass.getUniform( "diffuseTarget" );
+		pointLightNormalTarget = pointLightPass.getUniform( "normalTarget" );
+		pointLightPositionTarget = pointLightPass.getUniform( "positionTarget" );
+		GLOG( "GBuffer" );
 	}
 
 	if( spotLightPass.getValid() )
@@ -212,10 +233,10 @@ void GBuffer::end()
 	}
 	else
 	{
-		/*glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-		glReadBuffer( GL_COLOR_ATTACHMENT0 );
-		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );*/
+		glReadBuffer( GL_COLOR_ATTACHMENT4 );
+		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -302,7 +323,6 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 
 	directionalLightPass.setVec3( directionalLightCameraPosition, camera->getPosition() );
 	AGLOG( "GBuffer" );
-
 	
 	glActiveTexture( GL_TEXTURE0 );
 	glBindTexture( GL_TEXTURE_2D, targets[0] );
@@ -330,11 +350,6 @@ void GBuffer::endDirectionalLightPass()
 
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
-
-	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-	glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-	glReadBuffer( GL_COLOR_ATTACHMENT4 );
-	glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 }
 
 void GBuffer::renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity )
@@ -342,6 +357,67 @@ void GBuffer::renderDirectionalLight( const glm::vec3& direction, const glm::vec
 	directionalLightPass.setVec3( directionalLightDirection, direction );
 	directionalLightPass.setVec3( directionalLightColor, color );
 	directionalLightPass.setFloat( directionalLightIntensity, &intensity, 1 );
+	AGLOG( "GBuffer" );
+
+	glBindVertexArray( quadVAO );
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	glBindVertexArray( 0 );
+	AGLOG( "GBuffer" );
+}
+
+void GBuffer::beginPointLightPass( Camera* camera )
+{
+	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
+	glClear( GL_COLOR_BUFFER_BIT );
+	glDisable( GL_DEPTH_TEST );
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	glEnable( GL_BLEND );
+	glBlendEquation( GL_FUNC_ADD );
+	glBlendFunc( GL_ONE, GL_ONE );
+	AGLOG( "GBuffer(PointLightPass)" );
+
+	pointLightPass.bind();
+	AGLOG( "GBuffer(PointLightPass)" );
+
+	//pointLightPass.setMat4( pointLightProjectionMatrix, &camera->getFinalProjectionMatrix(), 1 );
+	//pointLightPass.setMat4( pointLightViewMatrix, &camera->getFinalViewMatrix(), 1 );
+	//pointLightPass.setVec3( pointLightCameraPosition, camera->getPosition() );
+	AGLOG( "GBuffer(PointLightPass)" );
+
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, targets[0] );
+	glActiveTexture( GL_TEXTURE1 );
+	glBindTexture( GL_TEXTURE_2D, targets[1] );
+	glActiveTexture( GL_TEXTURE2 );
+	glBindTexture( GL_TEXTURE_2D, targets[2] );
+	AGLOG( "GBuffer" );
+
+	const int TARGET_LOCATIONS[] = { 0, 1, 2 };
+	pointLightPass.setInt( pointLightDiffuseTarget, &TARGET_LOCATIONS[0], 1 );
+	pointLightPass.setInt( pointLightNormalTarget, &TARGET_LOCATIONS[1], 1 );
+	pointLightPass.setInt( pointLightPositionTarget, &TARGET_LOCATIONS[2], 1 );
+	AGLOG( "GBuffer(PointLightPass)" );
+}
+
+void GBuffer::endPointLightPass()
+{
+	glEnable( GL_DEPTH_TEST );
+	glDisable( GL_BLEND );
+}
+
+void GBuffer::renderPointLight( const glm::vec3& position, float radius, const glm::vec3& color, float intensity )
+{
+	pointLightPass.setVec3( pointLightPosition, position );
+	pointLightPass.setFloat( pointLightRadius, &radius, 1 );
+	pointLightPass.setVec3( pointLightColor, color );
+	pointLightPass.setFloat( pointLightIntensity, &intensity, 1 );
+	AGLOG( "GBuffer" );
+
+	float val = 1.0f;
+	pointLightPass.setFloat( pointLightLinear, &val, 1 );
+	pointLightPass.setFloat( pointLightConstant, &val, 1 );
+	pointLightPass.setFloat( pointLightExponent, &val, 1 );
 	AGLOG( "GBuffer" );
 
 	glBindVertexArray( quadVAO );
