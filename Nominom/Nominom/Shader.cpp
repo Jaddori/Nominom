@@ -147,10 +147,22 @@ void Shader::setInt( GLuint uniform, const int* values, int count )
 	glUniform1iv( uniform, count, values );
 }
 
+void Shader::setInt( GLuint uniform, int value )
+{
+	assert( valid );
+	glUniform1i( uniform, value );
+}
+
 void Shader::setFloat( GLuint uniform, const float* values, int count )
 {
 	assert( valid );
 	glUniform1fv( uniform, count, values );
+}
+
+void Shader::setFloat( GLuint uniform, float value )
+{
+	assert( valid );
+	glUniform1f( uniform, value );
 }
 
 void Shader::setVec2( GLuint uniform, const glm::vec2& value )
@@ -177,21 +189,17 @@ void Shader::setMat4( GLuint uniform, const glm::mat4* values, int count )
 	glUniformMatrix4fv( uniform, count, GL_FALSE, glm::value_ptr(*values) );
 }
 
+void Shader::setMat4( GLuint uniform, const glm::mat4& value )
+{
+	assert( valid );
+	glUniformMatrix4fv( uniform, 1, GL_FALSE, glm::value_ptr( value ) );
+}
+
 GLint Shader::getUniform( const char* name )
 {
 	assert( valid );
-	GLenum glError = glGetError();
-	if( glError )
-	{
-		int derfp = 0;
-	}
 	GLint result = glGetUniformLocation( program, name );
-	glError = glGetError();
-	if( glError )
-	{
-		int derer = 0;
-	}
-
+	AGLOG( "Shader(getUniform)" );
 	return result;
 }
 

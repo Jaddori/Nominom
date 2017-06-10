@@ -13,6 +13,7 @@ out vec4 finalColor;
 
 uniform DirectionalLight directionalLight;
 uniform vec3 cameraPosition;
+uniform float specularPower;
 uniform sampler2D diffuseTarget;
 uniform sampler2D normalTarget;
 uniform sampler2D positionTarget;
@@ -32,7 +33,7 @@ vec4 calculateDirectionalLight( vec3 normal, vec3 position )
 		vec3 halfDirection = normalize( directionToEye - directionalLight.direction );
 		
 		float specularFactor = dot( halfDirection, normal );
-		specularFactor = pow( specularFactor, 8.0 ); // TEMP
+		specularFactor = pow( specularFactor, specularPower );
 		
 		if( specularFactor > 0.0 )
 		{

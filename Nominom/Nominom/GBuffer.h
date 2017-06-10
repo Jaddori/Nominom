@@ -4,7 +4,26 @@
 #include "Shader.h"
 #include "ModelInstance.h"
 #include "Camera.h"
-#include "Texture.h"
+#include "Assets.h"
+
+#define GBUFFER_SPHERE_MESH_PATH "./assets/meshes/sphere.mesh"
+
+struct DirectionalLight
+{
+	glm::vec3 direction;
+	glm::vec3 color;
+	float intensity;
+};
+
+struct PointLight
+{
+	glm::vec3 position;
+	glm::vec3 color;
+	float intensity;
+	float linear;
+	float constant;
+	float exponent;
+};
 
 enum
 {
@@ -22,7 +41,7 @@ public:
 	GBuffer();
 	~GBuffer();
 
-	bool load( int width, int height );
+	bool load( Assets* assets, int width, int height );
 	void upload();
 
 	void begin();
@@ -32,17 +51,15 @@ public:
 	void endGeometryPass();
 	void updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count );
 	void updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap );
-	//void renderGeometry( Camera* camera, Array<ModelInstance>& instances );
-	//void renderDirectionalLights( Camera* camera );
-	//void renderPointLights( Camera* camera );
-	//void renderSpotLights( Camera* camera );
 	void beginDirectionalLightPass( Camera* camera );
 	void endDirectionalLightPass();
-	void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
+	//void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
+	void renderDirectionalLight( const DirectionalLight& light );
 
 	void beginPointLightPass( Camera* camera );
 	void endPointLightPass();
-	void renderPointLight( const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
+	//void renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
+	void renderPointLight( const PointLight& light );
 
 	void setDebug( bool debug );
 	void toggleDebug();
@@ -56,6 +73,7 @@ private:
 	GLuint targets[MAX_TARGETS];
 	GLuint depthBuffer;
 	bool debug;
+	Assets* assets;
 
 	GLuint quadVAO;
 
@@ -75,6 +93,7 @@ private:
 	GLint directionalLightColor;
 	GLint directionalLightIntensity;
 	GLint directionalLightCameraPosition;
+	GLint directionalLightSpecularPower;
 	GLint directionalLightDiffuseTarget;
 	GLint directionalLightNormalTarget;
 	GLint directionalLightPositionTarget;
@@ -85,6 +104,8 @@ private:
 	GLint pointLightViewMatrix;
 	GLint pointLightWorldMatrix;
 	GLint pointLightCameraPosition;
+	GLint pointLightSpecularPower;
+	GLint pointLightScreenSize;
 	GLint pointLightPosition;
 	GLint pointLightRadius;
 	GLint pointLightColor;
@@ -95,6 +116,7 @@ private:
 	GLint pointLightDiffuseTarget;
 	GLint pointLightNormalTarget;
 	GLint pointLightPositionTarget;
+	int sphereMesh;
 
 	Shader spotLightPass;
 };

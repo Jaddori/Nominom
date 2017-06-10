@@ -14,6 +14,8 @@ struct ThreadData
 	Assets* assets;
 	Input* input;
 	Array<ModelInstance>* instances;
+	Array<DirectionalLight>* directionalLights;
+	Array<PointLight>* pointLights;
 	DebugShapes* debugShapes;
 	SDL_sem* updateLock;
 	SDL_sem* renderLock;
@@ -143,6 +145,8 @@ int main( int argc, char* argv[] )
 			Assets assets;
 			Input input;
 			Array<ModelInstance> instances;
+			Array<DirectionalLight> directionalLights;
+			Array<PointLight> pointLights;
 			DebugShapes debugShapes;
 
 			int mesh = assets.loadMesh( "./assets/meshes/test.mesh" );
@@ -156,8 +160,10 @@ int main( int argc, char* argv[] )
 
 			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );
 
-			renderer.queue( &instances );
-			renderer.load();
+			renderer.queueInstances( &instances );
+			renderer.queueDirectionalLights( &directionalLights );
+			renderer.queuePointLights( &pointLights );
+			renderer.load( &assets );
 			renderer.upload();
 
 			debugShapes.load();
@@ -167,12 +173,37 @@ int main( int argc, char* argv[] )
 
 			camera->setPosition( glm::vec3( 0, 0, -4.0f ) );
 
+			DirectionalLight directionalLight =
+			{
+				glm::vec3( 1.0f, -1.0f, 1.0f ),
+				glm::vec3( 1.0f, 0.0f, 0.0f ),
+				0.8f
+			};
+			directionalLights.add( directionalLight );
+
+			directionalLight.direction = glm::vec3( -1.0f, -1.0f, 1.0f );
+			directionalLight.color = glm::vec3( 0.0f, 0.0f, 1.0f );
+			directionalLights.add( directionalLight );
+
+			PointLight pointLight =
+			{
+				glm::vec3( 0.0f, 1.0f, 2.1f ),
+				glm::vec3( 0.0f, 1.0f, 0.0f ),
+				2.0f,
+				1.0f,
+				0.0f,
+				1.0f
+			};
+			pointLights.add( pointLight );
+
 			ThreadData data =
 			{
 				&renderer,
 				&assets,
 				&input,
 				&instances,
+				&directionalLights,
+				&pointLights,
 				&debugShapes,
 				SDL_CreateSemaphore(1),
 				SDL_CreateSemaphore(0),

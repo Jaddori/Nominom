@@ -14,11 +14,14 @@ public:
 	void bind();
 	
 	void setInt( GLuint uniform, const int* values, int count );
+	void setInt( GLuint uniform, int value );
 	void setFloat( GLuint uniform, const float* values, int count );
+	void setFloat( GLuint uniform, float value );
 	void setVec2( GLuint uniform, const glm::vec2& value );
 	void setVec3( GLuint uniform, const glm::vec3& value );
 	void setVec4( GLuint uniform, const glm::vec4& value );
 	void setMat4( GLuint uniform, const glm::mat4* values, int count );
+	void setMat4( GLuint uniform, const glm::mat4& value );
 
 	GLint getUniform( const char* name );
 	bool getValid() const;

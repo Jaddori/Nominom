@@ -11,7 +11,7 @@ Renderer::~Renderer()
 	LOG( VERBOSITY_INFORMATION, "Renderer", "Destructing." );
 }
 
-void Renderer::load()
+void Renderer::load( Assets* assets )
 {
 	LOG( VERBOSITY_INFORMATION, "Renderer", "Loading shader." );
 
@@ -20,7 +20,7 @@ void Renderer::load()
 		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load basic shader." );
 	}*/
 
-	if( !gbuffer.load( 640, 480 ) )
+	if( !gbuffer.load( assets, 640, 480 ) )
 	{
 		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load gbuffer." );
 	}
@@ -47,9 +47,19 @@ void Renderer::upload()
 	gbuffer.upload();
 }
 
-void Renderer::queue( Array<ModelInstance>* i )
+void Renderer::queueInstances( Array<ModelInstance>* i )
 {
 	instances = i;
+}
+
+void Renderer::queueDirectionalLights( Array<DirectionalLight>* lights )
+{
+	directionalLights = lights;
+}
+
+void Renderer::queuePointLights( Array<PointLight>* lights )
+{
+	pointLights = lights;
 }
 
 void Renderer::render( Assets* assets )
@@ -84,30 +94,23 @@ void Renderer::render( Assets* assets )
 
 	// DIRECTIONAL LIGHT PASS
 	gbuffer.beginDirectionalLightPass( &camera );
+
+	assert( directionalLights );
+	const int MAX_DIRECTIONAL_LIGHTS = directionalLights->getSize();
+	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
 	{
-		glm::vec3 direction( 1.0f, -1.0f, 1.0f );
-		glm::vec3 color( 1.0f, 0.0f, 0.0f );
-		float intensity = 0.8f;
-
-		gbuffer.renderDirectionalLight( direction, color, intensity );
-
-		direction = glm::vec3( -1.0f, -1.0f, 1.0f );
-		color = glm::vec3( 0.0f, 0.0f, 1.0f );
-		intensity = 0.75f;
-
-		gbuffer.renderDirectionalLight( direction, color, intensity );
+		gbuffer.renderDirectionalLight( directionalLights->at(i) );
 	}
 	gbuffer.endDirectionalLightPass();
 
 	// POINT LIGHT PASS
 	gbuffer.beginPointLightPass( &camera );
-	{
-		glm::vec3 position( 0.0f, 1.0f, 2.1f);
-		float radius = 3.0f;
-		glm::vec3 color( 0.0f, 1.0f, 0.0f );
-		float intensity = 2.0f;
 
-		gbuffer.renderPointLight( position, radius, color, intensity );
+	assert( pointLights );
+	const int NUM_POINT_LIGHTS = pointLights->getSize();
+	for( int i=0; i<NUM_POINT_LIGHTS; i++ )
+	{
+		gbuffer.renderPointLight( pointLights->at(i) );
 	}
 	gbuffer.endPointLightPass();
 
