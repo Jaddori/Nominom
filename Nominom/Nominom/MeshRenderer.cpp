@@ -8,41 +8,28 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-void MeshRenderer::load( Assets* assets, Array<ModelInstance>* instances )
+void MeshRenderer::load( Assets* assets, InstanceHandler* instanceHandler )
 {
 	mesh = assets->loadMesh( "./assets/meshes/test.mesh" );
 	diffuseMap = assets->loadTexture( "./assets/textures/crate_diffuse.dds" );
 	normalMap = assets->loadTexture( "./assets/textures/crate_normal.dds" );
 	specularMap = assets->loadTexture( "./assets/textures/crate_specular.dds" );
 
-	// TEMP: Should do this more elegantly
-	instanceIndex = -1;
-	for( int i=0; instances->getSize() && instanceIndex < 0; i++ )
-	{
-		const ModelInstance& instance = instances->at(i);
-		if( instance.getMesh() == mesh &&
-			instance.getDiffuseMap() == diffuseMap &&
-			instance.getNormalMap() == normalMap &&
-			instance.getSpecularMap() == specularMap )
-		{
-			instanceIndex = i;
-		}
-	}
+	instanceIndex = instanceHandler->add( mesh, diffuseMap, normalMap, specularMap );
 
-	if( instanceIndex < 0 )
-	{
-		ModelInstance instance( mesh, diffuseMap, normalMap, specularMap );
-		instanceIndex = instances->getSize();
-		instances->add( instance );
-	}
-
-	worldMatrixIndex = instances->at( instanceIndex ).add();
+	ModelInstance* instance = instanceHandler->getInstance( instanceIndex.instance );
+	worldMatrix = instance->getWorldMatrix( instanceIndex.worldMatrix );
+	dirtyFlag = instance->getDirtyFlag();
 }
 
-void MeshRenderer::finalize( Array<ModelInstance>* instances )
+void MeshRenderer::finalize( InstanceHandler* instanceHandler )
 {
 	Transform* transform = (Transform*)parent->getComponents()->at(0);
+	if( transform->getDirtyFlag() )
+	{
+		*worldMatrix = glm::scale( glm::translate( glm::mat4(), transform->getPosition() ), transform->getScale() );
+		*dirtyFlag = true;
 
-	glm::mat4 worldMatrix = glm::scale( glm::translate( glm::mat4(), transform->getPosition() ), transform->getScale() );
-	instances->at( instanceIndex ).setWorldMatrix( worldMatrixIndex, worldMatrix );
+		transform->setDirtyFlag( false );
+	}
 }

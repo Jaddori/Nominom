@@ -14,6 +14,14 @@ ModelInstance::~ModelInstance()
 {
 }
 
+bool ModelInstance::operator==( const ModelInstance& ref ) const
+{
+	return ( mesh == ref.mesh &&
+			 diffuseMap == ref.diffuseMap &&
+			 normalMap == ref.normalMap &&
+			 specularMap == ref.specularMap );
+}
+
 int ModelInstance::add()
 {
 	int result = -1;
@@ -92,6 +100,7 @@ void ModelInstance::setWorldMatrix( int index, const glm::mat4& matrix )
 {
 	assert( index >= 0 && index < worldMatrices.getSize() );
 	worldMatrices[index] = matrix;
+	dirtyMatrices = true;
 }
 
 void ModelInstance::setDirty( bool dirty )
@@ -132,6 +141,11 @@ int ModelInstance::getInstances() const
 glm::mat4* ModelInstance::getWorldMatrix( int index )
 {
 	return worldMatrices.getData() + index;
+}
+
+bool* ModelInstance::getDirtyFlag()
+{
+	return &dirtyMatrices;
 }
 
 const glm::mat4* ModelInstance::getWorldMatrices()

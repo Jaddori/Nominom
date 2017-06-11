@@ -12,13 +12,16 @@ public:
 	void setPosition( const glm::vec3& position );
 	void setRotation( const glm::vec3& rotation );
 	void setScale( const glm::vec3& scale );
+	void setDirtyFlag( bool dirty );
 
 	const glm::vec3& getPosition() const;
 	const glm::vec3& getRotation() const;
 	const glm::vec3& getScale() const;
+	bool getDirtyFlag() const;
 
 private:
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scale;
+	bool dirtyFlag;
 };

@@ -167,6 +167,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="InstanceHandler.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="InstanceHandler.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="LogMessage.h" />
     <ClInclude Include="Mesh.h" />

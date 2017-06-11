@@ -16,6 +16,8 @@ public:
 	ModelInstance( int mesh, int diffuseMap, int normalMap, int specularMap );
 	~ModelInstance();
 
+	bool operator==( const ModelInstance& ref ) const;
+
 	int add();
 	void remove( int index );
 	void finalize();
@@ -33,6 +35,7 @@ public:
 	int getSpecularMap() const;
 	int getInstances() const;
 	glm::mat4* getWorldMatrix( int index );
+	bool* getDirtyFlag();
 
 	const glm::mat4* getWorldMatrices();
 	const glm::mat4* getFinalMatrices();

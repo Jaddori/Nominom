@@ -2,7 +2,7 @@
 
 #include "Transform.h"
 #include "Assets.h"
-#include "ModelInstance.h"
+#include "InstanceHandler.h"
 
 class MeshRenderer : public Component
 {
@@ -10,14 +10,16 @@ public:
 	MeshRenderer();
 	virtual ~MeshRenderer();
 
-	void load( Assets* assets, Array<ModelInstance>* instances );
-	void finalize( Array<ModelInstance>* instance );
+	void load( Assets* assets, InstanceHandler* instanceHandler );
+	void finalize( InstanceHandler* instanceHandler );
 
 private:
 	int mesh;
 	int diffuseMap;
 	int normalMap;
 	int specularMap;
-	int instanceIndex;
-	int worldMatrixIndex;
+	InstanceIndex instanceIndex;
+
+	glm::mat4* worldMatrix;
+	bool* dirtyFlag;
 };

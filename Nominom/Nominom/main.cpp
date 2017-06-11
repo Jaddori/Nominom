@@ -6,6 +6,7 @@
 #include "DebugShapes.h"
 #include "Actor.h"
 #include "MeshRenderer.h"
+#include "InstanceHandler.h"
 
 #define FPS 60
 #define TICKS (1000 / FPS)
@@ -15,7 +16,8 @@ struct ThreadData
 	Renderer* renderer;
 	Assets* assets;
 	Input* input;
-	Array<ModelInstance>* instances;
+	//Array<ModelInstance>* instances;
+	InstanceHandler* instanceHandler;
 	Array<DirectionalLight>* directionalLights;
 	Array<PointLight>* pointLights;
 	DebugShapes* debugShapes;
@@ -84,7 +86,7 @@ int updateThread( void* args )
 				camera->updatePosition( localMovement );
 			}
 
-			data->instances->at( 0 ).setDirty( true );
+			//data->instances->at( 0 ).setDirty( true );
 
 			/*data->debugShapes->addSphere( sphere );
 			data->debugShapes->addLine( line );
@@ -146,7 +148,8 @@ int main( int argc, char* argv[] )
 			Camera* camera = renderer.getCamera();
 			Assets assets;
 			Input input;
-			Array<ModelInstance> instances;
+			//Array<ModelInstance> instances;
+			InstanceHandler instanceHandler;
 			Array<DirectionalLight> directionalLights;
 			Array<PointLight> pointLights;
 			DebugShapes debugShapes;
@@ -156,13 +159,20 @@ int main( int argc, char* argv[] )
 			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
 			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
 
-			instances.add( ModelInstance( mesh, diffuseMap, normalMap, specularMap ) );
+			/*instances.add( ModelInstance( mesh, diffuseMap, normalMap, specularMap ) );
 			int firstIndex = instances[0].add();
 			int secondIndex = instances[0].add();
 
-			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );
+			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );*/
 
-			renderer.queueInstances( &instances );
+			InstanceIndex instanceIndex = instanceHandler.add( mesh, diffuseMap, normalMap, specularMap );
+			int firstIndex = instanceHandler.getInstance( instanceIndex.instance )->add();
+			int secondIndex = instanceHandler.getInstance( instanceIndex.instance )->add();
+
+			ModelInstance* instance = instanceHandler.getInstance( instanceIndex.instance );
+			instance->setWorldMatrix( secondIndex, glm::translate( glm::mat4(), glm::vec3( -4.0, 0.0, 0.0 ) ) );
+
+			renderer.queueInstances( instanceHandler.getInstances() );
 			renderer.queueDirectionalLights( &directionalLights );
 			renderer.queuePointLights( &pointLights );
 			renderer.load( &assets );
@@ -202,18 +212,17 @@ int main( int argc, char* argv[] )
 			Transform transform;
 			transform.setPosition( glm::vec3( 10.0f, 0.0f, 0.0f ) );
 			MeshRenderer meshRenderer;
-			meshRenderer.load( &assets, &instances );
+			meshRenderer.load( &assets, &instanceHandler );
 
 			actor.addComponent( &transform );
 			actor.addComponent( &meshRenderer );
-			
 
 			ThreadData data =
 			{
 				&renderer,
 				&assets,
 				&input,
-				&instances,
+				&instanceHandler,
 				&directionalLights,
 				&pointLights,
 				&debugShapes,
@@ -235,7 +244,13 @@ int main( int argc, char* argv[] )
 					data.running = false;
 				}
 
-				meshRenderer.finalize( &instances );
+				if( input.keyReleased( SDL_SCANCODE_M ) )
+				{
+					const glm::vec3& position = transform.getPosition();
+					transform.setPosition( position + glm::vec3( 0.0f, 0.0f, 0.1f ) );
+				}
+
+				meshRenderer.finalize( &instanceHandler );
 				renderer.finalize();
 				debugShapes.finalize();
 
