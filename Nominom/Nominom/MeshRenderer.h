@@ -11,7 +11,7 @@ public:
 	virtual ~MeshRenderer();
 
 	void load( Assets* assets, InstanceHandler* instanceHandler );
-	void finalize( InstanceHandler* instanceHandler );
+	void finalize();
 
 private:
 	int mesh;

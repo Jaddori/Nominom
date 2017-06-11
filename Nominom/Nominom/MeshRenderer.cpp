@@ -22,7 +22,7 @@ void MeshRenderer::load( Assets* assets, InstanceHandler* instanceHandler )
 	dirtyFlag = instance->getDirtyFlag();
 }
 
-void MeshRenderer::finalize( InstanceHandler* instanceHandler )
+void MeshRenderer::finalize()
 {
 	Transform* transform = (Transform*)parent->getComponents()->at(0);
 	if( transform->getDirtyFlag() )

@@ -16,8 +16,8 @@ struct ThreadData
 	Renderer* renderer;
 	Assets* assets;
 	Input* input;
-	//Array<ModelInstance>* instances;
 	InstanceHandler* instanceHandler;
+	Array<Actor>* actors;
 	Array<DirectionalLight>* directionalLights;
 	Array<PointLight>* pointLights;
 	DebugShapes* debugShapes;
@@ -148,8 +148,8 @@ int main( int argc, char* argv[] )
 			Camera* camera = renderer.getCamera();
 			Assets assets;
 			Input input;
-			//Array<ModelInstance> instances;
 			InstanceHandler instanceHandler;
+			Array<Actor> actors;
 			Array<DirectionalLight> directionalLights;
 			Array<PointLight> pointLights;
 			DebugShapes debugShapes;
@@ -159,24 +159,44 @@ int main( int argc, char* argv[] )
 			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
 			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
 
-			/*instances.add( ModelInstance( mesh, diffuseMap, normalMap, specularMap ) );
-			int firstIndex = instances[0].add();
-			int secondIndex = instances[0].add();
-
-			instances[0].setWorldMatrix( secondIndex, glm::translate( *instances[0].getWorldMatrix( secondIndex ), glm::vec3( -4.0f, 0.0f, 0.0f ) ) );*/
-
-			InstanceIndex instanceIndex = instanceHandler.add( mesh, diffuseMap, normalMap, specularMap );
+			/*InstanceIndex instanceIndex = instanceHandler.add( mesh, diffuseMap, normalMap, specularMap );
 			int firstIndex = instanceHandler.getInstance( instanceIndex.instance )->add();
 			int secondIndex = instanceHandler.getInstance( instanceIndex.instance )->add();
 
 			ModelInstance* instance = instanceHandler.getInstance( instanceIndex.instance );
-			instance->setWorldMatrix( secondIndex, glm::translate( glm::mat4(), glm::vec3( -4.0, 0.0, 0.0 ) ) );
+			instance->setWorldMatrix( secondIndex, glm::translate( glm::mat4(), glm::vec3( -4.0, 0.0, 0.0 ) ) );*/
 
 			renderer.queueInstances( instanceHandler.getInstances() );
 			renderer.queueDirectionalLights( &directionalLights );
 			renderer.queuePointLights( &pointLights );
 			renderer.load( &assets );
 			renderer.upload();
+
+			Actor actor;
+			Transform transform;
+			MeshRenderer meshRenderer;
+			meshRenderer.load( &assets, &instanceHandler );
+
+			actor.addComponent( &transform );
+			actor.addComponent( &meshRenderer );
+
+			Actor actor2;
+			Transform transform2;
+			transform2.setPosition( glm::vec3( -4.0f, 0.0f, 0.0f ) );
+			MeshRenderer meshRenderer2;
+			meshRenderer2.load( &assets, &instanceHandler );
+
+			actor2.addComponent( &transform2 );
+			actor2.addComponent( &meshRenderer2 );
+
+			Actor actor3;
+			Transform transform3;
+			transform3.setPosition( glm::vec3( 10.0f, 0.0f, 0.0f ) );
+			MeshRenderer meshRenderer3;
+			meshRenderer3.load( &assets, &instanceHandler );
+
+			actor3.addComponent( &transform3 );
+			actor3.addComponent( &meshRenderer3 );
 
 			debugShapes.load();
 			debugShapes.upload();
@@ -208,21 +228,13 @@ int main( int argc, char* argv[] )
 			};
 			pointLights.add( pointLight );
 
-			Actor actor;
-			Transform transform;
-			transform.setPosition( glm::vec3( 10.0f, 0.0f, 0.0f ) );
-			MeshRenderer meshRenderer;
-			meshRenderer.load( &assets, &instanceHandler );
-
-			actor.addComponent( &transform );
-			actor.addComponent( &meshRenderer );
-
 			ThreadData data =
 			{
 				&renderer,
 				&assets,
 				&input,
 				&instanceHandler,
+				&actors,
 				&directionalLights,
 				&pointLights,
 				&debugShapes,
@@ -244,13 +256,9 @@ int main( int argc, char* argv[] )
 					data.running = false;
 				}
 
-				if( input.keyReleased( SDL_SCANCODE_M ) )
-				{
-					const glm::vec3& position = transform.getPosition();
-					transform.setPosition( position + glm::vec3( 0.0f, 0.0f, 0.1f ) );
-				}
-
-				meshRenderer.finalize( &instanceHandler );
+				meshRenderer.finalize();
+				meshRenderer2.finalize();
+				meshRenderer3.finalize();
 				renderer.finalize();
 				debugShapes.finalize();
 
