@@ -296,22 +296,15 @@ void GBuffer::end()
 		glBlitFramebuffer( 0, 0, width, height, 0, 0, width/2, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
 		// depth target, bottom right
-		/*glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_DEPTH );
-		glBlitFramebuffer( 0, 0, width, height, width/2, 0, width, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );*/
-
-		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_BILLBOARD );
+		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_DEPTH );
 		glBlitFramebuffer( 0, 0, width, height, width/2, 0, width, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 	}
 	else
 	{
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		AGLOG( "GBuffer(end)" );
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-		AGLOG( "GBuffer(end)" );
 		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
-		AGLOG( "GBuffer(end)" );
 		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
-		AGLOG( "GBuffer(end)" );
 		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST );
 		AGLOG( "GBuffer(end)" );
 	}
@@ -410,7 +403,6 @@ void GBuffer::endDirectionalLightPass()
 	glDepthMask( GL_TRUE );
 }
 
-//void GBuffer::renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity )
 void GBuffer::renderDirectionalLight( const DirectionalLight& light )
 {
 	directionalLightPass.setVec3( directionalLightDirection, light.direction );
@@ -469,7 +461,6 @@ void GBuffer::endPointLightPass()
 	glCullFace( GL_BACK );
 }
 
-//void GBuffer::renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity )
 void GBuffer::renderPointLight( const PointLight& light )
 {
 	pointLightPass.setVec3( pointLightPosition, light.position );
@@ -500,9 +491,8 @@ void GBuffer::renderPointLight( const PointLight& light )
 
 void GBuffer::beginBillboardPass( Camera* camera )
 {
-	glDisable( GL_DEPTH_TEST );
-	glDisable( GL_CULL_FACE );
 	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_BILLBOARD );
+	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 
 	billboardPass.bind();

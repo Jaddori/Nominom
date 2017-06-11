@@ -10,6 +10,5 @@ uniform sampler2D specularMap;
 
 void main()
 {
-	//finalColor = texture( diffuseMap, fragUV );
-	finalColor = vec4( 1.0, 0.0, 0.0, 1.0 );
+	finalColor = texture( diffuseMap, fragUV );
 }
