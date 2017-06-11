@@ -108,6 +108,9 @@ void Renderer::render( Assets* assets )
 	gbuffer.renderBillboards( &billboards );
 
 	gbuffer.endBillboardPass();
+	AGLOG( "Renderer" );
+
+	gbuffer.performFinalPass();
 
 	gbuffer.end();
 }

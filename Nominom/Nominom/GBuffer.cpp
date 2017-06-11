@@ -69,7 +69,15 @@ bool GBuffer::load( Assets* a, int w, int h )
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load billboard pass shader." );
 		result = false;
 	}
+	AGLOG( "GBuffer(load)" );
 
+	if( !finalPass.load( "./assets/shaders/final_pass.vs",
+							nullptr,
+							"./assets/shaders/final_pass.fs" ) )
+	{
+		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load final pass shader." );
+		result = false;
+	}
 	AGLOG( "GBuffer(load)" );
 
 	return result;
@@ -183,6 +191,16 @@ void GBuffer::upload()
 		AGLOG( "GBuffer(load, billboard pass)" );
 	}
 
+	if( finalPass.getValid() )
+	{
+		finalPass.upload();
+		AGLOG( "GBuffer(load, final pass)" );
+
+		finalLightTarget = finalPass.getUniform( "lightTarget" );
+		finalBillboardTarget = finalPass.getUniform( "billboardTarget" );
+		AGLOG( "GBuffer(load, final pass)" );
+	}
+
 	LOG( VERBOSITY_INFORMATION, "GBuffer", "Generating FBO." );
 
 	glGenFramebuffers( 1, &fbo );
@@ -287,14 +305,19 @@ void GBuffer::end()
 	else
 	{
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		AGLOG( "GBuffer(end)" );
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+		AGLOG( "GBuffer(end)" );
 		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
+		AGLOG( "GBuffer(end)" );
 		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+		AGLOG( "GBuffer(end)" );
 		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+		AGLOG( "GBuffer(end)" );
 	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-	GLOG( "GBuffer" );
+	GLOG( "GBuffer(end)" );
 }
 
 void GBuffer::beginGeometryPass( Camera* camera )
@@ -344,7 +367,7 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 {
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_DEPTH_TEST );
-	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_LIGHT );
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 	glDepthMask( GL_FALSE );
@@ -362,13 +385,11 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 	AGLOG( "GBuffer(DirectionalLightPass)" );
 	
 	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture( GL_TEXTURE_2D, targets[0] );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_DIFFUSE] );
 	glActiveTexture( GL_TEXTURE1 );
-	glBindTexture( GL_TEXTURE_2D, targets[1] );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_POSITION] );
 	glActiveTexture( GL_TEXTURE2 );
-	glBindTexture( GL_TEXTURE_2D, targets[2] );
-	glActiveTexture( GL_TEXTURE3 );
-	glBindTexture( GL_TEXTURE_2D, targets[3] );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_NORMAL] );
 	AGLOG( "GBuffer(DirectionalLightPass)" );
 
 	directionalLightPass.setInt( directionalLightDiffuseTarget, 0 );
@@ -405,7 +426,7 @@ void GBuffer::renderDirectionalLight( const DirectionalLight& light )
 
 void GBuffer::beginPointLightPass( Camera* camera )
 {
-	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_LIGHT );
 	glDisable( GL_DEPTH_TEST );
 	glCullFace( GL_FRONT );
 
@@ -427,11 +448,11 @@ void GBuffer::beginPointLightPass( Camera* camera )
 	AGLOG( "GBuffer(PointLightPass)" );
 
 	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture( GL_TEXTURE_2D, targets[0] );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_DIFFUSE] );
 	glActiveTexture( GL_TEXTURE1 );
-	glBindTexture( GL_TEXTURE_2D, targets[1] );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_POSITION] );
 	glActiveTexture( GL_TEXTURE2 );
-	glBindTexture( GL_TEXTURE_2D, targets[2] );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_NORMAL] );
 	AGLOG( "GBuffer(PointLightPass)" );
 
 	pointLightPass.setInt( pointLightDiffuseTarget, 0 );
@@ -462,7 +483,7 @@ void GBuffer::renderPointLight( const PointLight& light )
 	pointLightPass.setFloat( pointLightExponent, 1.0f );
 	AGLOG( "GBuffer(PointLightPass)" );
 
-	// Distance from attenuation formula:
+	// Distance-from-attenuation formula:
 	// http://ogldev.atspace.co.uk/www/tutorial36/tutorial36.html
 	float C = fmax( fmax( light.color.r, light.color.g ), light.color.b );
 	float radius = ( -light.linear + sqrt( powf( light.linear, 2.0f ) - 4*light.exponent * ( light.constant - 256*C*light.intensity ) ) ) / (2*light.exponent);
@@ -509,6 +530,32 @@ void GBuffer::renderBillboards( Array<Billboard>* billboards )
 
 	glDrawArrays( GL_POINTS, 0, billboards->getSize() );
 	glBindVertexArray( 0 );
+}
+
+void GBuffer::performFinalPass()
+{
+	glDisable( GL_DEPTH_TEST );
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
+
+	finalPass.bind();
+	AGLOG( "GBuffer(FinalPass)" );
+
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_LIGHT] );
+	glActiveTexture( GL_TEXTURE1 );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_BILLBOARD] );
+	AGLOG( "GBuffer(FinalPass)" );
+
+	finalPass.setInt( finalLightTarget, 0 );
+	finalPass.setInt( finalBillboardTarget, 1 );
+	AGLOG( "GBuffer(FinalPass)" );
+
+	glBindVertexArray( quadVAO );
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	glBindVertexArray( 0 );
+	AGLOG( "GBuffer(FinalPass)" );
+
+	glEnable( GL_DEPTH_TEST );
 }
 
 void GBuffer::setDebug( bool d )

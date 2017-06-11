@@ -37,6 +37,7 @@ enum
 	TARGET_POSITION,
 	TARGET_NORMAL,
 	TARGET_DEPTH,
+	TARGET_LIGHT,
 	TARGET_BILLBOARD,
 	TARGET_FINAL,
 	MAX_TARGETS
@@ -71,6 +72,8 @@ public:
 	void beginBillboardPass( Camera* camera );
 	void endBillboardPass();
 	void renderBillboards( Array<Billboard>* billboards );
+
+	void performFinalPass();
 
 	void setDebug( bool debug );
 	void toggleDebug();
@@ -140,4 +143,8 @@ private:
 	GLint billboardSpecularMap;
 	GLuint billboardVAO;
 	GLuint billboardVBO;
+
+	Shader finalPass;
+	GLint finalLightTarget;
+	GLint finalBillboardTarget;
 };
