@@ -51,12 +51,6 @@ void Shader::upload()
 {
 	assert( valid && ( vertexData || geometryData || fragmentData ) );
 
-	GLenum glError = glGetError();
-	if( glError )
-	{
-		LOG( VERBOSITY_WARNING, "Shader", "Unhandled OpenGL error: %d", glError );
-	}
-
 	LOG( VERBOSITY_INFORMATION, "Shader", "Uploading shader." );
 
 	if( program > 0 )
@@ -88,12 +82,6 @@ void Shader::upload()
 	}
 
 	link();
-
-	glError = glGetError();
-	if( glError )
-	{
-		LOG( VERBOSITY_WARNING, "Shader", "OpenGL error: %d", glError );
-	}
 }
 
 void Shader::unload()

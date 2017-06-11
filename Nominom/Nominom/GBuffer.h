@@ -25,12 +25,19 @@ struct PointLight
 	float exponent;
 };
 
+struct Billboard
+{
+	glm::vec3 position;
+	glm::vec2 size;
+};
+
 enum
 {
 	TARGET_DIFFUSE = 0,
 	TARGET_POSITION,
 	TARGET_NORMAL,
 	TARGET_DEPTH,
+	TARGET_BILLBOARD,
 	TARGET_FINAL,
 	MAX_TARGETS
 };
@@ -60,6 +67,10 @@ public:
 	void endPointLightPass();
 	//void renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
 	void renderPointLight( const PointLight& light );
+
+	void beginBillboardPass( Camera* camera );
+	void endBillboardPass();
+	void renderBillboards( Array<Billboard>* billboards );
 
 	void setDebug( bool debug );
 	void toggleDebug();
@@ -119,4 +130,14 @@ private:
 	int sphereMesh;
 
 	Shader spotLightPass;
+
+	Shader billboardPass;
+	GLint billboardProjectionMatrix;
+	GLint billboardViewMatrix;
+	GLint billboardCameraPosition;
+	GLint billboardDiffuseMap;
+	GLint billboardNormalMap;
+	GLint billboardSpecularMap;
+	GLuint billboardVAO;
+	GLuint billboardVBO;
 };

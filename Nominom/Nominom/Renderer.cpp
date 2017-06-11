@@ -15,11 +15,6 @@ void Renderer::load( Assets* assets )
 {
 	LOG( VERBOSITY_INFORMATION, "Renderer", "Loading shader." );
 
-	/*if( !basicShader.load( "./assets/shaders/basic.vs", nullptr, "./assets/shaders/basic.fs" ) )
-	{
-		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load basic shader." );
-	}*/
-
 	if( !gbuffer.load( assets, 640, 480 ) )
 	{
 		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load gbuffer." );
@@ -34,15 +29,6 @@ void Renderer::upload()
 
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
-
-	/*if( basicShader.getValid() )
-	{
-		basicShader.upload();
-
-		worldMatricesLocation = basicShader.getUniform( "worldMatrices" );
-		viewMatrixLocation = basicShader.getUniform( "viewMatrix" );
-		projectionMatrixLocation = basicShader.getUniform( "projectionMatrix" );
-	}*/
 
 	gbuffer.upload();
 }
@@ -113,6 +99,15 @@ void Renderer::render( Assets* assets )
 		gbuffer.renderPointLight( pointLights->at(i) );
 	}
 	gbuffer.endPointLightPass();
+
+	// BILLBOARD PASS
+	gbuffer.beginBillboardPass( &camera );
+
+	Array<Billboard> billboards;
+	billboards.add( { glm::vec3( 0.0f, 3.0f, 0.0f ), glm::vec2( 2.0f, 2.0f ) } );
+	gbuffer.renderBillboards( &billboards );
+
+	gbuffer.endBillboardPass();
 
 	gbuffer.end();
 }
