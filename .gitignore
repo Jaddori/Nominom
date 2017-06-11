@@ -301,3 +301,4 @@ QT/build-CityGenerator*/
 
 Nominom/build/log.txt
 Nominom/build/Nominom.exe
+*.xcuserstate
