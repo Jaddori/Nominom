@@ -141,6 +141,11 @@ int main( int argc, char* argv[] )
 				return -1;
 			}
 #endif
+			GLenum glewError = glGetError();
+			if( glewError == GL_INVALID_ENUM )
+			{
+				LOG( VERBOSITY_WARNING, "main", "GLEW flagged error 1280 after glewInit()." );
+			}
 
 			Renderer renderer;
 			Camera* camera = renderer.getCamera();
@@ -156,13 +161,6 @@ int main( int argc, char* argv[] )
 			int diffuseMap = assets.loadTexture( "./assets/textures/crate_diffuse.dds" );
 			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
 			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
-
-			/*InstanceIndex instanceIndex = instanceHandler.add( mesh, diffuseMap, normalMap, specularMap );
-			int firstIndex = instanceHandler.getInstance( instanceIndex.instance )->add();
-			int secondIndex = instanceHandler.getInstance( instanceIndex.instance )->add();
-
-			ModelInstance* instance = instanceHandler.getInstance( instanceIndex.instance );
-			instance->setWorldMatrix( secondIndex, glm::translate( glm::mat4(), glm::vec3( -4.0, 0.0, 0.0 ) ) );*/
 
 			renderer.queueInstances( instanceHandler.getInstances() );
 			renderer.queueDirectionalLights( &directionalLights );
@@ -260,17 +258,10 @@ int main( int argc, char* argv[] )
 				renderer.finalize();
 				debugShapes.finalize();
 
-				/*for( int i=0; i<10; i++ )
-				{
-					sphere.position = glm::vec3( i, 0.0f, 0.0f );
-					debugShapes.addSphere( sphere );
-				}*/
-
 				SDL_SemPost( data.updateLock );
 				// END OF CRITICAL SECTION
 
 				renderer.render( &assets );
-				
 				debugShapes.render( camera );
 
 				SDL_GL_SwapWindow( window );

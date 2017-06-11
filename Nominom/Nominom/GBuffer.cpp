@@ -26,6 +26,7 @@ bool GBuffer::load( Assets* a, int w, int h )
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load geometry pass shader." );
 		result = false;
 	}
+	AGLOG( "GBuffer(load)" );
 
 	if( !directionalLightPass.load( "./assets/shaders/directional_light_pass.vs",
 									nullptr,
@@ -34,6 +35,7 @@ bool GBuffer::load( Assets* a, int w, int h )
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load directional light pass shader." );
 		result = false;
 	}
+	AGLOG( "GBuffer(load)" );
 
 	if( !pointLightPass.load( "./assets/shaders/point_light_pass.vs",
 								nullptr,
@@ -42,6 +44,7 @@ bool GBuffer::load( Assets* a, int w, int h )
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load point light pass shader." );
 		result = false;
 	}
+	AGLOG( "GBuffer(load)" );
 
 	sphereMesh = assets->loadMesh( GBUFFER_SPHERE_MESH_PATH );
 	if( sphereMesh < 0 )
@@ -49,6 +52,7 @@ bool GBuffer::load( Assets* a, int w, int h )
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load sphere mesh for point light pass." );
 		result = false;
 	}
+	AGLOG( "GBuffer(load)" );
 
 	/*if( !spotLightPass.load( "./assets/shaders/spot_light_pass.vs",
 								"./assets/shaders/spot_light_pass.gs",
@@ -57,6 +61,8 @@ bool GBuffer::load( Assets* a, int w, int h )
 		LOG( VERBOSITY_ERROR, "GBuffer", "Failed to load spot light pass shader." );
 		result = false;
 	}*/
+
+	AGLOG( "GBuffer(load)" );
 
 	return result;
 }
