@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		503162F51EED5BDC00918A4D /* Actor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 503162EB1EED5BDC00918A4D /* Actor.cpp */; };
+		503162F61EED5BDC00918A4D /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 503162ED1EED5BDC00918A4D /* Component.cpp */; };
+		503162F71EED5BDC00918A4D /* InstanceHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 503162EF1EED5BDC00918A4D /* InstanceHandler.cpp */; };
+		503162F81EED5BDC00918A4D /* MeshRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 503162F11EED5BDC00918A4D /* MeshRenderer.cpp */; };
+		503162F91EED5BDC00918A4D /* Transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 503162F31EED5BDC00918A4D /* Transform.cpp */; };
 		5043DA2F1EE97500005F631C /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA271EE97500005F631C /* Camera.cpp */; };
 		5043DA301EE97500005F631C /* ModelInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA291EE97500005F631C /* ModelInstance.cpp */; };
 		5043DA311EE97500005F631C /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA2B1EE97500005F631C /* Renderer.cpp */; };
@@ -70,6 +75,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		503162EB1EED5BDC00918A4D /* Actor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Actor.cpp; path = ../../Nominom/Nominom/Actor.cpp; sourceTree = "<group>"; };
+		503162EC1EED5BDC00918A4D /* Actor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Actor.h; path = ../../Nominom/Nominom/Actor.h; sourceTree = "<group>"; };
+		503162ED1EED5BDC00918A4D /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = ../../Nominom/Nominom/Component.cpp; sourceTree = "<group>"; };
+		503162EE1EED5BDC00918A4D /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = ../../Nominom/Nominom/Component.h; sourceTree = "<group>"; };
+		503162EF1EED5BDC00918A4D /* InstanceHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstanceHandler.cpp; path = ../../Nominom/Nominom/InstanceHandler.cpp; sourceTree = "<group>"; };
+		503162F01EED5BDC00918A4D /* InstanceHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InstanceHandler.h; path = ../../Nominom/Nominom/InstanceHandler.h; sourceTree = "<group>"; };
+		503162F11EED5BDC00918A4D /* MeshRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MeshRenderer.cpp; path = ../../Nominom/Nominom/MeshRenderer.cpp; sourceTree = "<group>"; };
+		503162F21EED5BDC00918A4D /* MeshRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MeshRenderer.h; path = ../../Nominom/Nominom/MeshRenderer.h; sourceTree = "<group>"; };
+		503162F31EED5BDC00918A4D /* Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transform.cpp; path = ../../Nominom/Nominom/Transform.cpp; sourceTree = "<group>"; };
+		503162F41EED5BDC00918A4D /* Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Transform.h; path = ../../Nominom/Nominom/Transform.h; sourceTree = "<group>"; };
 		5043DA271EE97500005F631C /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Camera.cpp; path = ../../Nominom/Nominom/Camera.cpp; sourceTree = "<group>"; };
 		5043DA281EE97500005F631C /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = ../../Nominom/Nominom/Camera.h; sourceTree = "<group>"; };
 		5043DA291EE97500005F631C /* ModelInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModelInstance.cpp; path = ../../Nominom/Nominom/ModelInstance.cpp; sourceTree = "<group>"; };
@@ -180,6 +195,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		503162EA1EED5BC500918A4D /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				503162EB1EED5BDC00918A4D /* Actor.cpp */,
+				503162EC1EED5BDC00918A4D /* Actor.h */,
+				503162ED1EED5BDC00918A4D /* Component.cpp */,
+				503162EE1EED5BDC00918A4D /* Component.h */,
+				503162EF1EED5BDC00918A4D /* InstanceHandler.cpp */,
+				503162F01EED5BDC00918A4D /* InstanceHandler.h */,
+				503162F11EED5BDC00918A4D /* MeshRenderer.cpp */,
+				503162F21EED5BDC00918A4D /* MeshRenderer.h */,
+				503162F31EED5BDC00918A4D /* Transform.cpp */,
+				503162F41EED5BDC00918A4D /* Transform.h */,
+			);
+			name = Components;
+			sourceTree = "<group>";
+		};
 		5043DA251EE974E2005F631C /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
@@ -242,6 +274,7 @@
 		50CCA7041EE6AFA3009E77BC /* OSX */ = {
 			isa = PBXGroup;
 			children = (
+				503162EA1EED5BC500918A4D /* Components */,
 				5043DA3E1EE97518005F631C /* Input */,
 				5043DA261EE974E9005F631C /* Debug */,
 				5043DA251EE974E2005F631C /* Rendering */,
@@ -411,6 +444,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				50CCA7671EE6B0D2009E77BC /* lfunc.c in Sources */,
+				503162F61EED5BDC00918A4D /* Component.cpp in Sources */,
 				50CCA7701EE6B0D2009E77BC /* lopcodes.c in Sources */,
 				50CCA7621EE6B0D2009E77BC /* lctype.c in Sources */,
 				50CCA77A1EE6B0D2009E77BC /* lvm.c in Sources */,
@@ -431,12 +465,15 @@
 				50CCA76E1EE6B0D2009E77BC /* loadlib.c in Sources */,
 				5043DA3D1EE97513005F631C /* Logger.cpp in Sources */,
 				50CCA7731EE6B0D2009E77BC /* lstate.c in Sources */,
+				503162F51EED5BDC00918A4D /* Actor.cpp in Sources */,
 				50CCA7721EE6B0D2009E77BC /* lparser.c in Sources */,
 				50CCA7741EE6B0D2009E77BC /* lstring.c in Sources */,
 				50CCA75C1EE6B0D2009E77BC /* lapi.c in Sources */,
 				5043DA411EE97524005F631C /* Input.cpp in Sources */,
+				503162F71EED5BDC00918A4D /* InstanceHandler.cpp in Sources */,
 				50CCA75D1EE6B0D2009E77BC /* lauxlib.c in Sources */,
 				50CCA76F1EE6B0D2009E77BC /* lobject.c in Sources */,
+				503162F91EED5BDC00918A4D /* Transform.cpp in Sources */,
 				50CCA7631EE6B0D2009E77BC /* ldblib.c in Sources */,
 				50CCA7761EE6B0D2009E77BC /* ltable.c in Sources */,
 				50CCA77B1EE6B0D2009E77BC /* lzio.c in Sources */,
@@ -448,6 +485,7 @@
 				50CCA71B1EE6AFE8009E77BC /* Assets.cpp in Sources */,
 				50CCA71E1EE6AFE8009E77BC /* Model.cpp in Sources */,
 				50CCA7611EE6B0D2009E77BC /* lcorolib.c in Sources */,
+				503162F81EED5BDC00918A4D /* MeshRenderer.cpp in Sources */,
 				5043DA301EE97500005F631C /* ModelInstance.cpp in Sources */,
 				50CCA7781EE6B0D2009E77BC /* ltm.c in Sources */,
 				50CCA76C1EE6B0D2009E77BC /* lmathlib.c in Sources */,
