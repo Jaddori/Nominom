@@ -244,6 +244,7 @@ void GBuffer::end()
 		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
 		glReadBuffer( GL_COLOR_ATTACHMENT4 );
 		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST );
 	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -261,7 +262,7 @@ void GBuffer::beginGeometryPass( Camera* camera )
 	};
 	glDrawBuffers( MAX_TARGETS-1, drawBuffers );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	GLOG( "GBuffer(GeometryPass)" );
+	AGLOG( "GBuffer(GeometryPass)" );
 
 	geometryPass.bind();
 	geometryPass.setMat4( geometryProjectionMatrix, camera->getFinalProjectionMatrix() );
@@ -300,6 +301,7 @@ void GBuffer::beginDirectionalLightPass( Camera* camera )
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
+	glDepthMask( GL_FALSE );
 
 	glEnable( GL_BLEND );
 	glBlendEquation( GL_FUNC_ADD );
@@ -338,6 +340,7 @@ void GBuffer::endDirectionalLightPass()
 
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
+	glDepthMask( GL_TRUE );
 }
 
 //void GBuffer::renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity )
@@ -360,6 +363,7 @@ void GBuffer::beginPointLightPass( Camera* camera )
 	glDisable( GL_DEPTH_TEST );
 	glCullFace( GL_FRONT );
 
+	glDepthMask( GL_FALSE );
 	glEnable( GL_BLEND );
 	glBlendEquation( GL_FUNC_ADD );
 	glBlendFunc( GL_ONE, GL_ONE );
@@ -392,6 +396,7 @@ void GBuffer::beginPointLightPass( Camera* camera )
 
 void GBuffer::endPointLightPass()
 {
+	glDepthMask( GL_TRUE );
 	glEnable( GL_DEPTH_TEST );
 	glDisable( GL_BLEND );
 	glCullFace( GL_BACK );

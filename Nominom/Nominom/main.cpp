@@ -86,12 +86,10 @@ int updateThread( void* args )
 				camera->updatePosition( localMovement );
 			}
 
-			//data->instances->at( 0 ).setDirty( true );
-
-			/*data->debugShapes->addSphere( sphere );
+			data->debugShapes->addSphere( sphere );
 			data->debugShapes->addLine( line );
 			data->debugShapes->addAABB( aabb );
-			data->debugShapes->addOBB( obb );*/
+			data->debugShapes->addOBB( obb );
 
 			Mesh* mesh = data->assets->getMesh( 0 );
 			int count;
