@@ -106,13 +106,13 @@ void Renderer::render( Assets* assets )
 	Array<Billboard> billboards;
 	billboards.add( { glm::vec3( 0.0f, 3.0f, 0.0f ), glm::vec2( 1.0f, 1.0f ) } );
 
-	Texture* diffuseMap = assets->getTexture( 0 );
+	Texture* diffuseMap = assets->getTexture( 3 );
 	diffuseMap->bind( GL_TEXTURE0 );
 
-	Texture* normalMap = assets->getTexture( 1 );
+	Texture* normalMap = assets->getTexture( 4 );
 	normalMap->bind( GL_TEXTURE1 );
 
-	Texture* specularMap = assets->getTexture( 2 );
+	Texture* specularMap = assets->getTexture( 5 );
 	specularMap->bind( GL_TEXTURE2 );
 
 	gbuffer.renderBillboards( &billboards );

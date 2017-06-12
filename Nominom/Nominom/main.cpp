@@ -162,6 +162,10 @@ int main( int argc, char* argv[] )
 			int normalMap = assets.loadTexture( "./assets/textures/crate_normal.dds" );
 			int specularMap = assets.loadTexture( "./assets/textures/crate_specular.dds" );
 
+			int faceDiffuseMap = assets.loadTexture( "./assets/textures/face_diffuse.dds" );
+			int faceNormalMap = assets.loadTexture( "./assets/textures/face_normal.dds" );
+			int faceSpecularMap = assets.loadTexture( "./assets/textures/face_specular.dds" );
+
 			renderer.queueInstances( instanceHandler.getInstances() );
 			renderer.queueDirectionalLights( &directionalLights );
 			renderer.queuePointLights( &pointLights );
