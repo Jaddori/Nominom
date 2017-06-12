@@ -15,9 +15,8 @@ uniform DirectionalLight directionalLight;
 uniform vec3 cameraPosition;
 uniform float specularPower;
 uniform sampler2D diffuseTarget;
-uniform sampler2D normalTarget;
 uniform sampler2D positionTarget;
-uniform sampler2D depthTarget;
+uniform sampler2D normalTarget;
 
 vec4 calculateDirectionalLight( vec3 normal, vec3 position )
 {
@@ -51,4 +50,5 @@ void main()
 	vec3 normal = texture( normalTarget, fragUV ).rgb;
 	
 	finalColor = vec4( diffuse, 1.0 ) * calculateDirectionalLight( normal, position );
+	//finalColor = vec4( normal, 1.0 );
 }

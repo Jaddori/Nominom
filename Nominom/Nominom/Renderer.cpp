@@ -79,7 +79,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.endGeometryPass();
 
 	// DIRECTIONAL LIGHT PASS
-	gbuffer.beginDirectionalLightPass( &camera );
+	gbuffer.beginDirectionalLightPass( TARGET_LIGHT, &camera );
 
 	assert( directionalLights );
 	const int MAX_DIRECTIONAL_LIGHTS = directionalLights->getSize();
@@ -90,7 +90,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.endDirectionalLightPass();
 
 	// POINT LIGHT PASS
-	gbuffer.beginPointLightPass( &camera );
+	gbuffer.beginPointLightPass( TARGET_LIGHT, &camera );
 
 	assert( pointLights );
 	const int NUM_POINT_LIGHTS = pointLights->getSize();
@@ -104,7 +104,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.beginBillboardPass( &camera );
 
 	Array<Billboard> billboards;
-	billboards.add( { glm::vec3( 0.0f, 3.0f, 0.0f ), glm::vec2( 2.0f, 2.0f ) } );
+	billboards.add( { glm::vec3( 0.0f, 3.0f, 0.0f ), glm::vec2( 1.0f, 1.0f ) } );
 
 	Texture* diffuseMap = assets->getTexture( 0 );
 	diffuseMap->bind( GL_TEXTURE0 );
@@ -120,6 +120,25 @@ void Renderer::render( Assets* assets )
 	gbuffer.endBillboardPass();
 	AGLOG( "Renderer" );
 
+	// DIRECTIONAL LIGHT PASS
+	gbuffer.beginDirectionalLightPass( TARGET_BILLBOARD, &camera );
+
+	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
+	{
+		gbuffer.renderDirectionalLight( directionalLights->at(i) );
+	}
+	gbuffer.endDirectionalLightPass();
+
+	// POINT LIGHT PASS
+	gbuffer.beginPointLightPass( TARGET_BILLBOARD, &camera );
+
+	for( int i=0; i<NUM_POINT_LIGHTS; i++ )
+	{
+		gbuffer.renderPointLight( pointLights->at(i) );
+	}
+	gbuffer.endPointLightPass();
+
+	// FINAL PASS
 	gbuffer.performFinalPass();
 
 	gbuffer.end();

@@ -59,12 +59,12 @@ public:
 	void endGeometryPass();
 	void updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count );
 	void updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap );
-	void beginDirectionalLightPass( Camera* camera );
+	void beginDirectionalLightPass( int target, Camera* camera );
 	void endDirectionalLightPass();
 	//void renderDirectionalLight( const glm::vec3& direction, const glm::vec3& color, float intensity );
 	void renderDirectionalLight( const DirectionalLight& light );
 
-	void beginPointLightPass( Camera* camera );
+	void beginPointLightPass( int target, Camera* camera );
 	void endPointLightPass();
 	//void renderPointLight( Camera* camera, const glm::vec3& position, float radius, const glm::vec3& color, float intensity );
 	void renderPointLight( const PointLight& light );
@@ -111,7 +111,6 @@ private:
 	GLint directionalLightDiffuseTarget;
 	GLint directionalLightNormalTarget;
 	GLint directionalLightPositionTarget;
-	GLint directionalLightDepthTarget;
 
 	Shader pointLightPass;
 	GLint pointLightProjectionMatrix;
@@ -147,4 +146,5 @@ private:
 	Shader finalPass;
 	GLint finalLightTarget;
 	GLint finalBillboardTarget;
+	GLint finalBillboardAlphaTarget;
 };
