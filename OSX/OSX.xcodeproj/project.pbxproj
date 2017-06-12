@@ -19,6 +19,8 @@
 		5043DA3C1EE97513005F631C /* DebugShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA361EE97513005F631C /* DebugShapes.cpp */; };
 		5043DA3D1EE97513005F631C /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA391EE97513005F631C /* Logger.cpp */; };
 		5043DA411EE97524005F631C /* Input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5043DA3F1EE97524005F631C /* Input.cpp */; };
+		509694A11EEED0BD0040B775 /* Billboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5096949D1EEED0BD0040B775 /* Billboard.cpp */; };
+		509694A21EEED0BD0040B775 /* TextInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5096949F1EEED0BD0040B775 /* TextInstance.cpp */; };
 		50CAA4701EEB323B00DFEA78 /* GBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CAA46E1EEB323B00DFEA78 /* GBuffer.cpp */; };
 		50CCA71B1EE6AFE8009E77BC /* Assets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7101EE6AFE8009E77BC /* Assets.cpp */; };
 		50CCA71C1EE6AFE8009E77BC /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50CCA7121EE6AFE8009E77BC /* Font.cpp */; };
@@ -104,6 +106,10 @@
 		5043DA3B1EE97513005F631C /* LogMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LogMessage.h; path = ../../Nominom/Nominom/LogMessage.h; sourceTree = "<group>"; };
 		5043DA3F1EE97524005F631C /* Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Input.cpp; path = ../../Nominom/Nominom/Input.cpp; sourceTree = "<group>"; };
 		5043DA401EE97524005F631C /* Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Input.h; path = ../../Nominom/Nominom/Input.h; sourceTree = "<group>"; };
+		5096949D1EEED0BD0040B775 /* Billboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Billboard.cpp; path = ../../Nominom/Nominom/Billboard.cpp; sourceTree = "<group>"; };
+		5096949E1EEED0BD0040B775 /* Billboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Billboard.h; path = ../../Nominom/Nominom/Billboard.h; sourceTree = "<group>"; };
+		5096949F1EEED0BD0040B775 /* TextInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextInstance.cpp; path = ../../Nominom/Nominom/TextInstance.cpp; sourceTree = "<group>"; };
+		509694A01EEED0BD0040B775 /* TextInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextInstance.h; path = ../../Nominom/Nominom/TextInstance.h; sourceTree = "<group>"; };
 		50CAA46E1EEB323B00DFEA78 /* GBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GBuffer.cpp; path = ../../Nominom/Nominom/GBuffer.cpp; sourceTree = "<group>"; };
 		50CAA46F1EEB323B00DFEA78 /* GBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GBuffer.h; path = ../../Nominom/Nominom/GBuffer.h; sourceTree = "<group>"; };
 		50CCA7021EE6AFA3009E77BC /* OSX */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OSX; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -215,6 +221,10 @@
 		5043DA251EE974E2005F631C /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
+				5096949D1EEED0BD0040B775 /* Billboard.cpp */,
+				5096949E1EEED0BD0040B775 /* Billboard.h */,
+				5096949F1EEED0BD0040B775 /* TextInstance.cpp */,
+				509694A01EEED0BD0040B775 /* TextInstance.h */,
 				50CAA46E1EEB323B00DFEA78 /* GBuffer.cpp */,
 				50CAA46F1EEB323B00DFEA78 /* GBuffer.h */,
 				5043DA271EE97500005F631C /* Camera.cpp */,
@@ -452,6 +462,7 @@
 				5043DA311EE97500005F631C /* Renderer.cpp in Sources */,
 				50CCA7641EE6B0D2009E77BC /* ldebug.c in Sources */,
 				5043DA3C1EE97513005F631C /* DebugShapes.cpp in Sources */,
+				509694A11EEED0BD0040B775 /* Billboard.cpp in Sources */,
 				50CCA76A1EE6B0D2009E77BC /* liolib.c in Sources */,
 				50CCA71F1EE6AFE8009E77BC /* Texture.cpp in Sources */,
 				50CCA71D1EE6AFE8009E77BC /* Mesh.cpp in Sources */,
@@ -471,6 +482,7 @@
 				50CCA75C1EE6B0D2009E77BC /* lapi.c in Sources */,
 				5043DA411EE97524005F631C /* Input.cpp in Sources */,
 				503162F71EED5BDC00918A4D /* InstanceHandler.cpp in Sources */,
+				509694A21EEED0BD0040B775 /* TextInstance.cpp in Sources */,
 				50CCA75D1EE6B0D2009E77BC /* lauxlib.c in Sources */,
 				50CCA76F1EE6B0D2009E77BC /* lobject.c in Sources */,
 				503162F91EED5BDC00918A4D /* Transform.cpp in Sources */,
