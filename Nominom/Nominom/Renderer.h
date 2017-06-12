@@ -2,6 +2,7 @@
 
 #include "BaseIncludes.h"
 #include "ModelInstance.h"
+#include "TextInstance.h"
 #include "Assets.h"
 #include "Shader.h"
 #include "Camera.h"
@@ -17,23 +18,27 @@ public:
 	void upload();
 
 	void queueInstances( Array<ModelInstance>* instances );
+	void queueTextInstances( Array<TextInstance>* textInstances );
 	void queueDirectionalLights( Array<DirectionalLight>* lights );
 	void queuePointLights( Array<PointLight>* lights );
 	void render( Assets* assets );
 	void finalize();
 
-	Camera* getCamera();
+	Camera* getPerspectiveCamera();
+	Camera* getOrthographicCamera();
 	GBuffer* getGBuffer();
 
 private:
 	Array<ModelInstance>* instances;
+	Array<TextInstance>* textInstances;
 	Array<DirectionalLight>* directionalLights;
 	Array<PointLight>* pointLights;
 
-	Camera camera;
+	Camera perspectiveCamera;
+	Camera orthographicCamera;
 	GBuffer gbuffer;
-	//Shader basicShader;
-	GLuint worldMatricesLocation;
-	GLuint viewMatrixLocation;
-	GLuint projectionMatrixLocation;
+	
+	Shader textShader;
+	GLint textProjectionMatrix;
+	GLint textDiffuseMap;
 };

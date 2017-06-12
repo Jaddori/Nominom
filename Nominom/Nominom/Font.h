@@ -13,7 +13,7 @@ struct FontInfo
 	uint8_t shadow_y;
 	uint8_t padding_x;
 	uint8_t padding_y;
-	uint8_t textureSize;
+	uint16_t textureSize;
 	uint8_t widths[FONT_RANGE];
 	uint16_t xoffsets[FONT_RANGE];
 	uint16_t yoffsets[FONT_RANGE];
@@ -30,6 +30,15 @@ public:
 
 	bool load( const char* path );
 
+	float getHeight() const;
+	float getTextureSize() const;
+	float getWidth( int index ) const;
+	glm::vec2 getSize( int index ) const;
+	glm::vec2 getOffset( int index ) const;
+	glm::vec2 getStartUV( int index ) const;
+	glm::vec2 getEndUV( int index ) const;
+
+	const FontInfo& getInfo() const;
 	bool getValid() const;
 
 private:

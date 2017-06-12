@@ -141,13 +141,10 @@ Font* Assets::loadFont( const char* path )
 		LOG( VERBOSITY_INFORMATION, "Assets", "Font not found. Loading from file." );
 
 		result = new Font();
-		if( result->load( path ) )
+		if( !result->load( path ) )
 		{
 			delete result;
 			result = nullptr;
-		}
-		else
-		{
 			LOG( VERBOSITY_ERROR, "Assets", "Failed to load font %s.", path );
 		}
 	}

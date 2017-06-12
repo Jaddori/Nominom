@@ -3,39 +3,62 @@
 Renderer::Renderer()
 	: instances( nullptr )
 {
-	LOG( VERBOSITY_INFORMATION, "Renderer", "Constructing." );
+	LOG( VERBOSITY_INFORMATION, "Renderer(constructor)", "Constructing." );
 }
 
 Renderer::~Renderer()
 {
-	LOG( VERBOSITY_INFORMATION, "Renderer", "Destructing." );
+	LOG( VERBOSITY_INFORMATION, "Renderer(destructor)", "Destructing." );
 }
 
 void Renderer::load( Assets* assets )
 {
-	LOG( VERBOSITY_INFORMATION, "Renderer", "Loading shader." );
+	LOG( VERBOSITY_INFORMATION, "Renderer(load)", "Loading shader." );
 
 	if( !gbuffer.load( assets, 640, 480 ) )
 	{
-		LOG( VERBOSITY_ERROR, "Renderer", "Failed to load gbuffer." );
+		LOG( VERBOSITY_ERROR, "Renderer(load)", "Failed to load gbuffer." );
 	}
 
-	camera.updatePerspective( 640.0f, 480.0f );
+	if( !textShader.load( "./assets/shaders/text.vs",
+							"./assets/shaders/text.gs",
+							"./assets/shaders/text.fs" ) )
+	{
+		LOG( VERBOSITY_ERROR, "Renderer(load)", "Failed to load text shader." );
+	}
+
+	// TEMP: Magic numbers
+	perspectiveCamera.updatePerspective( 640.0f, 480.0f );
+	orthographicCamera.updateOrthographic( 640.0f, 480.0f );
 }
 
 void Renderer::upload()
 {
-	LOG( VERBOSITY_INFORMATION, "Renderer", "Uploading shader." );
+	LOG( VERBOSITY_INFORMATION, "Renderer(upload)", "Uploading shader." );
 
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
 
 	gbuffer.upload();
+
+	if( textShader.getValid() )
+	{
+		textShader.upload();
+		AGLOG( "Renderer(upload)" );
+
+		textProjectionMatrix = textShader.getUniform( "projectionMatrix" );
+		textDiffuseMap = textShader.getUniform( "diffuseMap" );
+	}
 }
 
 void Renderer::queueInstances( Array<ModelInstance>* i )
 {
 	instances = i;
+}
+
+void Renderer::queueTextInstances( Array<TextInstance>* t )
+{
+	textInstances = t;
 }
 
 void Renderer::queueDirectionalLights( Array<DirectionalLight>* lights )
@@ -53,7 +76,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.begin();
 
 	// GEOMETRY PASS
-	gbuffer.beginGeometryPass( &camera );
+	gbuffer.beginGeometryPass( &perspectiveCamera );
 
 	const int MAX_INSTANCES = instances->getSize();
 	for( int curInstance = 0; curInstance < MAX_INSTANCES; curInstance++ )
@@ -79,7 +102,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.endGeometryPass();
 
 	// DIRECTIONAL LIGHT PASS
-	gbuffer.beginDirectionalLightPass( TARGET_LIGHT, &camera );
+	gbuffer.beginDirectionalLightPass( TARGET_LIGHT, &perspectiveCamera );
 
 	assert( directionalLights );
 	const int MAX_DIRECTIONAL_LIGHTS = directionalLights->getSize();
@@ -90,7 +113,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.endDirectionalLightPass();
 
 	// POINT LIGHT PASS
-	gbuffer.beginPointLightPass( TARGET_LIGHT, &camera );
+	gbuffer.beginPointLightPass( TARGET_LIGHT, &perspectiveCamera );
 
 	assert( pointLights );
 	const int NUM_POINT_LIGHTS = pointLights->getSize();
@@ -101,7 +124,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.endPointLightPass();
 
 	// BILLBOARD PASS
-	gbuffer.beginBillboardPass( &camera );
+	gbuffer.beginBillboardPass( &perspectiveCamera );
 
 	Array<Billboard> billboards;
 	billboards.add( { glm::vec3( 0.0f, 3.0f, 0.0f ), glm::vec2( 1.0f, 1.0f ) } );
@@ -118,10 +141,10 @@ void Renderer::render( Assets* assets )
 	gbuffer.renderBillboards( &billboards );
 
 	gbuffer.endBillboardPass();
-	AGLOG( "Renderer" );
+	AGLOG( "Renderer(render)" );
 
 	// DIRECTIONAL LIGHT PASS
-	gbuffer.beginDirectionalLightPass( TARGET_BILLBOARD, &camera );
+	gbuffer.beginDirectionalLightPass( TARGET_BILLBOARD, &perspectiveCamera );
 
 	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
 	{
@@ -130,7 +153,7 @@ void Renderer::render( Assets* assets )
 	gbuffer.endDirectionalLightPass();
 
 	// POINT LIGHT PASS
-	gbuffer.beginPointLightPass( TARGET_BILLBOARD, &camera );
+	gbuffer.beginPointLightPass( TARGET_BILLBOARD, &perspectiveCamera );
 
 	for( int i=0; i<NUM_POINT_LIGHTS; i++ )
 	{
@@ -142,22 +165,55 @@ void Renderer::render( Assets* assets )
 	gbuffer.performFinalPass();
 
 	gbuffer.end();
+	AGLOG( "Renderer(render)" );
+
+	// TEXT RENDERING
+	glEnable( GL_DEPTH_TEST );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+	textShader.bind();
+	textShader.setMat4( textProjectionMatrix, orthographicCamera.getFinalProjectionMatrix() );
+
+	// TEMP: Crazy magic numbers
+	Texture* textTexture = assets->getTexture( 6 );
+	textTexture->bind( GL_TEXTURE0 );
+	textShader.setInt( textDiffuseMap, 0 );
+	
+	const int NUM_TEXT_INSTANCES = textInstances->getSize();
+	for( int i=0; i<NUM_TEXT_INSTANCES; i++ )
+	{
+		textInstances->at( i ).render();
+	}
+	glDisable( GL_BLEND );
 }
 
 void Renderer::finalize()
 {
-	const int MAX_INSTANCES = instances->getSize();
-	for( int curInstance = 0; curInstance < MAX_INSTANCES; curInstance++ )
+	const int NUM_INSTANCES = instances->getSize();
+	for( int curInstance = 0; curInstance < NUM_INSTANCES; curInstance++ )
 	{
 		instances->at( curInstance ).finalize();
 	}
 
-	camera.finalize();
+	const int NUM_TEXT_INSTANCES = textInstances->getSize();
+	for( int curInstance = 0; curInstance < NUM_TEXT_INSTANCES; curInstance++ )
+	{
+		textInstances->at( curInstance ).finalize();
+	}
+
+	perspectiveCamera.finalize();
+	orthographicCamera.finalize();
 }
 
-Camera* Renderer::getCamera()
+Camera* Renderer::getPerspectiveCamera()
 {
-	return &camera;
+	return &perspectiveCamera;
+}
+
+Camera* Renderer::getOrthographicCamera()
+{
+	return &orthographicCamera;
 }
 
 GBuffer* Renderer::getGBuffer()

@@ -168,7 +168,6 @@ void GBuffer::upload()
 
 		billboardProjectionMatrix = billboardPass.getUniform( "projectionMatrix" );
 		billboardViewMatrix = billboardPass.getUniform( "viewMatrix" );
-		//billboardCameraPosition = billboardPass.getUniform( "cameraPosition" );
 		AGLOG( "GBuffer(load, billboard pass)" );
 
 		billboardDiffuseMap = billboardPass.getUniform( "diffuseMap" );
@@ -495,8 +494,6 @@ void GBuffer::renderPointLight( const PointLight& light )
 
 void GBuffer::beginBillboardPass( Camera* camera )
 {
-	//glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_BILLBOARD );
-
 	GLenum drawBuffers[] =
 	{
 		GL_COLOR_ATTACHMENT0+TARGET_DIFFUSE,
@@ -516,7 +513,6 @@ void GBuffer::beginBillboardPass( Camera* camera )
 
 	billboardPass.setMat4( billboardProjectionMatrix, camera->getFinalProjectionMatrix() );
 	billboardPass.setMat4( billboardViewMatrix, camera->getFinalViewMatrix() );
-	//billboardPass.setVec3( billboardCameraPosition, camera->getPosition() );
 	AGLOG( "GBuffer(BillboardPass) ");
 
 	billboardPass.setInt( billboardDiffuseMap, 0 );

@@ -7,6 +7,7 @@
 #include "Actor.h"
 #include "MeshRenderer.h"
 #include "InstanceHandler.h"
+#include "TextInstance.h"
 
 #define FPS 60
 #define TICKS (1000 / FPS)
@@ -30,7 +31,7 @@ int updateThread( void* args )
 {
 	ThreadData* data = (ThreadData*)args;
 
-	Camera* camera = data->renderer->getCamera();
+	Camera* perspectiveCamera = data->renderer->getPerspectiveCamera();
 
 	DebugSphere sphere = { glm::vec3( 0.0f ), 1.5f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugLine line = { glm::vec3( 0.0f ), glm::vec3( 0.0f, 10.0f, 0.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
@@ -47,7 +48,7 @@ int updateThread( void* args )
 				int dy = data->input->getMouseDeltaY();
 				if( dx || dy )
 				{
-					camera->updateDirection( dx, dy );
+					perspectiveCamera->updateDirection( dx, dy );
 				}
 			}
 
@@ -83,7 +84,7 @@ int updateThread( void* args )
 
 			if( glm::length( localMovement ) > 0.0f )
 			{
-				camera->updatePosition( localMovement );
+				perspectiveCamera->updatePosition( localMovement );
 			}
 
 			data->debugShapes->addSphere( sphere );
@@ -148,11 +149,12 @@ int main( int argc, char* argv[] )
 			}
 
 			Renderer renderer;
-			Camera* camera = renderer.getCamera();
+			Camera* perspectiveCamera = renderer.getPerspectiveCamera();
 			Assets assets;
 			Input input;
 			InstanceHandler instanceHandler;
 			Array<Actor> actors;
+			Array<TextInstance> textInstances;
 			Array<DirectionalLight> directionalLights;
 			Array<PointLight> pointLights;
 			DebugShapes debugShapes;
@@ -166,7 +168,16 @@ int main( int argc, char* argv[] )
 			int faceNormalMap = assets.loadTexture( "./assets/textures/face_normal.dds" );
 			int faceSpecularMap = assets.loadTexture( "./assets/textures/face_specular.dds" );
 
+			int fontTexture = assets.loadTexture( "./assets/fonts/verdana_24.dds" );
+			Font* font = assets.loadFont( "./assets/fonts/verdana_24.font" );
+			assert( font );
+
+			const char* fontText = "Testing...";
+			textInstances.add( TextInstance( font, fontText, glm::vec2( 32.0f, 32.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
+			textInstances[0].upload();
+
 			renderer.queueInstances( instanceHandler.getInstances() );
+			renderer.queueTextInstances( &textInstances );
 			renderer.queueDirectionalLights( &directionalLights );
 			renderer.queuePointLights( &pointLights );
 			renderer.load( &assets );
@@ -203,7 +214,7 @@ int main( int argc, char* argv[] )
 
 			assets.upload();
 
-			camera->setPosition( glm::vec3( 0, 0, -4.0f ) );
+			perspectiveCamera->setPosition( glm::vec3( 0, 0, -4.0f ) );
 
 			DirectionalLight directionalLight =
 			{
@@ -266,7 +277,7 @@ int main( int argc, char* argv[] )
 				// END OF CRITICAL SECTION
 
 				renderer.render( &assets );
-				debugShapes.render( camera );
+				debugShapes.render( perspectiveCamera );
 
 				SDL_GL_SwapWindow( window );
 				int timeDif = SDL_GetTicks() - startTime;
