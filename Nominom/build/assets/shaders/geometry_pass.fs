@@ -28,6 +28,6 @@ void main()
 	
 	finalPosition = fragPosition;
 	
-	float depth = ( gl_FragCoord.z / gl_FragCoord.w ) / ( farPlane - nearPlane );
+	float depth = gl_FragCoord.z;
 	finalDepth = vec4( depth, depth, depth, 1.0 );
 }

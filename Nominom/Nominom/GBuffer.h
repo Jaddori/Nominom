@@ -7,6 +7,7 @@
 #include "Assets.h"
 
 #define GBUFFER_SPHERE_MESH_PATH "./assets/meshes/sphere.mesh"
+#define GBUFFER_SHADOW_MAP_RESOLUTION 10.0f
 
 struct DirectionalLight
 {
@@ -37,6 +38,7 @@ enum
 	TARGET_POSITION,
 	TARGET_NORMAL,
 	TARGET_DEPTH,
+	TARGET_SHADOW,
 	TARGET_LIGHT,
 	TARGET_BILLBOARD,
 	TARGET_FINAL,
@@ -59,9 +61,14 @@ public:
 	void endGeometryPass();
 	void updateGeometryWorldMatrices( const glm::mat4* worldMatrices, int count );
 	void updateGeometryTextures( Texture* diffuseMap, Texture* normalMap, Texture* specularMap );
+
+	void beginDirectionalShadowPass( Camera* camera, const DirectionalLight& light );
+	void endDirectionalShadowPass();
+	void updateDirectionalShadowWorldMatrices( const glm::mat4* worldMatrices, int count );
+
 	void beginDirectionalLightPass( int target, Camera* camera );
 	void endDirectionalLightPass();
-	void renderDirectionalLight( const DirectionalLight& light );
+	void renderDirectionalLight( Camera* camera, const DirectionalLight& light );
 
 	void beginPointLightPass( int target, Camera* camera );
 	void endPointLightPass();
@@ -106,9 +113,19 @@ private:
 	GLint directionalLightIntensity;
 	GLint directionalLightCameraPosition;
 	GLint directionalLightSpecularPower;
+	GLint directionalLightTransformation;
 	GLint directionalLightDiffuseTarget;
 	GLint directionalLightNormalTarget;
 	GLint directionalLightPositionTarget;
+	GLint directionalLightDepthTarget;
+	GLint directionalLightShadowTarget;
+
+	Shader directionalShadowPass;
+	GLint directionalShadowProjectionMatrix;
+	GLint directionalShadowViewMatrix;
+	GLint directionalShadowWorldMatrices;
+	GLint directionalShadowFarPlane;
+	GLint directionalShadowNearPlane;
 
 	Shader pointLightPass;
 	GLint pointLightProjectionMatrix;
@@ -128,6 +145,13 @@ private:
 	GLint pointLightNormalTarget;
 	GLint pointLightPositionTarget;
 	int sphereMesh;
+
+	Shader pointShadowPass;
+	GLint pointShadowProjectionMatrix;
+	GLint pointShadowViewMatrix;
+	GLint pointShadowWorldMatrices;
+	GLint pointShadowFarPlane;
+	GLint pointShadowNearPlane;
 
 	Shader spotLightPass;
 

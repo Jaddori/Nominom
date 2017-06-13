@@ -38,6 +38,8 @@ int updateThread( void* args )
 	DebugAABB aabb = { glm::vec3( -3.0f ), glm::vec3( 3.0f ), glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
 	DebugOBB obb = { glm::vec3( 0.0f ), glm::vec3(0.7f, 0.0f, 0.7f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-0.7f, 0.0f, 0.7f), glm::vec3(3.0f), glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
 
+	glm::vec3 dir = glm::normalize( glm::vec3( 1.0f, -1.0f, 1.0f ) );
+
 	while( data->running )
 	{
 		if( SDL_SemWaitTimeout( data->updateLock, 100 ) == 0 )
@@ -87,7 +89,7 @@ int updateThread( void* args )
 				perspectiveCamera->updatePosition( localMovement );
 			}
 
-			data->debugShapes->addSphere( sphere );
+			/*data->debugShapes->addSphere( sphere );
 			data->debugShapes->addLine( line );
 			data->debugShapes->addAABB( aabb );
 			data->debugShapes->addOBB( obb );
@@ -106,7 +108,10 @@ int updateThread( void* args )
 				data->debugShapes->addLine( normalLine );
 				data->debugShapes->addLine( tangentLine );
 				data->debugShapes->addLine( bitangentLine );
-			}
+			}*/
+
+			DebugLine dirlight = { -dir*10.0f, glm::vec3( 0.0f ), glm::vec4( 1.0f, 1.0f, 0.0f, 1.0 ) };
+			data->debugShapes->addLine( dirlight );
 
 			SDL_SemPost( data->renderLock );
 		}
@@ -209,6 +214,15 @@ int main( int argc, char* argv[] )
 			actor3.addComponent( &transform3 );
 			actor3.addComponent( &meshRenderer3 );
 
+			Actor actor4;
+			Transform transform4;
+			transform4.setPosition( glm::vec3( -2.0f, -1.0f, 2.0f ) );
+			MeshRenderer meshRenderer4;
+			meshRenderer4.load( &assets, &instanceHandler );
+
+			actor4.addComponent( &transform4 );
+			actor4.addComponent( &meshRenderer4 );
+
 			debugShapes.load();
 			debugShapes.upload();
 
@@ -218,15 +232,16 @@ int main( int argc, char* argv[] )
 
 			DirectionalLight directionalLight =
 			{
-				glm::vec3( 1.0f, -1.0f, 1.0f ),
+				glm::normalize( glm::vec3( 1.0f, -1.0f, 1.0f ) ),
+				//glm::vec3( 1.0f, 0.0f, 0.0f ),
 				glm::vec3( 1.0f, 0.0f, 0.0f ),
 				0.8f
 			};
 			directionalLights.add( directionalLight );
 
-			directionalLight.direction = glm::vec3( -1.0f, -1.0f, 1.0f );
-			directionalLight.color = glm::vec3( 0.0f, 0.0f, 1.0f );
-			directionalLights.add( directionalLight );
+			//directionalLight.direction = glm::vec3( -1.0f, -1.0f, 1.0f );
+			//directionalLight.color = glm::vec3( 0.0f, 0.0f, 1.0f );
+			//directionalLights.add( directionalLight );
 
 			PointLight pointLight =
 			{
@@ -270,6 +285,7 @@ int main( int argc, char* argv[] )
 				meshRenderer.finalize();
 				meshRenderer2.finalize();
 				meshRenderer3.finalize();
+				meshRenderer4.finalize();
 				renderer.finalize();
 				debugShapes.finalize();
 
