@@ -74,6 +74,7 @@ public:
 	void beginDirectionalShadowPass( Camera* camera, const DirectionalLight& light );
 	void endDirectionalShadowPass();
 	void updateDirectionalShadowWorldMatrices( const glm::mat4* worldMatrices, int count );
+	void clearShadowTarget();
 
 	void beginDirectionalLightPass( int target, Camera* camera );
 	void endDirectionalLightPass();

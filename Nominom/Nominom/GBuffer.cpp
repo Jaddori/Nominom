@@ -382,6 +382,11 @@ void GBuffer::end()
 			// final
 			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
 			glBlitFramebuffer( 0, 0, width, height, 0, 0, width/2, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+			// alpha
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_ALPHA );
+			glBlitFramebuffer( 0, 0, width, height, width/2, 0, width, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+			AGLOG( "GBuffer(end)" );
 		} break;
 
 		case DEBUG_NONE:
@@ -539,6 +544,13 @@ void GBuffer::updateDirectionalShadowWorldMatrices( const glm::mat4* worldMatric
 	directionalShadowPass.setMat4( directionalShadowWorldMatrices, worldMatrices, count );
 }
 
+void GBuffer::clearShadowTarget()
+{
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_SHADOW );
+	glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT );
+}
+
 void GBuffer::beginPointLightPass( int target, Camera* camera )
 {
 	glDrawBuffer( GL_COLOR_ATTACHMENT0+target );
@@ -614,7 +626,7 @@ void GBuffer::renderPointLight( const PointLight& light )
 
 void GBuffer::beginBillboardPass( Camera* camera )
 {
-	const int NUM_BUFFERS = 4;
+	/*const int NUM_BUFFERS = 4;
 	GLenum drawBuffers[NUM_BUFFERS] =
 	{
 		GL_COLOR_ATTACHMENT0+TARGET_DIFFUSE,
@@ -646,12 +658,48 @@ void GBuffer::beginBillboardPass( Camera* camera )
 	billboardPass.setInt( billboardNormalMap, 1 );
 	billboardPass.setInt( billboardSpecularMap, 2 );
 	billboardPass.setInt( billboardDepthTarget, 3 );
+	AGLOG( "GBuffer(beginBillboardPass)" );*/
+
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_ALPHA );
+	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	const int NUM_BUFFERS = 2;
+	GLenum drawBuffers[NUM_BUFFERS] =
+	{
+		GL_COLOR_ATTACHMENT0+TARGET_BILLBOARD,
+		GL_COLOR_ATTACHMENT0+TARGET_ALPHA
+	};
+	glDrawBuffers( NUM_BUFFERS, drawBuffers );
+
+	glClear( GL_DEPTH_BUFFER_BIT );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	//glDisable( GL_DEPTH_TEST );
+
+	billboardPass.bind();
+	AGLOG( "GBuffer(beginBillboardPass)" );
+
+	billboardPass.setMat4( billboardProjectionMatrix, camera->getFinalProjectionMatrix() );
+	billboardPass.setMat4( billboardViewMatrix, camera->getFinalViewMatrix() );
+	// TEMP: Magic numbers
+	billboardPass.setVec2( billboardScreenSize, glm::vec2( 640.0f, 480.0f ) );
+	AGLOG( "GBuffer(beginBillboardPass) ");
+
+	glActiveTexture( GL_TEXTURE3 );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_DEPTH] );
+
+	billboardPass.setInt( billboardDiffuseMap, 0 );
+	billboardPass.setInt( billboardNormalMap, 1 );
+	billboardPass.setInt( billboardSpecularMap, 2 );
+	billboardPass.setInt( billboardDepthTarget, 3 );
 	AGLOG( "GBuffer(beginBillboardPass)" );
 }
 
 void GBuffer::endBillboardPass()
 {
 	glEnable( GL_DEPTH_TEST );
+	glDisable( GL_BLEND );
 }
 
 void GBuffer::renderBillboards( Array<Billboard>* billboards )

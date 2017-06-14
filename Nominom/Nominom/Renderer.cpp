@@ -171,24 +171,6 @@ void Renderer::render( Assets* assets )
 
 	gbuffer.endBillboardPass();
 	AGLOG( "Renderer(render)" );
-
-	// DIRECTIONAL LIGHT PASS
-	gbuffer.beginDirectionalLightPass( TARGET_BILLBOARD, &perspectiveCamera );
-
-	for( int i=0; i<NUM_DIRECTIONAL_LIGHTS; i++ )
-	{
-		gbuffer.renderDirectionalLight( &perspectiveCamera, directionalLights->at(i) );
-	}
-	gbuffer.endDirectionalLightPass();
-
-	// POINT LIGHT PASS
-	gbuffer.beginPointLightPass( TARGET_BILLBOARD, &perspectiveCamera );
-
-	for( int i=0; i<NUM_POINT_LIGHTS; i++ )
-	{
-		gbuffer.renderPointLight( pointLights->at(i) );
-	}
-	gbuffer.endPointLightPass();
 #endif
 
 	// FINAL PASS
