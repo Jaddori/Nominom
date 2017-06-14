@@ -81,7 +81,7 @@ int updateThread( void* args )
 			}
 			if( data->input->keyReleased( SDL_SCANCODE_G ) )
 			{
-				data->renderer->getGBuffer()->toggleDebug();
+				data->renderer->getGBuffer()->toggleDebugMode();
 			}
 
 			if( glm::length( localMovement ) > 0.0f )
@@ -160,7 +160,8 @@ int main( int argc, char* argv[] )
 			Array<TextInstance> textInstances;
 			Array<DirectionalLight> directionalLights;
 			Array<PointLight> pointLights;
-			DebugShapes debugShapes;
+			//DebugShapes debugShapes;
+			DebugShapes* debugShapes = renderer.getDebugShapes();
 
 			int mesh = assets.loadMesh( "./assets/meshes/test.mesh" );
 			int diffuseMap = assets.loadTexture( "./assets/textures/crate_diffuse.dds" );
@@ -221,8 +222,8 @@ int main( int argc, char* argv[] )
 			actor4.addComponent( &transform4 );
 			actor4.addComponent( &meshRenderer4 );
 
-			debugShapes.load();
-			debugShapes.upload();
+			debugShapes->load();
+			debugShapes->upload();
 
 			assets.upload();
 
@@ -265,7 +266,7 @@ int main( int argc, char* argv[] )
 				&actors,
 				&directionalLights,
 				&pointLights,
-				&debugShapes,
+				debugShapes,
 				SDL_CreateSemaphore(1),
 				SDL_CreateSemaphore(0),
 				true
@@ -289,13 +290,13 @@ int main( int argc, char* argv[] )
 				meshRenderer3.finalize();
 				meshRenderer4.finalize();
 				renderer.finalize();
-				debugShapes.finalize();
+				//debugShapes.finalize();
 
 				SDL_SemPost( data.updateLock );
 				// END OF CRITICAL SECTION
 
 				renderer.render( &assets );
-				debugShapes.render( perspectiveCamera );
+				//debugShapes.render( perspectiveCamera );
 
 				SDL_GL_SwapWindow( window );
 				int timeDif = SDL_GetTicks() - startTime;

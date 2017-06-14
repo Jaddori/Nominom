@@ -102,16 +102,6 @@ void Renderer::render( Assets* assets )
 	gbuffer.endGeometryPass();
 
 	// DIRECTIONAL LIGHT PASS
-	/*gbuffer.beginDirectionalLightPass( TARGET_LIGHT, &perspectiveCamera );
-
-	assert( directionalLights );
-	const int MAX_DIRECTIONAL_LIGHTS = directionalLights->getSize();
-	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
-	{
-		gbuffer.renderDirectionalLight( directionalLights->at(i) );
-	}
-	gbuffer.endDirectionalLightPass();*/
-
 	assert( directionalLights );
 	const int NUM_DIRECTIONAL_LIGHTS = directionalLights->getSize();
 	for( int i=0; i<NUM_DIRECTIONAL_LIGHTS; i++ )
@@ -152,6 +142,14 @@ void Renderer::render( Assets* assets )
 
 	gbuffer.endPointLightPass();
 #endif
+
+	// DEBUG SHAPES
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_LIGHT );
+
+	glDisable( GL_DEPTH_TEST );
+	debugShapes.bindDepthTarget( gbuffer.getTarget( TARGET_DEPTH ) );
+	debugShapes.render( &perspectiveCamera );
+	glEnable( GL_DEPTH_TEST );
 
 	// BILLBOARD PASS
 #if 1
@@ -218,6 +216,7 @@ void Renderer::render( Assets* assets )
 		textInstances->at( i ).render();
 	}
 	glDisable( GL_BLEND );
+	AGLOG( "Renderer(render)" );
 }
 
 void Renderer::finalize()
@@ -236,6 +235,8 @@ void Renderer::finalize()
 
 	perspectiveCamera.finalize();
 	orthographicCamera.finalize();
+
+	debugShapes.finalize();
 }
 
 Camera* Renderer::getPerspectiveCamera()
@@ -251,4 +252,9 @@ Camera* Renderer::getOrthographicCamera()
 GBuffer* Renderer::getGBuffer()
 {
 	return &gbuffer;
+}
+
+DebugShapes* Renderer::getDebugShapes()
+{
+	return &debugShapes;
 }

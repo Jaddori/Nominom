@@ -10,13 +10,22 @@ layout(location=1) out vec4 finalPosition;
 layout(location=2) out vec4 finalNormal;
 layout(location=3) out vec4 finalAlpha;
 
+uniform vec2 screenSize;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D specularMap;
+uniform sampler2D depthTarget;
 
 void main()
 {
 	//finalColor = texture( diffuseMap, fragUV );
+	
+	vec2 depthUV = gl_FragCoord.xy / screenSize;
+	float depthStored = texture( depthTarget, depthUV ).r;
+	float fragDepth = gl_FragCoord.z;
+	
+	if( fragDepth > depthStored )
+		discard;
 	
 	finalDiffuse = texture( diffuseMap, fragUV );
 	finalPosition = fragPosition;
@@ -26,5 +35,5 @@ void main()
 	normal = normalize( fragTBN * normal );
 	finalNormal = vec4( normal, 1.0 );
 	
-	finalAlpha = vec4( finalDiffuse.a, 0.0, 0.0, 1.0 );
+	finalAlpha = vec4( finalDiffuse.a, finalDiffuse.a, finalDiffuse.a, 1.0 );
 }

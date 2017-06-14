@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "GBuffer.h"
+#include "DebugShapes.h"
 
 class Renderer
 {
@@ -27,6 +28,7 @@ public:
 	Camera* getPerspectiveCamera();
 	Camera* getOrthographicCamera();
 	GBuffer* getGBuffer();
+	DebugShapes* getDebugShapes();
 
 private:
 	Array<ModelInstance>* instances;
@@ -37,6 +39,7 @@ private:
 	Camera perspectiveCamera;
 	Camera orthographicCamera;
 	GBuffer gbuffer;
+	DebugShapes debugShapes;
 	
 	Shader textShader;
 	GLint textProjectionMatrix;

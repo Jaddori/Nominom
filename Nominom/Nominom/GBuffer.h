@@ -39,10 +39,19 @@ enum
 	TARGET_NORMAL,
 	TARGET_DEPTH,
 	TARGET_SHADOW,
+	TARGET_ALPHA = TARGET_SHADOW,
 	TARGET_LIGHT,
 	TARGET_BILLBOARD,
 	TARGET_FINAL,
 	MAX_TARGETS
+};
+
+enum
+{
+	DEBUG_NONE = 0,
+	DEBUG_GEOMETRY,
+	DEBUG_FINAL,
+	MAX_DEBUG_MODES
 };
 
 class GBuffer
@@ -80,10 +89,11 @@ public:
 
 	void performFinalPass();
 
-	void setDebug( bool debug );
-	void toggleDebug();
+	void setDebugMode( int mode );
+	void toggleDebugMode();
 
 	GLuint getFBO() const;
+	GLuint getTarget( int index ) const;
 
 private:
 	int width;
@@ -91,7 +101,7 @@ private:
 	GLuint fbo;
 	GLuint targets[MAX_TARGETS];
 	GLuint depthBuffer;
-	bool debug;
+	int debugMode;
 	Assets* assets;
 
 	GLuint quadVAO;
@@ -152,10 +162,11 @@ private:
 	Shader billboardPass;
 	GLint billboardProjectionMatrix;
 	GLint billboardViewMatrix;
-	GLint billboardCameraPosition;
+	GLint billboardScreenSize;
 	GLint billboardDiffuseMap;
 	GLint billboardNormalMap;
 	GLint billboardSpecularMap;
+	GLint billboardDepthTarget;
 	GLuint billboardVAO;
 	GLuint billboardVBO;
 
