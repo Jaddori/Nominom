@@ -2,9 +2,6 @@
 
 out vec4 finalColor;
 
-uniform float farPlane;
-uniform float nearPlane;
-
 void main()
 {
 	float z = gl_FragCoord.z;

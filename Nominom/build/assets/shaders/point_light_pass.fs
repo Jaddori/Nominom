@@ -16,11 +16,11 @@ out vec4 finalColor;
 
 uniform PointLight pointLight;
 uniform vec3 cameraPosition;
-uniform float specularPower;
 uniform vec2 screenSize;
+uniform float specularPower;
 uniform sampler2D diffuseTarget;
-uniform sampler2D normalTarget;
 uniform sampler2D positionTarget;
+uniform sampler2D normalTarget;
 
 vec4 calculatePointLight( vec3 normal, vec3 position )
 {
@@ -64,5 +64,6 @@ void main()
 	vec3 normal = normalize( texture( normalTarget, uv ).rgb );
 	
 	finalColor = vec4( diffuse, 1.0 ) * calculatePointLight( normal, position );
+	//finalColor = vec4( diffuse, 1.0 );
 	//finalColor = vec4( 1.0, 0.0, 0.0, 1.0 );
 }

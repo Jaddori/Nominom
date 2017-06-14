@@ -104,8 +104,6 @@ private:
 	GLint geometryNormalMap;
 	GLint geometryPositionMap;
 	GLint geometryDepthMap;
-	GLint geometryFarPlane;
-	GLint geometryNearPlane;
 
 	Shader directionalLightPass;
 	GLint directionalLightDirection;
@@ -124,16 +122,14 @@ private:
 	GLint directionalShadowProjectionMatrix;
 	GLint directionalShadowViewMatrix;
 	GLint directionalShadowWorldMatrices;
-	GLint directionalShadowFarPlane;
-	GLint directionalShadowNearPlane;
 
 	Shader pointLightPass;
 	GLint pointLightProjectionMatrix;
 	GLint pointLightViewMatrix;
 	GLint pointLightWorldMatrix;
 	GLint pointLightCameraPosition;
-	GLint pointLightSpecularPower;
 	GLint pointLightScreenSize;
+	GLint pointLightSpecularPower;
 	GLint pointLightPosition;
 	GLint pointLightRadius;
 	GLint pointLightColor;
@@ -150,8 +146,6 @@ private:
 	GLint pointShadowProjectionMatrix;
 	GLint pointShadowViewMatrix;
 	GLint pointShadowWorldMatrices;
-	GLint pointShadowFarPlane;
-	GLint pointShadowNearPlane;
 
 	Shader spotLightPass;
 

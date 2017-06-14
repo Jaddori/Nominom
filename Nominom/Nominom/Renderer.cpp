@@ -113,8 +113,8 @@ void Renderer::render( Assets* assets )
 	gbuffer.endDirectionalLightPass();*/
 
 	assert( directionalLights );
-	const int MAX_DIRECTIONAL_LIGHTS = directionalLights->getSize();
-	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
+	const int NUM_DIRECTIONAL_LIGHTS = directionalLights->getSize();
+	for( int i=0; i<NUM_DIRECTIONAL_LIGHTS; i++ )
 	{
 		const DirectionalLight& light = directionalLights->at(i);
 
@@ -140,7 +140,7 @@ void Renderer::render( Assets* assets )
 	}
 
 	// POINT LIGHT PASS
-#if 0
+#if 1
 	gbuffer.beginPointLightPass( TARGET_LIGHT, &perspectiveCamera );
 
 	assert( pointLights );
@@ -149,6 +149,7 @@ void Renderer::render( Assets* assets )
 	{
 		gbuffer.renderPointLight( pointLights->at(i) );
 	}
+
 	gbuffer.endPointLightPass();
 #endif
 

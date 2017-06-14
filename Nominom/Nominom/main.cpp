@@ -89,29 +89,27 @@ int updateThread( void* args )
 				perspectiveCamera->updatePosition( localMovement );
 			}
 
-			/*data->debugShapes->addSphere( sphere );
-			data->debugShapes->addLine( line );
-			data->debugShapes->addAABB( aabb );
-			data->debugShapes->addOBB( obb );
-
-			Mesh* mesh = data->assets->getMesh( 0 );
-			int count;
-			const Vertex* vertices = mesh->getVertices( &count );
-			for( int i=0; i<count; i++ )
+			// Add debug lines for all directional lights
+			const int NUM_DIRECTIONAL_LIGHTS = data->directionalLights->getSize();
+			for( int i=0; i<NUM_DIRECTIONAL_LIGHTS; i++ )
 			{
-				DebugLine normalLine = { vertices[i].position, vertices[i].position+vertices[i].normal*0.1f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+				const DirectionalLight& light = data->directionalLights->at( i );
 
-				DebugLine tangentLine = { vertices[i].position, vertices[i].position+vertices[i].tangent*0.1f, glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
+				DebugLine line = { light.direction*-10.0f, glm::vec3( 0.0f ), glm::vec4( light.color, light.intensity ) };
 
-				DebugLine bitangentLine = { vertices[i].position, vertices[i].position+vertices[i].bitangent*0.1f, glm::vec4( 0.0f, 0.0f, 1.0f, 1.0f ) };
+				data->debugShapes->addLine( line );
+			}
 
-				data->debugShapes->addLine( normalLine );
-				data->debugShapes->addLine( tangentLine );
-				data->debugShapes->addLine( bitangentLine );
-			}*/
+			// Add debug spheres for all point lights
+			const int NUM_POINT_LIGHTS = data->pointLights->getSize();
+			for( int i=0; i<NUM_POINT_LIGHTS; i++ )
+			{
+				const PointLight& light = data->pointLights->at( i );
 
-			DebugLine dirlight = { -dir*10.0f, glm::vec3( 0.0f ), glm::vec4( 1.0f, 1.0f, 0.0f, 1.0 ) };
-			data->debugShapes->addLine( dirlight );
+				DebugSphere sphere = { light.position, 1.0f, glm::vec4( light.color, light.intensity ) };
+
+				data->debugShapes->addSphere( sphere );
+			}
 
 			SDL_SemPost( data->renderLock );
 		}
@@ -233,15 +231,19 @@ int main( int argc, char* argv[] )
 			DirectionalLight directionalLight =
 			{
 				glm::normalize( glm::vec3( 1.0f, -1.0f, 1.0f ) ),
-				//glm::vec3( 1.0f, 0.0f, 0.0f ),
 				glm::vec3( 1.0f, 0.0f, 0.0f ),
 				0.8f
 			};
-			directionalLights.add( directionalLight );
 
-			//directionalLight.direction = glm::vec3( -1.0f, -1.0f, 1.0f );
-			//directionalLight.color = glm::vec3( 0.0f, 0.0f, 1.0f );
-			//directionalLights.add( directionalLight );
+			DirectionalLight directionalLight2 =
+			{
+				glm::normalize( glm::vec3( -1.0f, -1.0f, 1.0f ) ),
+				glm::vec3( 0.0f, 0.0f, 1.0f ),
+				0.8f
+			};
+
+			directionalLights.add( directionalLight );
+			directionalLights.add( directionalLight2 );
 
 			PointLight pointLight =
 			{
