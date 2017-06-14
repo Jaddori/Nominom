@@ -154,7 +154,7 @@ void Renderer::render( Assets* assets )
 #endif
 
 	// BILLBOARD PASS
-#if 0
+#if 1
 	gbuffer.beginBillboardPass( &perspectiveCamera );
 
 	Array<Billboard> billboards;
@@ -177,9 +177,9 @@ void Renderer::render( Assets* assets )
 	// DIRECTIONAL LIGHT PASS
 	gbuffer.beginDirectionalLightPass( TARGET_BILLBOARD, &perspectiveCamera );
 
-	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
+	for( int i=0; i<NUM_DIRECTIONAL_LIGHTS; i++ )
 	{
-		gbuffer.renderDirectionalLight( directionalLights->at(i) );
+		gbuffer.renderDirectionalLight( &perspectiveCamera, directionalLights->at(i) );
 	}
 	gbuffer.endDirectionalLightPass();
 
@@ -200,7 +200,7 @@ void Renderer::render( Assets* assets )
 	AGLOG( "Renderer(render)" );
 
 	// TEXT RENDERING
-	/*glEnable( GL_DEPTH_TEST );
+	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
@@ -217,7 +217,7 @@ void Renderer::render( Assets* assets )
 	{
 		textInstances->at( i ).render();
 	}
-	glDisable( GL_BLEND );*/
+	glDisable( GL_BLEND );
 }
 
 void Renderer::finalize()
