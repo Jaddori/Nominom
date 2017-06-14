@@ -102,19 +102,9 @@ void Renderer::render( Assets* assets )
 	gbuffer.endGeometryPass();
 
 	// DIRECTIONAL LIGHT PASS
-	/*gbuffer.beginDirectionalLightPass( TARGET_LIGHT, &perspectiveCamera );
-
 	assert( directionalLights );
-	const int MAX_DIRECTIONAL_LIGHTS = directionalLights->getSize();
-	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
-	{
-		gbuffer.renderDirectionalLight( directionalLights->at(i) );
-	}
-	gbuffer.endDirectionalLightPass();*/
-
-	assert( directionalLights );
-	const int MAX_DIRECTIONAL_LIGHTS = directionalLights->getSize();
-	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
+	const int NUM_DIRECTIONAL_LIGHTS = directionalLights->getSize();
+	for( int i=0; i<NUM_DIRECTIONAL_LIGHTS; i++ )
 	{
 		const DirectionalLight& light = directionalLights->at(i);
 
@@ -140,7 +130,7 @@ void Renderer::render( Assets* assets )
 	}
 
 	// POINT LIGHT PASS
-#if 0
+#if 1
 	gbuffer.beginPointLightPass( TARGET_LIGHT, &perspectiveCamera );
 
 	assert( pointLights );
@@ -149,11 +139,20 @@ void Renderer::render( Assets* assets )
 	{
 		gbuffer.renderPointLight( pointLights->at(i) );
 	}
+
 	gbuffer.endPointLightPass();
 #endif
 
+	// DEBUG SHAPES
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_LIGHT );
+
+	glDisable( GL_DEPTH_TEST );
+	debugShapes.bindDepthTarget( gbuffer.getTarget( TARGET_DEPTH ) );
+	debugShapes.render( &perspectiveCamera );
+	glEnable( GL_DEPTH_TEST );
+
 	// BILLBOARD PASS
-#if 0
+#if 1
 	gbuffer.beginBillboardPass( &perspectiveCamera );
 
 	Array<Billboard> billboards;
@@ -172,24 +171,6 @@ void Renderer::render( Assets* assets )
 
 	gbuffer.endBillboardPass();
 	AGLOG( "Renderer(render)" );
-
-	// DIRECTIONAL LIGHT PASS
-	gbuffer.beginDirectionalLightPass( TARGET_BILLBOARD, &perspectiveCamera );
-
-	for( int i=0; i<MAX_DIRECTIONAL_LIGHTS; i++ )
-	{
-		gbuffer.renderDirectionalLight( directionalLights->at(i) );
-	}
-	gbuffer.endDirectionalLightPass();
-
-	// POINT LIGHT PASS
-	gbuffer.beginPointLightPass( TARGET_BILLBOARD, &perspectiveCamera );
-
-	for( int i=0; i<NUM_POINT_LIGHTS; i++ )
-	{
-		gbuffer.renderPointLight( pointLights->at(i) );
-	}
-	gbuffer.endPointLightPass();
 #endif
 
 	// FINAL PASS
@@ -199,7 +180,7 @@ void Renderer::render( Assets* assets )
 	AGLOG( "Renderer(render)" );
 
 	// TEXT RENDERING
-	/*glEnable( GL_DEPTH_TEST );
+	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
@@ -216,7 +197,8 @@ void Renderer::render( Assets* assets )
 	{
 		textInstances->at( i ).render();
 	}
-	glDisable( GL_BLEND );*/
+	glDisable( GL_BLEND );
+	AGLOG( "Renderer(render)" );
 }
 
 void Renderer::finalize()
@@ -235,6 +217,8 @@ void Renderer::finalize()
 
 	perspectiveCamera.finalize();
 	orthographicCamera.finalize();
+
+	debugShapes.finalize();
 }
 
 Camera* Renderer::getPerspectiveCamera()
@@ -250,4 +234,9 @@ Camera* Renderer::getOrthographicCamera()
 GBuffer* Renderer::getGBuffer()
 {
 	return &gbuffer;
+}
+
+DebugShapes* Renderer::getDebugShapes()
+{
+	return &debugShapes;
 }

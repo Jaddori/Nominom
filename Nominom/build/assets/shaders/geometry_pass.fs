@@ -12,8 +12,6 @@ layout(location=3) out vec4 finalDepth;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
-uniform float farPlane;
-uniform float nearPlane;
 
 void main()
 {

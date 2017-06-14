@@ -20,4 +20,5 @@ void main()
 	finalColor = ( ftColor * lightFactor ) + btColor;
 	//finalColor = ftColor;
 	//finalColor = btColor;
+	//finalColor = vec4( btAlpha, 0.0, 0.0, 1.0 );
 }

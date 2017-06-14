@@ -18,6 +18,7 @@ public:
 	bool load();
 	void upload();
 
+	void bindDepthTarget( GLuint target );
 	void render( Camera* camera );
 	void finalize();
 
@@ -37,27 +38,37 @@ private:
 	Array<DebugOBB> finalOBBs;
 	Array<DebugLine> finalLines;
 
+	GLuint depthTarget;
+
 	// sphere
 	Shader sphereShader;
 	GLint sphereProjectionMatrix;
 	GLint sphereViewMatrix;
+	GLint sphereDepthTarget;
+	GLint sphereScreenSize;
 	GLuint sphereVAO, sphereVBO;
 
 	// aabb
 	Shader aabbShader;
 	GLint aabbProjectionMatrix;
 	GLint aabbViewMatrix;
+	GLint aabbDepthTarget;
+	GLint aabbScreenSize;
 	GLuint aabbVAO, aabbVBO;
 
 	// obb
 	Shader obbShader;
 	GLint obbProjectionMatrix;
 	GLint obbViewMatrix;
+	GLint obbDepthTarget;
+	GLint obbScreenSize;
 	GLuint obbVAO, obbVBO;
 
 	// line
 	Shader lineShader;
 	GLint lineProjectionMatrix;
 	GLint lineViewMatrix;
+	GLint lineDepthTarget;
+	GLint lineScreenSize;
 	GLuint lineVAO, lineVBO;
 };

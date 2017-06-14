@@ -81,7 +81,7 @@ int updateThread( void* args )
 			}
 			if( data->input->keyReleased( SDL_SCANCODE_G ) )
 			{
-				data->renderer->getGBuffer()->toggleDebug();
+				data->renderer->getGBuffer()->toggleDebugMode();
 			}
 
 			if( glm::length( localMovement ) > 0.0f )
@@ -89,29 +89,27 @@ int updateThread( void* args )
 				perspectiveCamera->updatePosition( localMovement );
 			}
 
-			/*data->debugShapes->addSphere( sphere );
-			data->debugShapes->addLine( line );
-			data->debugShapes->addAABB( aabb );
-			data->debugShapes->addOBB( obb );
-
-			Mesh* mesh = data->assets->getMesh( 0 );
-			int count;
-			const Vertex* vertices = mesh->getVertices( &count );
-			for( int i=0; i<count; i++ )
+			// Add debug lines for all directional lights
+			const int NUM_DIRECTIONAL_LIGHTS = data->directionalLights->getSize();
+			for( int i=0; i<NUM_DIRECTIONAL_LIGHTS; i++ )
 			{
-				DebugLine normalLine = { vertices[i].position, vertices[i].position+vertices[i].normal*0.1f, glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f ) };
+				const DirectionalLight& light = data->directionalLights->at( i );
 
-				DebugLine tangentLine = { vertices[i].position, vertices[i].position+vertices[i].tangent*0.1f, glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f ) };
+				DebugLine line = { light.direction*-10.0f, glm::vec3( 0.0f ), glm::vec4( light.color, light.intensity ) };
 
-				DebugLine bitangentLine = { vertices[i].position, vertices[i].position+vertices[i].bitangent*0.1f, glm::vec4( 0.0f, 0.0f, 1.0f, 1.0f ) };
+				data->debugShapes->addLine( line );
+			}
 
-				data->debugShapes->addLine( normalLine );
-				data->debugShapes->addLine( tangentLine );
-				data->debugShapes->addLine( bitangentLine );
-			}*/
+			// Add debug spheres for all point lights
+			const int NUM_POINT_LIGHTS = data->pointLights->getSize();
+			for( int i=0; i<NUM_POINT_LIGHTS; i++ )
+			{
+				const PointLight& light = data->pointLights->at( i );
 
-			DebugLine dirlight = { -dir*10.0f, glm::vec3( 0.0f ), glm::vec4( 1.0f, 1.0f, 0.0f, 1.0 ) };
-			data->debugShapes->addLine( dirlight );
+				DebugSphere sphere = { light.position, 1.0f, glm::vec4( light.color, light.intensity ) };
+
+				data->debugShapes->addSphere( sphere );
+			}
 
 			SDL_SemPost( data->renderLock );
 		}
@@ -162,7 +160,8 @@ int main( int argc, char* argv[] )
 			Array<TextInstance> textInstances;
 			Array<DirectionalLight> directionalLights;
 			Array<PointLight> pointLights;
-			DebugShapes debugShapes;
+			//DebugShapes debugShapes;
+			DebugShapes* debugShapes = renderer.getDebugShapes();
 
 			int mesh = assets.loadMesh( "./assets/meshes/test.mesh" );
 			int diffuseMap = assets.loadTexture( "./assets/textures/crate_diffuse.dds" );
@@ -223,8 +222,8 @@ int main( int argc, char* argv[] )
 			actor4.addComponent( &transform4 );
 			actor4.addComponent( &meshRenderer4 );
 
-			debugShapes.load();
-			debugShapes.upload();
+			debugShapes->load();
+			debugShapes->upload();
 
 			assets.upload();
 
@@ -233,15 +232,19 @@ int main( int argc, char* argv[] )
 			DirectionalLight directionalLight =
 			{
 				glm::normalize( glm::vec3( 1.0f, -1.0f, 1.0f ) ),
-				//glm::vec3( 1.0f, 0.0f, 0.0f ),
 				glm::vec3( 1.0f, 0.0f, 0.0f ),
 				0.8f
 			};
-			directionalLights.add( directionalLight );
 
-			//directionalLight.direction = glm::vec3( -1.0f, -1.0f, 1.0f );
-			//directionalLight.color = glm::vec3( 0.0f, 0.0f, 1.0f );
-			//directionalLights.add( directionalLight );
+			DirectionalLight directionalLight2 =
+			{
+				glm::normalize( glm::vec3( -1.0f, -1.0f, 1.0f ) ),
+				glm::vec3( 0.0f, 0.0f, 1.0f ),
+				0.8f
+			};
+
+			directionalLights.add( directionalLight );
+			directionalLights.add( directionalLight2 );
 
 			PointLight pointLight =
 			{
@@ -263,7 +266,7 @@ int main( int argc, char* argv[] )
 				&actors,
 				&directionalLights,
 				&pointLights,
-				&debugShapes,
+				debugShapes,
 				SDL_CreateSemaphore(1),
 				SDL_CreateSemaphore(0),
 				true
@@ -287,13 +290,13 @@ int main( int argc, char* argv[] )
 				meshRenderer3.finalize();
 				meshRenderer4.finalize();
 				renderer.finalize();
-				debugShapes.finalize();
+				//debugShapes.finalize();
 
 				SDL_SemPost( data.updateLock );
 				// END OF CRITICAL SECTION
 
 				renderer.render( &assets );
-				debugShapes.render( perspectiveCamera );
+				//debugShapes.render( perspectiveCamera );
 
 				SDL_GL_SwapWindow( window );
 				int timeDif = SDL_GetTicks() - startTime;

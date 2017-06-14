@@ -52,6 +52,8 @@ void DebugShapes::upload()
 		sphereShader.upload();
 		sphereProjectionMatrix = sphereShader.getUniform( "projectionMatrix" );
 		sphereViewMatrix = sphereShader.getUniform( "viewMatrix" );
+		sphereDepthTarget = sphereShader.getUniform( "depthTarget" );
+		sphereScreenSize = sphereShader.getUniform( "screenSize" );
 
 		glGenVertexArrays( 1, &sphereVAO );
 		glBindVertexArray( sphereVAO );
@@ -76,6 +78,8 @@ void DebugShapes::upload()
 		aabbShader.upload();
 		aabbProjectionMatrix = aabbShader.getUniform( "projectionMatrix" );
 		aabbViewMatrix = aabbShader.getUniform( "viewMatrix" );
+		aabbDepthTarget = aabbShader.getUniform( "depthTarget" );
+		aabbScreenSize = aabbShader.getUniform( "screenSize" );
 
 		glGenVertexArrays( 1, &aabbVAO );
 		glBindVertexArray( aabbVAO );
@@ -100,6 +104,8 @@ void DebugShapes::upload()
 		obbShader.upload();
 		obbProjectionMatrix = obbShader.getUniform( "projectionMatrix" );
 		obbViewMatrix = obbShader.getUniform( "viewMatrix" );
+		obbDepthTarget = obbShader.getUniform( "depthTarget" );
+		obbScreenSize = obbShader.getUniform( "screenSize" );
 
 		glGenVertexArrays( 1, &obbVAO );
 		glBindVertexArray( obbVAO );
@@ -130,6 +136,8 @@ void DebugShapes::upload()
 		lineShader.upload();
 		lineProjectionMatrix = lineShader.getUniform( "projectionMatrix" );
 		lineViewMatrix = lineShader.getUniform( "viewMatrix" );
+		lineDepthTarget = lineShader.getUniform( "depthTarget" );
+		lineScreenSize = lineShader.getUniform( "screenSize" );
 
 		glGenVertexArrays( 1, &lineVAO );
 		glBindVertexArray( lineVAO );
@@ -148,6 +156,11 @@ void DebugShapes::upload()
 
 		glBindVertexArray( 0 );
 	}
+}
+
+void DebugShapes::bindDepthTarget( GLuint target )
+{
+	depthTarget = target;
 }
 
 void DebugShapes::render( Camera* camera )
@@ -175,6 +188,12 @@ void DebugShapes::render( Camera* camera )
 		sphereShader.bind();
 		sphereShader.setMat4( sphereProjectionMatrix, projectionMatrix, 1 );
 		sphereShader.setMat4( sphereViewMatrix, viewMatrix, 1 );
+		// TEMP: Magic numbers
+		sphereShader.setVec2( sphereScreenSize, glm::vec2( 640.0f, 480.0f ) );
+		
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, depthTarget );
+		sphereShader.setInt( sphereDepthTarget, 0 );
 
 		glDrawArrays( GL_POINTS, 0, NUM_SPHERES );
 	}
@@ -189,6 +208,12 @@ void DebugShapes::render( Camera* camera )
 		aabbShader.bind();
 		aabbShader.setMat4( aabbProjectionMatrix, projectionMatrix, 1 );
 		aabbShader.setMat4( aabbViewMatrix, viewMatrix, 1 );
+		// TEMP: Magic numbers
+		aabbShader.setVec2( aabbScreenSize, glm::vec2( 640.0f, 480.0f ) );
+
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, depthTarget );
+		sphereShader.setInt( aabbDepthTarget, 0 );
 
 		glDrawArrays( GL_POINTS, 0, NUM_AABB );
 	}
@@ -203,6 +228,12 @@ void DebugShapes::render( Camera* camera )
 		obbShader.bind();
 		obbShader.setMat4( obbProjectionMatrix, projectionMatrix, 1 );
 		obbShader.setMat4( obbViewMatrix, viewMatrix, 1 );
+		// TEMP: Magic numbers
+		obbShader.setVec2( obbScreenSize, glm::vec2( 640.0f, 480.0f ) );
+
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, depthTarget );
+		sphereShader.setInt( obbDepthTarget, 0 );
 
 		glDrawArrays( GL_POINTS, 0, NUM_OBB );
 	}
@@ -217,6 +248,12 @@ void DebugShapes::render( Camera* camera )
 		lineShader.bind();
 		lineShader.setMat4( lineProjectionMatrix, projectionMatrix, 1 );
 		lineShader.setMat4( lineViewMatrix, viewMatrix, 1 );
+		// TEMP: Magic numbers
+		lineShader.setVec2( lineScreenSize, glm::vec2( 640.0f, 480.0f ) );
+
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, depthTarget );
+		sphereShader.setInt( lineDepthTarget, 0 );
 
 		glDrawArrays( GL_POINTS, 0, NUM_LINES );
 	}

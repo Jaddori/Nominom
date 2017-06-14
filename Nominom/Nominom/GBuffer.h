@@ -39,10 +39,19 @@ enum
 	TARGET_NORMAL,
 	TARGET_DEPTH,
 	TARGET_SHADOW,
+	TARGET_ALPHA = TARGET_SHADOW,
 	TARGET_LIGHT,
 	TARGET_BILLBOARD,
 	TARGET_FINAL,
 	MAX_TARGETS
+};
+
+enum
+{
+	DEBUG_NONE = 0,
+	DEBUG_GEOMETRY,
+	DEBUG_FINAL,
+	MAX_DEBUG_MODES
 };
 
 class GBuffer
@@ -65,6 +74,7 @@ public:
 	void beginDirectionalShadowPass( Camera* camera, const DirectionalLight& light );
 	void endDirectionalShadowPass();
 	void updateDirectionalShadowWorldMatrices( const glm::mat4* worldMatrices, int count );
+	void clearShadowTarget();
 
 	void beginDirectionalLightPass( int target, Camera* camera );
 	void endDirectionalLightPass();
@@ -80,10 +90,11 @@ public:
 
 	void performFinalPass();
 
-	void setDebug( bool debug );
-	void toggleDebug();
+	void setDebugMode( int mode );
+	void toggleDebugMode();
 
 	GLuint getFBO() const;
+	GLuint getTarget( int index ) const;
 
 private:
 	int width;
@@ -91,7 +102,7 @@ private:
 	GLuint fbo;
 	GLuint targets[MAX_TARGETS];
 	GLuint depthBuffer;
-	bool debug;
+	int debugMode;
 	Assets* assets;
 
 	GLuint quadVAO;
@@ -104,8 +115,6 @@ private:
 	GLint geometryNormalMap;
 	GLint geometryPositionMap;
 	GLint geometryDepthMap;
-	GLint geometryFarPlane;
-	GLint geometryNearPlane;
 
 	Shader directionalLightPass;
 	GLint directionalLightDirection;
@@ -124,16 +133,14 @@ private:
 	GLint directionalShadowProjectionMatrix;
 	GLint directionalShadowViewMatrix;
 	GLint directionalShadowWorldMatrices;
-	GLint directionalShadowFarPlane;
-	GLint directionalShadowNearPlane;
 
 	Shader pointLightPass;
 	GLint pointLightProjectionMatrix;
 	GLint pointLightViewMatrix;
 	GLint pointLightWorldMatrix;
 	GLint pointLightCameraPosition;
-	GLint pointLightSpecularPower;
 	GLint pointLightScreenSize;
+	GLint pointLightSpecularPower;
 	GLint pointLightPosition;
 	GLint pointLightRadius;
 	GLint pointLightColor;
@@ -150,18 +157,17 @@ private:
 	GLint pointShadowProjectionMatrix;
 	GLint pointShadowViewMatrix;
 	GLint pointShadowWorldMatrices;
-	GLint pointShadowFarPlane;
-	GLint pointShadowNearPlane;
 
 	Shader spotLightPass;
 
 	Shader billboardPass;
 	GLint billboardProjectionMatrix;
 	GLint billboardViewMatrix;
-	GLint billboardCameraPosition;
+	GLint billboardScreenSize;
 	GLint billboardDiffuseMap;
 	GLint billboardNormalMap;
 	GLint billboardSpecularMap;
+	GLint billboardDepthTarget;
 	GLuint billboardVAO;
 	GLuint billboardVBO;
 

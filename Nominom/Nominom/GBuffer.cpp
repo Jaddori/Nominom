@@ -110,10 +110,6 @@ void GBuffer::upload()
 		geometryPositionMap = geometryPass.getUniform( "positionMap" );
 		geometryDepthMap = geometryPass.getUniform( "depthMap" );
 		AGLOG( "GBuffer(upload)" );
-
-		geometryFarPlane = geometryPass.getUniform( "farPlane" );
-		geometryNearPlane = geometryPass.getUniform( "nearPlane" );
-		AGLOG( "GBuffer(upload)" );
 	}
 
 	if( directionalLightPass.getValid() )
@@ -145,8 +141,6 @@ void GBuffer::upload()
 		directionalShadowProjectionMatrix = directionalShadowPass.getUniform( "projectionMatrix" );
 		directionalShadowViewMatrix = directionalShadowPass.getUniform( "viewMatrix" );
 		directionalShadowWorldMatrices = directionalShadowPass.getUniform( "worldMatrices" );
-		directionalShadowFarPlane = directionalShadowPass.getUniform( "farPlane" );
-		directionalShadowNearPlane = directionalShadowPass.getUniform( "nearPlane" );
 		AGLOG( "GBuffer(upload)" );
 	}
 
@@ -161,8 +155,8 @@ void GBuffer::upload()
 		AGLOG( "GBuffer(upload)" );
 
 		pointLightCameraPosition = pointLightPass.getUniform( "cameraPosition" );
-		pointLightSpecularPower = pointLightPass.getUniform( "specularPower" );
 		pointLightScreenSize = pointLightPass.getUniform( "screenSize" );
+		pointLightSpecularPower = pointLightPass.getUniform( "specularPower" );
 		AGLOG( "GBuffer(upload)" );
 
 		pointLightPosition = pointLightPass.getUniform( "pointLight.position" );
@@ -192,11 +186,13 @@ void GBuffer::upload()
 
 		billboardProjectionMatrix = billboardPass.getUniform( "projectionMatrix" );
 		billboardViewMatrix = billboardPass.getUniform( "viewMatrix" );
+		billboardScreenSize = billboardPass.getUniform( "screenSize" );
 		AGLOG( "GBuffer(load, billboard pass)" );
 
 		billboardDiffuseMap = billboardPass.getUniform( "diffuseMap" );
 		billboardNormalMap = billboardPass.getUniform( "normalMap" );
 		billboardSpecularMap = billboardPass.getUniform( "specularMap" );
+		billboardDepthTarget = billboardPass.getUniform( "depthTarget" );
 		AGLOG( "GBuffer(load, billboard pass)" );
 
 		glGenVertexArrays( 1, &billboardVAO );
@@ -314,39 +310,93 @@ void GBuffer::upload()
 void GBuffer::begin()
 {
 	glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+
+	// clear geometry targets
+	GLenum geometryTargets[] =
+	{
+		GL_COLOR_ATTACHMENT0+TARGET_DIFFUSE,
+		GL_COLOR_ATTACHMENT0+TARGET_POSITION,
+		GL_COLOR_ATTACHMENT0+TARGET_NORMAL,
+	};
+	glDrawBuffers( 3, geometryTargets );
+	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+	// clear final target
+	GLenum finalTargets[] =
+	{
+		GL_COLOR_ATTACHMENT0+TARGET_LIGHT,
+		GL_COLOR_ATTACHMENT0+TARGET_BILLBOARD,
+		GL_COLOR_ATTACHMENT0+TARGET_FINAL
+	};
+	glDrawBuffers( 3, finalTargets );
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	// clear depth target to white
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_DEPTH );
+	glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	// clear shadow target
+	/*glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_SHADOW );
+	glClear( GL_COLOR_BUFFER_BIT );*/
 }
 
 void GBuffer::end()
 {
-	if( debug )
+	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+	glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+
+	switch( debugMode )
 	{
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+		case DEBUG_GEOMETRY:
+		{
+			// diffuse target, top left
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_DIFFUSE );
+			glBlitFramebuffer( 0, 0, width, height, 0, height/2, width/2, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
-		// diffuse target, top left
-		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_DIFFUSE );
-		glBlitFramebuffer( 0, 0, width, height, 0, height/2, width/2, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+			// normal target, top right
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_NORMAL );
+			glBlitFramebuffer( 0, 0, width, height, width/2, height/2, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
-		// normal target, top right
-		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_NORMAL );
-		glBlitFramebuffer( 0, 0, width, height, width/2, height/2, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+			// position target, bottom left
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_POSITION );
+			glBlitFramebuffer( 0, 0, width, height, 0, 0, width/2, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
-		// position target, bottom left
-		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_POSITION );
-		glBlitFramebuffer( 0, 0, width, height, 0, 0, width/2, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+			// depth target, bottom right
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_DEPTH );
+			glBlitFramebuffer( 0, 0, width, height, width/2, 0, width, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+			AGLOG( "GBuffer(end)" );
+		} break;
 
-		// depth target, bottom right
-		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_SHADOW );
-		glBlitFramebuffer( 0, 0, width, height, width/2, 0, width, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
-	}
-	else
-	{
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-		glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
-		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
-		glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST );
-		AGLOG( "GBuffer(end)" );
+		case DEBUG_FINAL:
+		{
+			// final light
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_LIGHT );
+			glBlitFramebuffer( 0, 0, width, height, 0, height/2, width/2, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+			// final billboard
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_BILLBOARD );
+			glBlitFramebuffer( 0, 0, width, height, width/2, height/2, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+			// final
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
+			glBlitFramebuffer( 0, 0, width, height, 0, 0, width/2, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+			// alpha
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_ALPHA );
+			glBlitFramebuffer( 0, 0, width, height, width/2, 0, width, height/2, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+			AGLOG( "GBuffer(end)" );
+		} break;
+
+		case DEBUG_NONE:
+		default:
+		{
+			glReadBuffer( GL_COLOR_ATTACHMENT0+TARGET_FINAL );
+			glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
+			glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+			AGLOG( "GBuffer(end)" );
+		} break;
 	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -363,16 +413,12 @@ void GBuffer::beginGeometryPass( Camera* camera )
 		GL_COLOR_ATTACHMENT0+TARGET_DEPTH,
 	};
 	glDrawBuffers( TARGET_DEPTH+1, drawBuffers );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	//glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	AGLOG( "GBuffer(beginGeometryPass)" );
 
 	geometryPass.bind();
 	geometryPass.setMat4( geometryProjectionMatrix, camera->getFinalProjectionMatrix() );
 	geometryPass.setMat4( geometryViewMatrix, camera->getFinalViewMatrix() );
-	AGLOG( "GBuffer(beginGeometryPass)" );
-
-	geometryPass.setFloat( geometryFarPlane, camera->getFarPlane() );
-	geometryPass.setFloat( geometryNearPlane, camera->getNearPlane() );
 	AGLOG( "GBuffer(beginGeometryPass)" );
 
 	geometryPass.setInt( geometryDiffuseMap, 0 );
@@ -401,8 +447,8 @@ void GBuffer::beginDirectionalLightPass( int target, Camera* camera )
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_DEPTH_TEST );
 	glDrawBuffer( GL_COLOR_ATTACHMENT0+target );
-	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-	glClear( GL_COLOR_BUFFER_BIT );
+	/*glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT );*/
 	glDepthMask( GL_FALSE );
 
 	glEnable( GL_BLEND );
@@ -473,7 +519,7 @@ void GBuffer::beginDirectionalShadowPass( Camera* camera, const DirectionalLight
 {
 	glDrawBuffer( GL_COLOR_ATTACHMENT0 + TARGET_SHADOW );
 	glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	AGLOG( "GBuffer(beginDirectionalShadow)" );
 
 	directionalShadowPass.bind();
@@ -486,8 +532,6 @@ void GBuffer::beginDirectionalShadowPass( Camera* camera, const DirectionalLight
 
 	directionalShadowPass.setMat4( directionalShadowProjectionMatrix, projectionMatrix );
 	directionalShadowPass.setMat4( directionalShadowViewMatrix, viewMatrix );
-	directionalShadowPass.setFloat( directionalShadowFarPlane, 100.0f );
-	directionalShadowPass.setFloat( directionalShadowNearPlane, 0.1f );
 	AGLOG( "GBuffer(beginDirectionalShadow)" );
 }
 
@@ -498,6 +542,13 @@ void GBuffer::endDirectionalShadowPass()
 void GBuffer::updateDirectionalShadowWorldMatrices( const glm::mat4* worldMatrices, int count )
 {
 	directionalShadowPass.setMat4( directionalShadowWorldMatrices, worldMatrices, count );
+}
+
+void GBuffer::clearShadowTarget()
+{
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_SHADOW );
+	glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT );
 }
 
 void GBuffer::beginPointLightPass( int target, Camera* camera )
@@ -519,8 +570,8 @@ void GBuffer::beginPointLightPass( int target, Camera* camera )
 	pointLightPass.setMat4( pointLightViewMatrix, camera->getFinalViewMatrix() );
 	pointLightPass.setVec3( pointLightCameraPosition, camera->getPosition() );
 	// TEMP: Magic numbers
-	pointLightPass.setFloat( pointLightSpecularPower, 8.0f );
 	pointLightPass.setVec2( pointLightScreenSize, glm::vec2( 640.0f, 480.0f ) );
+	pointLightPass.setFloat( pointLightSpecularPower, 8.0f );
 	AGLOG( "GBuffer(beginPointLightPass)" );
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -575,37 +626,80 @@ void GBuffer::renderPointLight( const PointLight& light )
 
 void GBuffer::beginBillboardPass( Camera* camera )
 {
-	GLenum drawBuffers[] =
+	/*const int NUM_BUFFERS = 4;
+	GLenum drawBuffers[NUM_BUFFERS] =
 	{
 		GL_COLOR_ATTACHMENT0+TARGET_DIFFUSE,
 		GL_COLOR_ATTACHMENT0+TARGET_POSITION,
 		GL_COLOR_ATTACHMENT0+TARGET_NORMAL,
-		GL_COLOR_ATTACHMENT0+TARGET_DEPTH,
+		GL_COLOR_ATTACHMENT0+TARGET_ALPHA,
 	};
-	glDrawBuffers( TARGET_DEPTH+1, drawBuffers );
+	glDrawBuffers( NUM_BUFFERS, drawBuffers );
 
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	glDisable( GL_DEPTH_TEST );
 
 	billboardPass.bind();
 	AGLOG( "GBuffer(beginBillboardPass)" );
 
 	billboardPass.setMat4( billboardProjectionMatrix, camera->getFinalProjectionMatrix() );
 	billboardPass.setMat4( billboardViewMatrix, camera->getFinalViewMatrix() );
+	// TEMP: Magic numbers
+	billboardPass.setVec2( billboardScreenSize, glm::vec2( 640.0f, 480.0f ) );
 	AGLOG( "GBuffer(beginBillboardPass) ");
+
+	glActiveTexture( GL_TEXTURE3 );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_DEPTH] );
 
 	billboardPass.setInt( billboardDiffuseMap, 0 );
 	billboardPass.setInt( billboardNormalMap, 1 );
 	billboardPass.setInt( billboardSpecularMap, 2 );
+	billboardPass.setInt( billboardDepthTarget, 3 );
+	AGLOG( "GBuffer(beginBillboardPass)" );*/
+
+	glDrawBuffer( GL_COLOR_ATTACHMENT0+TARGET_ALPHA );
+	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	const int NUM_BUFFERS = 2;
+	GLenum drawBuffers[NUM_BUFFERS] =
+	{
+		GL_COLOR_ATTACHMENT0+TARGET_BILLBOARD,
+		GL_COLOR_ATTACHMENT0+TARGET_ALPHA
+	};
+	glDrawBuffers( NUM_BUFFERS, drawBuffers );
+
+	glClear( GL_DEPTH_BUFFER_BIT );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	//glDisable( GL_DEPTH_TEST );
+
+	billboardPass.bind();
+	AGLOG( "GBuffer(beginBillboardPass)" );
+
+	billboardPass.setMat4( billboardProjectionMatrix, camera->getFinalProjectionMatrix() );
+	billboardPass.setMat4( billboardViewMatrix, camera->getFinalViewMatrix() );
+	// TEMP: Magic numbers
+	billboardPass.setVec2( billboardScreenSize, glm::vec2( 640.0f, 480.0f ) );
+	AGLOG( "GBuffer(beginBillboardPass) ");
+
+	glActiveTexture( GL_TEXTURE3 );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_DEPTH] );
+
+	billboardPass.setInt( billboardDiffuseMap, 0 );
+	billboardPass.setInt( billboardNormalMap, 1 );
+	billboardPass.setInt( billboardSpecularMap, 2 );
+	billboardPass.setInt( billboardDepthTarget, 3 );
 	AGLOG( "GBuffer(beginBillboardPass)" );
 }
 
 void GBuffer::endBillboardPass()
 {
 	glEnable( GL_DEPTH_TEST );
-	glEnable( GL_CULL_FACE );
+	glDisable( GL_BLEND );
 }
 
 void GBuffer::renderBillboards( Array<Billboard>* billboards )
@@ -633,7 +727,7 @@ void GBuffer::performFinalPass()
 	glActiveTexture( GL_TEXTURE1 );
 	glBindTexture( GL_TEXTURE_2D, targets[TARGET_BILLBOARD] );
 	glActiveTexture( GL_TEXTURE2 );
-	glBindTexture( GL_TEXTURE_2D, targets[TARGET_DEPTH] );
+	glBindTexture( GL_TEXTURE_2D, targets[TARGET_ALPHA] );
 	AGLOG( "GBuffer(performFinalPass)" );
 
 	finalPass.setInt( finalLightTarget, 0 );
@@ -649,17 +743,23 @@ void GBuffer::performFinalPass()
 	glEnable( GL_DEPTH_TEST );
 }
 
-void GBuffer::setDebug( bool d )
+void GBuffer::setDebugMode( int mode )
 {
-	debug = d;
+	debugMode = mode;
 }
 
-void GBuffer::toggleDebug()
+void GBuffer::toggleDebugMode()
 {
-	debug = !debug;
+	debugMode = ( debugMode + 1 ) % MAX_DEBUG_MODES;
 }
 
 GLuint GBuffer::getFBO() const
 {
 	return fbo;
+}
+
+GLuint GBuffer::getTarget( int index ) const
+{
+	assert( index >= 0 && index < MAX_TARGETS );
+	return targets[index];
 }
